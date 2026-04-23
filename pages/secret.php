@@ -565,6 +565,30 @@
             <div id="tab-settings" class="admin-tab hidden animate-fade-in">
                 <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">⚙️ Tizim sozlamalari</h2>
                 <div class="space-y-6">
+                    <!-- Maintenance Mode -->
+                    <div id="maintenance-card" class="border rounded-2xl p-6 transition-all border-white/5 bg-white/[0.03]">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-2xl">
+                                    🔧
+                                </div>
+                                <div>
+                                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                        Texnik ishlar rejimi
+                                        <span id="maintenance-badge" class="hidden px-2 py-0.5 text-[9px] font-bold rounded-full bg-red-500/15 text-red-400 border border-red-500/20">YOQILGAN</span>
+                                    </h3>
+                                    <p class="text-xs text-gray-500 mt-0.5">Yoqilganda barcha foydalanuvchilarga "texnik ishlar" sahifasi ko'rsatiladi</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch" style="flex-shrink:0">
+                                <input type="checkbox" id="maintenance-toggle" onchange="toggleMaintenance()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div id="maintenance-status" class="hidden mt-4 p-3 rounded-xl text-xs">
+                        </div>
+                    </div>
+
                     <!-- Cleanup -->
                     <div class="bg-white/[0.03] border border-white/5 rounded-2xl p-6">
                         <h3 class="text-sm font-bold text-white mb-2">🧹 Rasmlarni tozalash</h3>
@@ -949,7 +973,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tab === 'sections') loadSections();
             if (tab === 'gallery') loadGallery(1);
             if (tab === 'packages') loadPackages();
-            if (tab === 'settings') { loadSystemInfo(); loadPaymentSettings(); }
+            if (tab === 'settings') { loadSystemInfo(); loadPaymentSettings(); loadMaintenanceStatus(); }
             if (tab === 'users') loadUsers();
             if (tab === 'payments') loadPayments();
             if (tab === 'logs') loadLogs();
@@ -2116,6 +2140,59 @@ document.addEventListener('DOMContentLoaded', () => {
         toast.classList.remove('hidden');
         setTimeout(() => toast.classList.add('hidden'), 4000);
     }
+    // ========== MAINTENANCE MODE ==========
+    async function loadMaintenanceStatus() {
+        try {
+            const res = await apiCall('/api/admin-stats.php', { action: 'maintenance-status' });
+            updateMaintenanceUI(res.enabled);
+        } catch (err) { console.warn('Maintenance status error:', err); }
+    }
+
+    function updateMaintenanceUI(enabled) {
+        const toggle = document.getElementById('maintenance-toggle');
+        const badge = document.getElementById('maintenance-badge');
+        const card = document.getElementById('maintenance-card');
+        const status = document.getElementById('maintenance-status');
+        
+        if (toggle) toggle.checked = enabled;
+        
+        if (enabled) {
+            badge.classList.remove('hidden');
+            card.className = 'border rounded-2xl p-6 transition-all border-red-500/20 bg-red-500/5';
+            status.classList.remove('hidden');
+            status.className = 'mt-4 p-3 rounded-xl text-xs bg-red-500/10 border border-red-500/20 text-red-300';
+            status.innerHTML = '⚠️ Texnik ishlar rejimi <b>YOQILGAN</b>. Oddiy foydalanuvchilar saytga kira olmaydi. Siz admin sifatida saytni tekshirishingiz mumkin.';
+        } else {
+            badge.classList.add('hidden');
+            card.className = 'border rounded-2xl p-6 transition-all border-white/5 bg-white/[0.03]';
+            status.classList.add('hidden');
+        }
+    }
+
+    window.toggleMaintenance = async function() {
+        const toggle = document.getElementById('maintenance-toggle');
+        const enabled = toggle.checked;
+        
+        if (enabled) {
+            if (!confirm('⚠️ Texnik ishlar rejimini yoqmoqchimisiz?\n\nBarcha foydalanuvchilar saytga kira olmaydi.\nFaqat siz (admin) saytni ko\'ra olasiz.')) {
+                toggle.checked = false;
+                return;
+            }
+        }
+        
+        try {
+            const res = await apiCall('/api/admin-stats.php', {
+                action: 'maintenance-toggle',
+                enabled: enabled,
+            });
+            updateMaintenanceUI(enabled);
+            showToast(res.message, enabled ? 'error' : 'success');
+        } catch (err) {
+            toggle.checked = !enabled; // Revert
+            showToast('❌ ' + err.message, 'error');
+        }
+    };
+
     // ========== EXPOSE TO GLOBAL SCOPE (for onclick handlers) ==========
     window.showPackageModal = showPackageModal;
     window.closePackageModal = closePackageModal;

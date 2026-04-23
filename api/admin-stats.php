@@ -57,6 +57,12 @@ switch ($action) {
     case 'save-payment-settings':
         handleSavePaymentSettings($input);
         break;
+    case 'maintenance-toggle':
+        handleMaintenanceToggle($input, $sessionToken);
+        break;
+    case 'maintenance-status':
+        handleMaintenanceStatus();
+        break;
     case 'all-activity':
         handleAllActivity($db);
         break;
@@ -780,5 +786,50 @@ function handleCleanupReceipts() {
         'success' => true,
         'message' => "{$deleted} ta eski chek o'chirildi",
         'deleted' => $deleted
+    ]);
+}
+
+// ========== MAINTENANCE MODE ==========
+
+function handleMaintenanceToggle($input, $sessionToken) {
+    $enabled = !empty($input['enabled']);
+    
+    setSetting('maintenance_mode', $enabled ? '1' : '0');
+    
+    if ($enabled) {
+        // Admin uchun bypass cookie o'rnatish (24 soat)
+        setcookie('admin_bypass', $sessionToken, [
+            'expires' => time() + 86400,
+            'path' => '/',
+            'httponly' => true,
+            'samesite' => 'Lax',
+            'secure' => isset($_SERVER['HTTPS']),
+        ]);
+    } else {
+        // Maintenance o'chirilganda cookie ni tozalash
+        setcookie('admin_bypass', '', [
+            'expires' => time() - 3600,
+            'path' => '/',
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+    }
+    
+    $statusText = $enabled 
+        ? "🔧 Texnik ishlar rejimi YOQILDI. Foydalanuvchilar saytga kira olmaydi." 
+        : "✅ Texnik ishlar rejimi O'CHIRILDI. Sayt barcha uchun ochiq.";
+    
+    jsonResponse([
+        'success' => true,
+        'enabled' => $enabled,
+        'message' => $statusText,
+    ]);
+}
+
+function handleMaintenanceStatus() {
+    $enabled = getSetting('maintenance_mode', '0') === '1';
+    jsonResponse([
+        'success' => true,
+        'enabled' => $enabled,
     ]);
 }
