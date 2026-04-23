@@ -1,23 +1,22 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/tibaaiuz/public_html
-    - /bin/cp -R api $DEPLOYPATH/
-    - /bin/cp -R assets $DEPLOYPATH/
-    - /bin/cp -R components $DEPLOYPATH/
-    - /bin/cp -R config $DEPLOYPATH/
-    - /bin/cp -R pages $DEPLOYPATH/
-    - /bin/cp -R data $DEPLOYPATH/ 2>/dev/null; true
-    - /bin/cp .htaccess $DEPLOYPATH/
-    - /bin/cp index.php $DEPLOYPATH/
-    - /bin/cp router.php $DEPLOYPATH/
-    - /bin/cp init.php $DEPLOYPATH/
-    - /bin/cp cleanup.php $DEPLOYPATH/
-    - /bin/cp robots.txt $DEPLOYPATH/
-    - /bin/cp sitemap.xml $DEPLOYPATH/
-    - mkdir -p $DEPLOYPATH/generated
-    - mkdir -p $DEPLOYPATH/tmp
-    - mkdir -p $DEPLOYPATH/data
-    - chmod 755 $DEPLOYPATH/generated
-    - chmod 755 $DEPLOYPATH/tmp
-    - chmod 755 $DEPLOYPATH/data
+    - /bin/cp -R api /home/tibaaiuz/public_html/
+    - /bin/cp -R assets /home/tibaaiuz/public_html/
+    - /bin/cp -R components /home/tibaaiuz/public_html/
+    - /bin/cp -R config /home/tibaaiuz/public_html/
+    - /bin/cp -R pages /home/tibaaiuz/public_html/
+    - /bin/cp -R data /home/tibaaiuz/public_html/ 2>/dev/null; true
+    - /bin/cp .htaccess /home/tibaaiuz/public_html/
+    - /bin/cp index.php /home/tibaaiuz/public_html/
+    - /bin/cp router.php /home/tibaaiuz/public_html/
+    - /bin/cp init.php /home/tibaaiuz/public_html/
+    - /bin/cp cleanup.php /home/tibaaiuz/public_html/
+    - /bin/cp robots.txt /home/tibaaiuz/public_html/
+    - /bin/cp sitemap.xml /home/tibaaiuz/public_html/
+    - mkdir -p /home/tibaaiuz/public_html/generated
+    - mkdir -p /home/tibaaiuz/public_html/tmp
+    - mkdir -p /home/tibaaiuz/public_html/data
+    - chmod 755 /home/tibaaiuz/public_html/generated
+    - chmod 755 /home/tibaaiuz/public_html/tmp
+    - chmod 755 /home/tibaaiuz/public_html/data
