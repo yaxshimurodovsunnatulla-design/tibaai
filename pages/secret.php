@@ -604,6 +604,15 @@
                             </div>
 
                             <!-- Click/Payme Toggle -->
+                            <style>
+                                .toggle-switch { position:relative; width:44px; height:24px; }
+                                .toggle-switch input { opacity:0; width:0; height:0; }
+                                .toggle-slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.1); border-radius:24px; transition:.3s; }
+                                .toggle-slider:before { position:absolute; content:""; height:20px; width:20px; left:2px; bottom:2px; background:#9ca3af; border-radius:50%; transition:.3s; }
+                                .toggle-switch input:checked + .toggle-slider { background:#2563eb; }
+                                .toggle-switch input:checked + .toggle-slider:before { transform:translateX(20px); background:#fff; }
+                                .toggle-switch.cyan input:checked + .toggle-slider { background:#0891b2; }
+                            </style>
                             <div class="border-t border-white/5 pt-4 mt-2">
                                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">To'lov usullari</label>
                                 <div class="space-y-3">
@@ -617,9 +626,9 @@
                                                 <div class="text-[10px] text-gray-500">Online to'lov ilovasi</div>
                                             </div>
                                         </div>
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" id="settings-click-enabled" class="sr-only peer" checked>
-                                            <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 peer-checked:after:bg-white"></div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="settings-click-enabled" checked>
+                                            <span class="toggle-slider"></span>
                                         </label>
                                     </div>
                                     <div class="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5">
@@ -632,9 +641,9 @@
                                                 <div class="text-[10px] text-gray-500">Online to'lov ilovasi</div>
                                             </div>
                                         </div>
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" id="settings-payme-enabled" class="sr-only peer" checked>
-                                            <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600 peer-checked:after:bg-white"></div>
+                                        <label class="toggle-switch cyan">
+                                            <input type="checkbox" id="settings-payme-enabled" checked>
+                                            <span class="toggle-slider"></span>
                                         </label>
                                     </div>
                                 </div>
