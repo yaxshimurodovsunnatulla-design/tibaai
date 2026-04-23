@@ -673,26 +673,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         <i class="fa-solid fa-chevron-right text-gray-600 group-hover:text-indigo-400 transition-colors text-xs"></i>
                     </button>
 
-                    <button onclick="PaymentModal.selectMethod('click')" class="pay-method-btn w-full flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-blue-500/30 transition-all text-left group" style="<?= $clickEnabled ? '' : 'display:none' ?>">
+                    <button <?= $clickEnabled ? "onclick=\"PaymentModal.selectMethod('click')\"" : "disabled" ?> class="pay-method-btn w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left group <?= $clickEnabled ? 'border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-blue-500/30 cursor-pointer' : 'border-white/5 bg-white/[0.01] opacity-50 cursor-not-allowed' ?>">
                         <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
                             <i class="fa-solid fa-mobile-screen text-blue-400"></i>
                         </div>
                         <div class="flex-1">
-                            <div class="text-white font-semibold text-sm">Click</div>
-                            <div class="text-[11px] text-gray-500">Online to'lov — Click ilovasi</div>
+                            <div class="text-white font-semibold text-sm flex items-center gap-2">Click <?php if (!$clickEnabled): ?><span class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20">Tez kunda</span><?php endif; ?></div>
+                            <div class="text-[11px] text-gray-500"><?= $clickEnabled ? 'Online to\'lov — Click ilovasi' : 'Tez orada ishga tushadi' ?></div>
                         </div>
-                        <i class="fa-solid fa-chevron-right text-gray-600 group-hover:text-blue-400 transition-colors text-xs"></i>
+                        <?php if ($clickEnabled): ?><i class="fa-solid fa-chevron-right text-gray-600 group-hover:text-blue-400 transition-colors text-xs"></i><?php else: ?><i class="fa-solid fa-clock text-amber-400/40 text-xs"></i><?php endif; ?>
                     </button>
 
-                    <button onclick="PaymentModal.selectMethod('payme')" class="pay-method-btn w-full flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-cyan-500/30 transition-all text-left group" style="<?= $paymeEnabled ? '' : 'display:none' ?>">
+                    <button <?= $paymeEnabled ? "onclick=\"PaymentModal.selectMethod('payme')\"" : "disabled" ?> class="pay-method-btn w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left group <?= $paymeEnabled ? 'border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-cyan-500/30 cursor-pointer' : 'border-white/5 bg-white/[0.01] opacity-50 cursor-not-allowed' ?>">
                         <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
                             <i class="fa-solid fa-wallet text-cyan-400"></i>
                         </div>
                         <div class="flex-1">
-                            <div class="text-white font-semibold text-sm">Payme</div>
-                            <div class="text-[11px] text-gray-500">Online to'lov — Payme ilovasi</div>
+                            <div class="text-white font-semibold text-sm flex items-center gap-2">Payme <?php if (!$paymeEnabled): ?><span class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20">Tez kunda</span><?php endif; ?></div>
+                            <div class="text-[11px] text-gray-500"><?= $paymeEnabled ? 'Online to\'lov — Payme ilovasi' : 'Tez orada ishga tushadi' ?></div>
                         </div>
-                        <i class="fa-solid fa-chevron-right text-gray-600 group-hover:text-cyan-400 transition-colors text-xs"></i>
+                        <?php if ($paymeEnabled): ?><i class="fa-solid fa-chevron-right text-gray-600 group-hover:text-cyan-400 transition-colors text-xs"></i><?php else: ?><i class="fa-solid fa-clock text-amber-400/40 text-xs"></i><?php endif; ?>
                     </button>
                 </div>
             </div>
