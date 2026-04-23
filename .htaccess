@@ -11,15 +11,8 @@ RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # ========== TEXNIK ISHLAR REJIMI ==========
-# data/maintenance.flag fayl mavjud bo'lsa — saytni yopish
-# Admin (admin_bypass cookie bor) va /secret, /api/ — o'tib ketadi
-RewriteCond %{DOCUMENT_ROOT}/data/maintenance.flag -f
-RewriteCond %{REQUEST_URI} !^/pages/maintenance\.php
-RewriteCond %{REQUEST_URI} !^/secret
-RewriteCond %{REQUEST_URI} !^/api/
-RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot)$
-RewriteCond %{HTTP_COOKIE} !admin_bypass
-RewriteRule ^ /pages/maintenance.php [L]
+# Har bir PHP fayldan oldin maintenance_check.php yuklanadi
+php_value auto_prepend_file "/home/tibaaiuz/public_html/maintenance_check.php"
 
 # Block access to sensitive directories
 RewriteRule ^data/ - [F,L]
