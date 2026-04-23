@@ -1,4 +1,14 @@
 <?php
+// ========== TEXNIK ISHLAR TEKSHIRUVI ==========
+$_mFlag = __DIR__ . '/../data/maintenance.flag';
+if (file_exists($_mFlag)) {
+    $_mUri = $_SERVER['REQUEST_URI'] ?? '';
+    if (strpos($_mUri, '/secret') !== 0 && !isset($_COOKIE['admin_bypass'])) {
+        http_response_code(503);
+        include __DIR__ . '/../pages/maintenance.php';
+        exit;
+    }
+}
 require_once __DIR__ . '/../api/config.php';
 $currentPage = $_SERVER['REQUEST_URI'] ?? '/';
 $currentPage = parse_url($currentPage, PHP_URL_PATH);
