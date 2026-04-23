@@ -312,6 +312,26 @@ function runMigrations($pdo) {
     }
 }
 
+/**
+ * Tizim sozlamasini olish (configs jadvalidan)
+ */
+function getSetting($key, $default = null) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT data FROM configs WHERE id = ?");
+    $stmt->execute(["setting_$key"]);
+    $row = $stmt->fetch();
+    return $row ? $row['data'] : $default;
+}
+
+/**
+ * Tizim sozlamasini saqlash
+ */
+function setSetting($key, $value) {
+    $db = getDB();
+    $stmt = $db->prepare("INSERT OR REPLACE INTO configs (id, data, updated_at) VALUES (?, ?, datetime('now'))");
+    $stmt->execute(["setting_$key", $value]);
+}
+
 // Backward compatibility helper (kept effectively empty or alias)
 function ensureUserTables($pdo) {
     runMigrations($pdo);

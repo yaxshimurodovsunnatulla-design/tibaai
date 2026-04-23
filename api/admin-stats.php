@@ -136,6 +136,8 @@ function handleGetPaymentSettings() {
         'card_number' => '',
         'card_holder' => '',
         'admin_chat_id' => '',
+        'click_enabled' => getSetting('click_enabled', '1'),
+        'payme_enabled' => getSetting('payme_enabled', '1'),
     ];
 
     if (file_exists($envFile)) {
@@ -161,6 +163,14 @@ function handleSavePaymentSettings($input) {
     $cardNumber = trim($input['card_number'] ?? '');
     $cardHolder = trim($input['card_holder'] ?? '');
     $adminChatId = trim($input['admin_chat_id'] ?? '');
+
+    // Click/Payme toggle
+    if (isset($input['click_enabled'])) {
+        setSetting('click_enabled', $input['click_enabled'] ? '1' : '0');
+    }
+    if (isset($input['payme_enabled'])) {
+        setSetting('payme_enabled', $input['payme_enabled'] ? '1' : '0');
+    }
 
     if (empty($cardNumber)) {
         jsonResponse(['error' => 'Karta raqamini kiriting'], 400);

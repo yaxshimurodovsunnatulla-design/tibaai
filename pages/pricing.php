@@ -17,6 +17,10 @@ if (!empty($dbPackages)) {
     $first = $dbPackages[0];
     $basePerCoin = $first['credits'] > 0 ? $first['price'] / $first['credits'] : 0;
 }
+
+// To'lov usullari holati
+$clickEnabled = getSetting('click_enabled', '1') !== '0';
+$paymeEnabled = getSetting('payme_enabled', '1') !== '0';
 ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
 
@@ -669,7 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <i class="fa-solid fa-chevron-right text-gray-600 group-hover:text-indigo-400 transition-colors text-xs"></i>
                     </button>
 
-                    <button onclick="PaymentModal.selectMethod('click')" class="pay-method-btn w-full flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-blue-500/30 transition-all text-left group">
+                    <button onclick="PaymentModal.selectMethod('click')" class="pay-method-btn w-full flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-blue-500/30 transition-all text-left group" style="<?= $clickEnabled ? '' : 'display:none' ?>">
                         <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
                             <i class="fa-solid fa-mobile-screen text-blue-400"></i>
                         </div>
@@ -680,7 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <i class="fa-solid fa-chevron-right text-gray-600 group-hover:text-blue-400 transition-colors text-xs"></i>
                     </button>
 
-                    <button onclick="PaymentModal.selectMethod('payme')" class="pay-method-btn w-full flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-cyan-500/30 transition-all text-left group">
+                    <button onclick="PaymentModal.selectMethod('payme')" class="pay-method-btn w-full flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-cyan-500/30 transition-all text-left group" style="<?= $paymeEnabled ? '' : 'display:none' ?>">
                         <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
                             <i class="fa-solid fa-wallet text-cyan-400"></i>
                         </div>

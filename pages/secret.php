@@ -602,6 +602,44 @@
                                 <input type="text" id="settings-admin-chat-id" class="input-field text-sm font-mono" placeholder="8496157812">
                                 <p class="text-[9px] text-gray-500 mt-1">Yangi to'lovlar haqida bildirishnoma boradigan chat ID</p>
                             </div>
+
+                            <!-- Click/Payme Toggle -->
+                            <div class="border-t border-white/5 pt-4 mt-2">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">To'lov usullari</label>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                                <i class="fa-solid fa-mobile-screen text-blue-400 text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-semibold text-white">Click</div>
+                                                <div class="text-[10px] text-gray-500">Online to'lov ilovasi</div>
+                                            </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" id="settings-click-enabled" class="sr-only peer" checked>
+                                            <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 peer-checked:after:bg-white"></div>
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 rounded-lg bg-cyan-500/10 flex items-center justify-center">
+                                                <i class="fa-solid fa-wallet text-cyan-400 text-sm"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-semibold text-white">Payme</div>
+                                                <div class="text-[10px] text-gray-500">Online to'lov ilovasi</div>
+                                            </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" id="settings-payme-enabled" class="sr-only peer" checked>
+                                            <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600 peer-checked:after:bg-white"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="pt-2">
                                 <button onclick="savePaymentSettings()" id="save-payment-settings-btn" class="w-full btn-primary py-2.5 text-xs font-bold">
                                     💾 To'lov sozlamalarini saqlash
@@ -1855,6 +1893,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('settings-card-number').value = res.settings.card_number || '';
                 document.getElementById('settings-card-holder').value = res.settings.card_holder || '';
                 document.getElementById('settings-admin-chat-id').value = res.settings.admin_chat_id || '';
+                document.getElementById('settings-click-enabled').checked = res.settings.click_enabled !== '0';
+                document.getElementById('settings-payme-enabled').checked = res.settings.payme_enabled !== '0';
             }
         } catch (err) { console.warn('Payment settings load error:', err); }
     }
@@ -1878,6 +1918,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 card_number: cardNumber,
                 card_holder: cardHolder,
                 admin_chat_id: adminChatId,
+                click_enabled: document.getElementById('settings-click-enabled').checked ? 1 : 0,
+                payme_enabled: document.getElementById('settings-payme-enabled').checked ? 1 : 0,
             });
             const status = document.getElementById('payment-settings-status');
             status.classList.remove('hidden');
