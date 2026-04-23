@@ -4,6 +4,7 @@
 # Database
 data/*.db
 data/*.sqlite
+data/maintenance.flag
 
 # Generated images
 generated/*

@@ -9,8 +9,8 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $filePath = __DIR__ . $uri;
 
 // ========== TEXNIK ISHLAR REJIMI ==========
-// Admin sessiyasi bor foydalanuvchilar o'tib ketadi
-// API endpoint va statik fayllar ham ishlaydi
+// Fayl mavjud bo'lsa — maintenance rejim yoqilgan
+$maintenanceFlag = __DIR__ . '/data/maintenance.flag';
 $maintenanceBypassPaths = ['/secret', '/api/admin-auth.php', '/api/admin-stats.php', '/api/admin-services.php'];
 $isApiCall = (strpos($uri, '/api/') === 0);
 $isStaticFile = false;
@@ -22,27 +22,23 @@ if ($uri !== '/' && file_exists($filePath) && is_file($filePath)) {
 
 $isBypass = in_array($uri, $maintenanceBypassPaths) || $isStaticFile;
 
-if (!$isBypass) {
-    require_once __DIR__ . '/api/config.php';
-    $maintenanceOn = getSetting('maintenance_mode', '0') === '1';
+if (!$isBypass && file_exists($maintenanceFlag)) {
+    // Admin bypass: cookie tekshiruvi
+    $isAdmin = false;
+    $adminToken = $_COOKIE['admin_bypass'] ?? '';
+    if (!empty($adminToken)) {
+        try {
+            require_once __DIR__ . '/api/config.php';
+            $db = getDB();
+            $stmt = $db->prepare("SELECT id FROM admin_sessions WHERE token = ? AND status = 'active' AND expires_at > datetime('now')");
+            $stmt->execute([$adminToken]);
+            if ($stmt->fetch()) $isAdmin = true;
+        } catch (Exception $e) { /* ignore */ }
+    }
     
-    if ($maintenanceOn) {
-        // Admin sessiyasi tekshiruvi — faqat cookie/session orqali
-        $isAdmin = false;
-        $adminToken = $_COOKIE['admin_bypass'] ?? '';
-        if (!empty($adminToken)) {
-            try {
-                $db = getDB();
-                $stmt = $db->prepare("SELECT id FROM admin_sessions WHERE token = ? AND status = 'active' AND expires_at > datetime('now')");
-                $stmt->execute([$adminToken]);
-                if ($stmt->fetch()) $isAdmin = true;
-            } catch (Exception $e) { /* ignore */ }
-        }
-        
-        if (!$isAdmin && !$isApiCall) {
-            include __DIR__ . '/pages/maintenance.php';
-            return true;
-        }
+    if (!$isAdmin && !$isApiCall) {
+        include __DIR__ . '/pages/maintenance.php';
+        exit;
     }
 }
 

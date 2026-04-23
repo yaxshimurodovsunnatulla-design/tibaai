@@ -793,10 +793,18 @@ function handleCleanupReceipts() {
 
 function handleMaintenanceToggle($input, $sessionToken) {
     $enabled = !empty($input['enabled']);
+    $flagFile = __DIR__ . '/../data/maintenance.flag';
     
+    // Baza va fayl orqali saqlash
     setSetting('maintenance_mode', $enabled ? '1' : '0');
     
+    // Flag fayl yaratish/o'chirish
     if ($enabled) {
+        // data/ papka mavjudligini tekshirish
+        $dir = dirname($flagFile);
+        if (!is_dir($dir)) mkdir($dir, 0755, true);
+        file_put_contents($flagFile, date('Y-m-d H:i:s') . ' - Maintenance mode enabled');
+        
         // Admin uchun bypass cookie o'rnatish (24 soat)
         setcookie('admin_bypass', $sessionToken, [
             'expires' => time() + 86400,
@@ -806,7 +814,11 @@ function handleMaintenanceToggle($input, $sessionToken) {
             'secure' => isset($_SERVER['HTTPS']),
         ]);
     } else {
-        // Maintenance o'chirilganda cookie ni tozalash
+        // Flag faylni o'chirish
+        if (file_exists($flagFile)) {
+            unlink($flagFile);
+        }
+        // Cookie ni tozalash
         setcookie('admin_bypass', '', [
             'expires' => time() - 3600,
             'path' => '/',
@@ -827,7 +839,8 @@ function handleMaintenanceToggle($input, $sessionToken) {
 }
 
 function handleMaintenanceStatus() {
-    $enabled = getSetting('maintenance_mode', '0') === '1';
+    $flagFile = __DIR__ . '/../data/maintenance.flag';
+    $enabled = file_exists($flagFile);
     jsonResponse([
         'success' => true,
         'enabled' => $enabled,
