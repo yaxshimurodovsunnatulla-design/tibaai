@@ -13,3 +13,4 @@ deployment:
     - /bin/cp ~/repositories/tibaai/robots.txt ~/public_html/
     - /bin/cp ~/repositories/tibaai/sitemap.xml ~/public_html/
     - mkdir -p ~/public_html/generated ~/public_html/tmp ~/public_html/data
+    - chmod 755 ~/public_html/data ~/public_html/generated ~/public_html/tmp
