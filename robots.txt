@@ -1,0 +1,15 @@
+# Tiba AI - Robots.txt
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /secret
+Disallow: /data/
+Disallow: /tmp/
+Disallow: /config/
+Disallow: /generated/
+Disallow: /sync_prompts.php
+Disallow: /init.php
+
+# Sitemap
+Sitemap: https://tibaai.uz/sitemap.xml

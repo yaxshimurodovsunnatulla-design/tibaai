@@ -1,0 +1,116 @@
+"type": "string",
+            "description": "Название магазина"
+          }
+        }
+      },
+      "GenericResponseSellerPaymentInfoDtoList": {
+        "type": "object",
+        "description": "Список информации о платежах продавца.",
+        "properties": {
+          "payload": {
+            "$ref": "#/components/schemas/SellerPaymentInfoDtoList"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiErrorResponse"
+            },
+            "description": "Список ошибок, возникших во время обработки запроса."
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Временная метка, указывающая время выполнения запроса."
+          },
+          "trace": {
+            "type": "string",
+            "description": "Идентификатор трассировки для отладки."
+          },
+          "error": {
+            "type": "string",
+            "readOnly": true,
+            "example": "null",
+            "description": "Код ошибки, если запрос завершился с ошибкой."
+          }
+        }
+      },
+      "SellerPaymentInfoDtoList": {
+        "type": "object",
+        "description": "Список информации о платежах продавца.",
+        "properties": {
+          "payments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SellerPaymentDto"
+            },
+            "description": "Массив объектов, содержащих данные о платежах продавца."
+          }
+        }
+      },
+      "SellerPaymentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Уникальный идентификатор платежа."
+          },
+          "dateCreated": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Дата и время создания записи о платеже."
+          },
+          "dateUpdated": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Дата и время последнего обновления записи о платеже."
+          },
+          "name": {
+            "type": "string",
+            "description": "Название платежа или его описание."
+          },
+          "source": {
+            "type": "string",
+            "description": "Источник, из которого был инициирован платеж."
+          },
+          "shopId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Идентификатор магазина, связанного с платежом."
+          },
+          "sellerId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Идентификатор продавца, связанного с платежом."
+          },
+          "paymentPrice": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Сумма платежа."
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Количество единиц, связанных с платежом."
+          },
+          "status": {
+            "type": "string",
+            "description": "Статус платежа: CREATED - создан, REFUNDED - возвращен, CONFIRMED - подтвержден, CANCELED - отменен.",
+            "enum": [
+              "CREATED",
+              "REFUNDED",
+              "CONFIRMED",
+              "CANCELED"
+            ]
+          },
+          "externalId": {
+            "type": "string",
+            "description": "Внешний идентификатор платежа."
+          },
+          "code": {
+            "type": "string",
+            "description": "Код, связанный с платежом."
+          },
+          "dateService": {
+            "type": "string",
+            "format": "date-time",

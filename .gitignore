@@ -1,0 +1,39 @@
+# Environment
+.env
+
+# Database
+data/*.db
+data/*.sqlite
+
+# Generated images
+generated/*
+!generated/.gitkeep
+
+# Temp files
+tmp/*
+!tmp/.gitkeep
+
+# Debug/test files
+debug_output*.txt
+test_dates_output*.txt
+php_debug.log
+tmp_check.js
+
+# Deploy scripts
+deploy.ps1
+create_deploy.ps1
+*.zip
+_deploy_temp/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Node
+node_modules/

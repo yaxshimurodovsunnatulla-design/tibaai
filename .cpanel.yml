@@ -1,0 +1,12 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/$USER/public_html
+    - /bin/cp -R * $DEPLOYPATH/
+    - /bin/cp .htaccess $DEPLOYPATH/
+    - mkdir -p $DEPLOYPATH/generated
+    - mkdir -p $DEPLOYPATH/tmp
+    - mkdir -p $DEPLOYPATH/data
+    - chmod 755 $DEPLOYPATH/generated
+    - chmod 755 $DEPLOYPATH/tmp
+    - chmod 755 $DEPLOYPATH/data

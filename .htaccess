@@ -1,0 +1,50 @@
+# Tiba AI – Security & URL Rewriting
+
+# Disable directory listing
+Options -Indexes
+
+# Rewrite Engine
+RewriteEngine On
+
+# Redirect HTTP to HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Block access to sensitive directories
+RewriteRule ^data/ - [F,L]
+RewriteRule ^config/ - [F,L]
+RewriteRule ^tmp/ - [F,L]
+RewriteRule ^\.git/ - [F,L]
+
+# Block sync_prompts.php and init.php from web
+RewriteRule ^sync_prompts\.php$ - [F,L]
+RewriteRule ^init\.php$ - [F,L]
+
+# Block access to data files
+<FilesMatch "\.(db|sqlite|sql|log)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect sensitive files
+<FilesMatch "\.(env|log|ini|conf|bak|old|orig)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https: https://lh3.googleusercontent.com; connect-src 'self' https://accounts.google.com https://*.googleapis.com; frame-src 'self' https://accounts.google.com; frame-ancestors 'self' https://accounts.google.com"
+    Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
+# Rewrite URLs
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ router.php [L,QSA]
