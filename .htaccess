@@ -10,6 +10,17 @@ RewriteEngine On
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# ========== TEXNIK ISHLAR REJIMI ==========
+# data/maintenance.flag fayl mavjud bo'lsa — saytni yopish
+# Admin (admin_bypass cookie bor) va /secret, /api/ — o'tib ketadi
+RewriteCond %{DOCUMENT_ROOT}/data/maintenance.flag -f
+RewriteCond %{REQUEST_URI} !^/pages/maintenance\.php
+RewriteCond %{REQUEST_URI} !^/secret
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot)$
+RewriteCond %{HTTP_COOKIE} !admin_bypass
+RewriteRule ^ /pages/maintenance.php [L]
+
 # Block access to sensitive directories
 RewriteRule ^data/ - [F,L]
 RewriteRule ^config/ - [F,L]
@@ -39,11 +50,10 @@ RewriteRule ^init\.php$ - [F,L]
     Header set X-XSS-Protection "1; mode=block"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
     Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https: https://lh3.googleusercontent.com; connect-src 'self' https://accounts.google.com https://*.googleapis.com; frame-src 'self' https://accounts.google.com; frame-ancestors 'self' https://accounts.google.com"
-    Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    Header set Permissions-Policy "camera=(), microphone=(), geolocation()"
 </IfModule>
 
 # Rewrite URLs
-RewriteEngine On
 RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
