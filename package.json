@@ -1,0 +1,27 @@
+{
+  "name": "tiba-ai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tmp_check.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./assets/input.css -o ./assets/tailwind.compiled.css --minify",
+    "watch:css": "tailwindcss -i ./assets/input.css -o ./assets/tailwind.compiled.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yaxshimurodovsunnatulla-design/tibaai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/yaxshimurodovsunnatulla-design/tibaai/issues"
+  },
+  "homepage": "https://github.com/yaxshimurodovsunnatulla-design/tibaai#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.4",
+    "tailwindcss": "^4.2.4"
+  }
+}
