@@ -99,6 +99,21 @@ function getDB() {
 }
 
 function runMigrations($pdo) {
+    // Migratsiya versiyasini tekshirish (keraksiz ishlarni oldini olish)
+    $currentVersion = 0;
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS migration_version (id INTEGER PRIMARY KEY, version INTEGER DEFAULT 0)");
+        $row = $pdo->query("SELECT version FROM migration_version WHERE id = 1")->fetch();
+        if ($row) {
+            $currentVersion = (int)$row['version'];
+        } else {
+            $pdo->exec("INSERT INTO migration_version (id, version) VALUES (1, 0)");
+        }
+    } catch (Exception $e) {}
+
+    $targetVersion = 5; // Har yangi migratsiya qo'shganda +1 qiling
+    if ($currentVersion >= $targetVersion) return; // Allaqachon yangilangan
+
     // 1. Users table
     $pdo->exec("CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -317,10 +332,8 @@ function runMigrations($pdo) {
     )");
 
     // Migration: Add insta_credentials for users
-    try {
-        $pdo->exec("ALTER TABLE users ADD COLUMN insta_access_token TEXT");
-        $pdo->exec("ALTER TABLE users ADD COLUMN insta_account_id TEXT");
-    } catch (Exception $e) { /* Ignore if exists */ }
+    try { $pdo->exec("ALTER TABLE users ADD COLUMN insta_access_token TEXT"); } catch (Exception $e) {}
+    try { $pdo->exec("ALTER TABLE users ADD COLUMN insta_account_id TEXT"); } catch (Exception $e) {}
 
     // 9. Packages table (pricing packages)
     $pdo->exec("CREATE TABLE IF NOT EXISTS packages (
@@ -374,6 +387,9 @@ function runMigrations($pdo) {
         $stmt = $pdo->prepare("INSERT OR REPLACE INTO configs (id, data) VALUES ('prompts', ?)");
         $stmt->execute([$prompts]);
     }
+
+    // Migratsiya versiyasini yangilash
+    $pdo->exec("UPDATE migration_version SET version = $targetVersion WHERE id = 1");
 }
 
 /**
