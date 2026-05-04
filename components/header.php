@@ -86,10 +86,8 @@ try {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>var _tw=console.warn;console.warn=function(){if(arguments[0]&&String(arguments[0]).includes('tailwindcss.com'))return;_tw.apply(console,arguments)}</script>
-    <script src="/assets/tailwind.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-    console.warn=_tw;
     tailwind.config = {
         theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] } } }
     }
