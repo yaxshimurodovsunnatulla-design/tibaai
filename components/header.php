@@ -89,6 +89,7 @@ try {
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
     tailwind.config = {
+        darkMode: ['selector', '[data-theme="dark"]'],
         theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] } } }
     }
     </script>
