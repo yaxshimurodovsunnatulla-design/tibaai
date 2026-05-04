@@ -2,21 +2,23 @@
 deployment:
   tasks:
     # Kerakli papkalarni yaratish
+    - mkdir -p ~/public_html/api ~/public_html/assets ~/public_html/components ~/public_html/pages
     - mkdir -p ~/public_html/generated ~/public_html/tmp ~/public_html/data ~/public_html/assets/samples
-    # Asosiy papkalar (recursive, force overwrite)
-    - /bin/cp -Rf ~/repositories/tibaai/api/* ~/public_html/api/
-    - /bin/cp -Rf ~/repositories/tibaai/assets/* ~/public_html/assets/
-    - /bin/cp -Rf ~/repositories/tibaai/components/* ~/public_html/components/
-    - /bin/cp -Rf ~/repositories/tibaai/pages/* ~/public_html/pages/
+    # Eski fayllarni tozalash va yangilarini nusxalash
+    - rm -rf ~/public_html/api ~/public_html/assets ~/public_html/components ~/public_html/pages
+    - /bin/cp -Rf ~/repositories/tibaai/api ~/public_html/
+    - /bin/cp -Rf ~/repositories/tibaai/assets ~/public_html/
+    - /bin/cp -Rf ~/repositories/tibaai/components ~/public_html/
+    - /bin/cp -Rf ~/repositories/tibaai/pages ~/public_html/
     # Root fayllar (force overwrite)
-    - /bin/cp -f ~/repositories/tibaai/.htaccess ~/public_html/
-    - /bin/cp -f ~/repositories/tibaai/.user.ini ~/public_html/
-    - /bin/cp -f ~/repositories/tibaai/index.php ~/public_html/
-    - /bin/cp -f ~/repositories/tibaai/router.php ~/public_html/
-    - /bin/cp -f ~/repositories/tibaai/init.php ~/public_html/
-    - /bin/cp -f ~/repositories/tibaai/cleanup.php ~/public_html/
-    - /bin/cp -f ~/repositories/tibaai/maintenance_check.php ~/public_html/
-    - /bin/cp -f ~/repositories/tibaai/robots.txt ~/public_html/
-    - /bin/cp -f ~/repositories/tibaai/sitemap.xml ~/public_html/
+    - /bin/cp -f ~/repositories/tibaai/.htaccess ~/public_html/.htaccess
+    - /bin/cp -f ~/repositories/tibaai/.user.ini ~/public_html/.user.ini
+    - /bin/cp -f ~/repositories/tibaai/index.php ~/public_html/index.php
+    - /bin/cp -f ~/repositories/tibaai/router.php ~/public_html/router.php
+    - /bin/cp -f ~/repositories/tibaai/init.php ~/public_html/init.php
+    - /bin/cp -f ~/repositories/tibaai/cleanup.php ~/public_html/cleanup.php
+    - /bin/cp -f ~/repositories/tibaai/maintenance_check.php ~/public_html/maintenance_check.php
+    - /bin/cp -f ~/repositories/tibaai/robots.txt ~/public_html/robots.txt
+    - /bin/cp -f ~/repositories/tibaai/sitemap.xml ~/public_html/sitemap.xml
     # Ruxsatlar
-    - chmod -R 755 ~/public_html/data ~/public_html/generated ~/public_html/tmp ~/public_html/assets/samples
+    - chmod -R 755 ~/public_html/data ~/public_html/generated ~/public_html/tmp
