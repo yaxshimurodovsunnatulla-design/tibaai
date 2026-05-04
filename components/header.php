@@ -86,7 +86,14 @@ try {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/tailwind.compiled.css">
+    <script>var _tw=console.warn;console.warn=function(){if(arguments[0]&&String(arguments[0]).includes('tailwindcss.com'))return;_tw.apply(console,arguments)}</script>
+    <script src="/assets/tailwind.js"></script>
+    <script>
+    console.warn=_tw;
+    tailwind.config = {
+        theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] } } }
+    }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/assets/style.css">
     <!-- Theme: FOUC prevention (apply saved theme before paint) -->
