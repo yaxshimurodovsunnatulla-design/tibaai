@@ -218,6 +218,57 @@ function runMigrations($pdo) {
         }
     }
 
+    // Migration: Add 'Kartochkani to'liq sozlash' if not in services
+    $exists = $pdo->query("SELECT COUNT(*) FROM services WHERE slug = 'kartochka-sozlash'")->fetchColumn();
+    if ($exists == 0) {
+        $maxSort = (int)$pdo->query("SELECT MAX(sort_order) FROM services")->fetchColumn();
+        $pdo->prepare("INSERT INTO services (name, slug, icon, description, badge, gradient, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)")
+            ->execute(['Kartochkani to\'liq sozlash', 'kartochka-sozlash', 'fa-solid fa-sliders', 'Marketplace uchun tovar kartochkangizni to\'liq sozlang. AI barcha maydonlarni avtomatik to\'ldiradi.', 'YANGI', 'from-emerald-600 to-teal-600', $maxSort + 1]);
+    }
+
+    // Instruments table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS instruments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        slug TEXT NOT NULL,
+        description TEXT NOT NULL,
+        icon TEXT NOT NULL,
+        gradient TEXT NOT NULL,
+        color TEXT DEFAULT 'indigo',
+        category TEXT DEFAULT 'tools',
+        link TEXT,
+        is_external INTEGER DEFAULT 0,
+        badge TEXT,
+        status TEXT DEFAULT 'active',
+        sort_order INTEGER DEFAULT 0
+    )");
+
+    // Seed instruments
+    $icount = $pdo->query("SELECT COUNT(*) FROM instruments")->fetchColumn();
+    if ($icount == 0) {
+        $instruments = [
+            ['STUV Kalkulyatori', 'stuv-kalkulyatori', 'Soliq, Tannarx, Usta (foyda) va Vazn asosida mahsulotning yakuniy narxini va foydasini hisoblang.', 'fa-solid fa-calculator', 'from-violet-600 to-fuchsia-600', 'violet', 'tools', '/stuv-kalkulyatori', 0, '', 'active', 1],
+            ['QQS Kalkulyatori', 'qqs-kalkulyatori', 'Qachon majburiy ravishda QQSga o\'tishingizni bilib oling. O\'zR Soliq Kodeksi 462-moddasiga binoan.', 'fa-solid fa-receipt', 'from-amber-500 to-orange-600', 'amber', 'tools', '/qqs-kalkulyatori', 0, '', 'active', 2],
+            ['Sotuvlar Analitikasi', 'sotuvlar-analitikasi', 'Haftalik va oylik sotuvlaringizni tahlil qiling. O\'sish sur\'ati va trendlarni kuzating.', 'fa-solid fa-chart-line', 'from-emerald-500 to-teal-600', 'emerald', 'tools', '/sotuvlar-analitikasi', 0, '', 'active', 3],
+            ['InstaLink AI', 'insta-link', 'Instagram videolaringizga izoh qoldirganlarga avtomatik Direct xabar va linklar yuboring.', 'fa-brands fa-instagram', 'from-purple-600 via-pink-500 to-orange-500', 'pink', 'tools', '/insta-link', 0, '', 'active', 4],
+            ['Didox ETTY', 'didox-etty', 'Didox orqali ETTY yukxatini avtomatik yaratish. Uzum buyurtmalari uchun bir tugma bilan rasmiylashtiring.', 'fa-solid fa-file-invoice', 'from-cyan-500 to-blue-600', 'cyan', 'tools', '/didox-etty', 0, 'Yangi', 'active', 5],
+            ['Raqiblar Narxi Monitori', 'raqiblar-narxi', 'Uzum Market\'dagi raqobatchilar narxini real vaqtda tekshiring.', 'fa-solid fa-binoculars', 'from-gray-600 to-gray-700', 'gray', 'tools', '#', 0, '', 'coming_soon', 6],
+            ['Zoom Selling AI', 'zoom-selling', 'Kategoriyalar va har bir tovar uchun mukammal AI tahlil. Raqobat, narx, talab va trend analizi.', 'fa-solid fa-magnifying-glass-chart', 'from-gray-600 to-gray-700', 'gray', 'tools', '#', 0, '', 'coming_soon', 7],
+            ['Yo\'qolgan Tovarlar', 'yoqolgan-tovarlar', 'Omborda yotib zarar keltiruvchi tovarlarni aniqlang. AI maslahatlarini oling.', 'fa-solid fa-box-open', 'from-amber-500 to-red-600', 'amber', 'reports', '/hisobotlar', 0, 'Muhim', 'active', 1],
+            ['Foyda Hisoboti', 'foyda-hisoboti', 'Har bir tovar bo\'yicha sof foydani hisoblash. Komissiya va xarajatlarni inobatga olgan holda.', 'fa-solid fa-file-invoice', 'from-gray-600 to-gray-700', 'gray', 'reports', '#', 0, '', 'coming_soon', 2],
+            ['Oylik Taqqoslash', 'oylik-taqqoslash', 'Oyma-oy sotuvlar, xarajatlar va foyda ko\'rsatkichlarini taqqoslash.', 'fa-solid fa-chart-bar', 'from-gray-600 to-gray-700', 'gray', 'reports', '#', 0, '', 'coming_soon', 3],
+            ['Kapital Bank', 'kapital-bank', 'Biznes hisob varag\'ingizni onlayn oching. YaTT va MChJ uchun qadamba-qadam yo\'riqnoma.', 'fa-solid fa-landmark', 'from-green-500 to-emerald-600', 'green', 'banks', '/kapital-bank', 0, '', 'active', 1],
+            ['TBC Bank', 'tbc-bank', 'Gruziyaning eng yirik banki O\'zbekistonda. Zamonaviy mobil ilova va qulay tariflar.', 'fa-solid fa-building-columns', 'from-blue-600 to-indigo-700', 'blue', 'banks', 'https://www.tbcbank.uz/uz/business', 1, '', 'active', 2],
+            ['Tenge Bank', 'tenge-bank', 'Qozog\'istonlik bank O\'zbekistonda. Innovatsion raqamli banking va qulay kreditlar.', 'fa-solid fa-coins', 'from-violet-600 to-purple-700', 'violet', 'banks', 'https://tengebank.uz/uz/business', 1, '', 'active', 3],
+        ];
+        $istmt = $pdo->prepare("INSERT INTO instruments (name, slug, description, icon, gradient, color, category, link, is_external, badge, status, sort_order) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+        foreach ($instruments as $i) { $istmt->execute($i); }
+    }
+
+    // Migration: rename STUV -> Sotuv Kalkulyatori
+    $pdo->exec("UPDATE instruments SET name = 'Sotuv Kalkulyatori', description = 'Tannarx va sotuv narx kalkulyatori. Foydangizni aniq hisoblang va saqlang.' WHERE slug = 'stuv-kalkulyatori'");
+    $pdo->exec("UPDATE services SET name = 'Sotuv Kalkulyatori' WHERE slug = 'stuv-kalkulyatori' OR name = 'STUV Kalkulyatori'");
+
     // 7. Payments table
     $pdo->exec("CREATE TABLE IF NOT EXISTS payments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -301,6 +352,19 @@ function runMigrations($pdo) {
             $stmtPkg->execute($p);
         }
     }
+
+    // 10. Showcase Samples (namunalar carousel + before/after)
+    $pdo->exec("CREATE TABLE IF NOT EXISTS showcase_samples (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        image_path TEXT,
+        before_image_path TEXT,
+        after_image_path TEXT,
+        type TEXT DEFAULT 'carousel',
+        sort_order INTEGER DEFAULT 0,
+        is_active INTEGER DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
 
     // Default prompts
     $stmt = $pdo->prepare("SELECT id FROM configs WHERE id = 'prompts'");

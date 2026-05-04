@@ -123,6 +123,7 @@ $routes = [
     '/kapital-bank' => '/pages/kapital-bank.php',
     '/hisobotlar' => '/pages/hisobotlar.php',
     '/didox-etty' => '/pages/didox-etty.php',
+    '/namunalar' => '/pages/namunalar.php',
 ];
 
 // Check if URI matches a route

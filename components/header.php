@@ -94,6 +94,14 @@ try {
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/assets/style.css">
+    <!-- Theme: FOUC prevention (apply saved theme before paint) -->
+    <script>
+    (function(){
+        var t = localStorage.getItem('tiba-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+    })();
+    </script>
     <!-- Google Identity Services -->
     <?php if ($googleClientId && $googleClientId !== 'YOUR_GOOGLE_CLIENT_ID_HERE'): ?>
     <script src="https://accounts.google.com/gsi/client" async defer onload="if(typeof TibaAuth!=='undefined')TibaAuth.initGoogle()"></script>
@@ -105,7 +113,8 @@ try {
 <nav class="sticky top-0 z-50 glass-card border-t-0 border-x-0 rounded-none">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-            <a href="/" class="flex items-center gap-2.5 group">
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-2.5 group flex-shrink-0">
                 <div class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-shadow">
                     <span class="text-white font-extrabold text-sm">T</span>
                 </div>
@@ -116,8 +125,7 @@ try {
                 <?php
                 $navLinks = [
                     ['path' => '/', 'label' => 'Bosh sahifa'],
-                    ['path' => '/create', 'label' => '<i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-indigo-400"></i> Yaratish', 'patterns' => ['/infografika', '/infografika-paketi', '/foto-tahrir', '/noldan-yaratish', '/uslub-nusxalash', '/fashion-ai', '/fotosesiya-pro', '/kartochka-ai', '/video-ai', '/smart-matn']],
-                    ['path' => '/instrumentlar', 'label' => 'Instrumentlar', 'patterns' => ['/stuv-kalkulyatori', '/sotuvlar-analitikasi', '/raqiblar-monitori', '/zoom-selling-ai', '/qqs-kalkulyatori', '/hisobotlar']],
+                    ['path' => '#', 'label' => '<i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-indigo-400"></i> Yordamchi', 'dropdown' => true, 'patterns' => ['/create', '/infografika', '/infografika-paketi', '/foto-tahrir', '/noldan-yaratish', '/uslub-nusxalash', '/fashion-ai', '/fotosesiya-pro', '/kartochka-ai', '/video-ai', '/smart-matn', '/instrumentlar', '/stuv-kalkulyatori', '/sotuvlar-analitikasi', '/raqiblar-monitori', '/zoom-selling-ai', '/qqs-kalkulyatori', '/hisobotlar']],
                     ['path' => '/pricing', 'label' => 'Narxlar'],
                     ['path' => '/contact', 'label' => 'Aloqa'],
                     ['path' => '/kurslar', 'label' => 'Kurslar'],
@@ -138,42 +146,31 @@ try {
                     }
 
                     if (isset($link['dropdown']) && $link['dropdown']): ?>
-                    <div class="relative group">
-                        <a href="<?= $link['path'] ?>" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 <?= $isActive ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?> flex items-center gap-1.5">
+                    <div class="relative" id="yordamchi-wrapper">
+                        <button type="button" onclick="toggleYordamchi()" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 <?= $isActive ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?> flex items-center gap-1.5">
                             <?= $link['label'] ?>
-                            <i class="fa-solid fa-chevron-down text-[10px] opacity-50 group-hover:rotate-180 transition-transform"></i>
-                        </a>
-                        <div class="absolute left-0 top-full pt-2 w-[520px] hidden group-hover:block animate-fade-in-up z-[60]">
-                            <div class="glass-card p-4 grid grid-cols-2 gap-1 border border-white/10 shadow-2xl">
-                                <?php foreach ($headerServices as $s): ?>
-                                <a href="/<?= $s['slug'] ?>" class="flex items-center gap-3.5 p-3 rounded-2xl hover:bg-white/5 transition-all group/item border border-transparent hover:border-white/5">
-                                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br <?= $s['gradient'] ?> flex items-center justify-center text-xl shadow-lg ring-1 ring-white/10 group-hover/item:scale-110 transition-transform duration-300">
-                                        <i class="<?= $s['icon'] ?> text-white font-size-lg"></i>
+                            <i class="fa-solid fa-chevron-down text-[10px] opacity-50 transition-transform" id="yordamchi-chevron"></i>
+                        </button>
+                        <div id="yordamchi-dropdown" class="absolute left-0 top-full pt-2 w-[280px] hidden animate-fade-in-up z-[60]">
+                            <div class="yordamchi-dropdown-panel p-3 border shadow-2xl rounded-2xl">
+                                <a href="/create" class="flex items-center gap-3.5 p-3 rounded-2xl hover:bg-white/5 transition-all group/item border border-transparent hover:border-white/5">
+                                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xl shadow-lg ring-1 ring-white/10 group-hover/item:scale-110 transition-transform duration-300">
+                                        <i class="fa-solid fa-wand-magic-sparkles text-white"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="text-sm font-bold text-white group-hover/item:text-indigo-400 transition-colors truncate"><?= $s['name'] ?></span>
-                                            <?php if ($s['badge']): ?>
-                                                <span class="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase tracking-tighter"><?= $s['badge'] ?></span>
-                                            <?php endif; ?>
-                                        </div>
-                                        <div class="text-[10px] text-gray-500 line-clamp-1 group-hover/item:text-gray-400 transition-colors"><?= $s['description'] ?></div>
+                                        <span class="text-sm font-bold text-white group-hover/item:text-indigo-400 transition-colors">Infografika yaratish</span>
+                                        <div class="text-[10px] text-gray-500 line-clamp-1">AI yordamida dizayn yarating</div>
                                     </div>
                                 </a>
-                                <?php endforeach; ?>
-                                
-                                <div class="col-span-2 pt-2 mt-2 border-t border-white/5 px-2">
-                                    <div class="px-1 py-2 text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1">Yordamchi vositalar</div>
-                                    <a href="/stuv-kalkulyatori" class="flex items-center gap-3.5 p-3 rounded-2xl hover:bg-white/5 transition-all group/item border border-transparent hover:border-white/5">
-                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-lg shadow-lg group-hover/item:scale-110 transition-transform">
-                                            <i class="fa-solid fa-calculator text-white"></i>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-bold text-white group-hover/item:text-violet-400 transition-colors">STUV Kalkulyatori</div>
-                                            <div class="text-[10px] text-gray-500 line-clamp-1">Foyda va xarajatlarni hisoblash</div>
-                                        </div>
-                                    </a>
-                                </div>
+                                <a href="/instrumentlar" class="flex items-center gap-3.5 p-3 rounded-2xl hover:bg-white/5 transition-all group/item border border-transparent hover:border-white/5">
+                                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-xl shadow-lg ring-1 ring-white/10 group-hover/item:scale-110 transition-transform duration-300">
+                                        <i class="fa-solid fa-toolbox text-white"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <span class="text-sm font-bold text-white group-hover/item:text-violet-400 transition-colors">Instrumentlar</span>
+                                        <div class="text-[10px] text-gray-500 line-clamp-1">Yordamchi vositalar</div>
+                                    </div>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -196,12 +193,12 @@ try {
                 <div id="nav-user-profile" class="hidden relative">
                     <div class="flex items-center gap-2">
                         <div class="relative">
-                            <button id="nav-balance-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/15 hover:border-amber-500/30 transition-all cursor-pointer">
-                                <i class="fa-solid fa-coins text-amber-500 text-sm"></i>
+                            <button id="nav-balance-btn" class="balance-btn flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all cursor-pointer">
+                                <i class="fa-solid fa-coins text-sm"></i>
                                 <span id="nav-user-balance" class="font-bold text-sm">0</span>
-                                <i class="fa-solid fa-chevron-down text-[9px] ml-0.5 text-amber-500/60"></i>
+                                <i class="fa-solid fa-chevron-down text-[9px] ml-0.5"></i>
                             </button>
-                            <div id="nav-balance-dropdown" class="hidden absolute right-0 top-full mt-2 w-52 bg-[#12121a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-fade-in z-50">
+                            <div id="nav-balance-dropdown" class="hidden absolute right-0 top-full mt-2 w-52 yordamchi-dropdown-panel border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-fade-in z-50">
                                 <div class="px-4 py-3 border-b border-white/5 text-center">
                                     <div class="text-xs text-gray-500">Joriy balans</div>
                                     <div class="text-lg font-bold text-amber-400 mt-0.5"><i class="fa-solid fa-coins text-amber-500 mr-1"></i> <span id="dd-balance-value">0</span> <span class="text-xs font-normal text-gray-500">tanga</span></div>
@@ -216,17 +213,17 @@ try {
                                 </div>
                             </div>
                         </div>
-                        <button id="nav-user-btn" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-white/5 transition-all group">
+                        <button id="nav-user-btn" class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-white/5 transition-all group">
                             <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
                                 <span id="nav-user-initial" class="text-white font-bold text-xs"></span>
                             </div>
-                            <div class="hidden sm:block text-left">
+                            <div class="hidden lg:block text-left">
                                 <div id="nav-user-name" class="text-sm font-semibold text-white leading-tight"></div>
                                 <div id="nav-user-email" class="text-[10px] text-gray-500 leading-tight"></div>
                             </div>
                         </button>
                     </div>
-                    <div id="nav-user-dropdown" class="hidden absolute right-0 top-full mt-2 w-56 bg-[#12121a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-fade-in z-50">
+                    <div id="nav-user-dropdown" class="hidden absolute right-0 top-full mt-2 w-56 yordamchi-dropdown-panel border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-fade-in z-50">
                         <div class="px-4 py-3 border-b border-white/5">
                             <div id="dd-user-name" class="text-sm font-semibold text-white"></div>
                             <div id="dd-user-email" class="text-xs text-gray-500 mt-0.5"></div>
@@ -241,60 +238,92 @@ try {
                     </div>
                 </div>
 
-                <a href="/create" class="hidden md:inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 transition-all duration-300">
+                <!-- Boshlash: faqat guest uchun ko'rinadi -->
+                <a href="/create" id="nav-start-btn" class="hidden md:inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 transition-all duration-300">
                     <i class="fa-solid fa-bolt"></i> Boshlash
                 </a>
 
-                <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
-                    <i class="fa-solid fa-bars text-xl"></i>
+                <!-- Hamburger -->
+                <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 transition-colors">
+                    <i class="fa-solid fa-bars text-lg text-gray-400" id="mobile-menu-icon"></i>
+                </button>
+
+                <!-- Theme Toggle (desktop) -->
+                <button id="theme-toggle-btn" class="theme-toggle hidden md:flex" onclick="TibaTheme.toggle()" title="Rejimni o'zgartirish">
+                    <i class="fa-solid fa-sun icon-sun"></i>
+                    <i class="fa-solid fa-moon icon-moon"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="md:hidden border-t border-white/10 hidden animate-fade-in">
-        <div class="px-4 py-3 space-y-1">
-            <?php foreach ($navLinks as $link): ?>
-                <a href="<?= $link['path'] ?>" class="block px-4 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"><?= $link['label'] ?></a>
-                <?php if (isset($link['dropdown']) && $link['dropdown']): ?>
-                    <div class="grid grid-cols-2 gap-2 px-2 pb-2 mt-1">
-                        <!-- STUV Kalkulyatori -->
-                        <a href="/stuv-kalkulyatori" class="flex items-center gap-2.5 p-2 rounded-xl bg-violet-500/10 border border-violet-500/20 active:bg-violet-500/20 transition-all">
-                            <div class="w-8 h-8 flex-shrink-0 rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-xs shadow-lg">
-                                <i class="fa-solid fa-calculator text-white"></i>
-                            </div>
-                            <span class="text-[11px] font-bold text-violet-300 truncate">STUV Kalkul.</span>
-                        </a>
-                        <!-- AI Services -->
-                        <?php foreach ($headerServices as $s): ?>
-                        <a href="/<?= $s['slug'] ?>" class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.03] border border-white/5 active:bg-white/10 transition-all">
-                            <div class="w-8 h-8 flex-shrink-0 rounded-lg bg-gradient-to-br <?= $s['gradient'] ?> flex items-center justify-center text-xs shadow-lg">
-                                <i class="<?= $s['icon'] ?> text-white"></i>
-                            </div>
-                            <span class="text-[11px] font-bold text-gray-300 truncate lowercase first-letter:uppercase"><?= $s['name'] ?></span>
-                        </a>
-                        <?php endforeach; ?>
+    <!-- ===== MOBILE MENU ===== -->
+    <div id="mobile-menu" class="md:hidden hidden">
+        <div class="border-t border-white/10"></div>
+        <div class="px-4 py-4 space-y-3 mobile-menu-inner">
+
+            <!-- User Card (logged in) -->
+            <div id="mobile-user-section" class="hidden">
+                <div class="mob-user-card flex items-center gap-3 p-3 rounded-2xl border">
+                    <div class="mob-icon-box-indigo w-10 h-10 rounded-xl flex items-center justify-center shadow-md">
+                        <span id="mobile-user-initial" class="font-bold text-sm" style="color:#fff"></span>
                     </div>
-                <?php endif; ?>
-            <?php endforeach; ?>
-            <div id="mobile-user-section" class="hidden mt-3 pt-3 border-t border-white/5">
-                <div class="flex items-center gap-3 px-4 py-2">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                        <span id="mobile-user-initial" class="text-white font-bold text-xs"></span>
+                    <div class="flex-1 min-w-0">
+                        <div id="mobile-user-name" class="text-sm font-bold truncate" style="color:var(--text-heading)"></div>
+                        <div id="mobile-user-email" class="text-[11px] truncate" style="color:var(--text-muted)"></div>
+                        <div class="balance-btn inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-bold mt-1 border">
+                            <i class="fa-solid fa-coins text-[10px]"></i>
+                            <span id="mobile-user-balance">0</span> tanga
+                        </div>
                     </div>
-                    <div>
-                        <div id="mobile-user-name" class="text-sm font-semibold text-white"></div>
-                        <div class="text-amber-400 text-xs font-bold mt-1"><i class="fa-solid fa-coins text-amber-500 mr-1"></i> <span id="mobile-user-balance">0</span> tanga</div>
-                    </div>
+                    <button onclick="TibaAuth.logout()" class="mob-logout-btn w-9 h-9 flex items-center justify-center rounded-xl transition-colors" title="Chiqish">
+                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                    </button>
                 </div>
-                <button onclick="TibaAuth.logout()" class="flex items-center gap-2 w-full px-4 py-2.5 mt-1 text-sm text-red-400 hover:bg-red-500/5 rounded-lg">Chiqish</button>
             </div>
-            <div id="mobile-guest-section" class="pt-2">
-                <button onclick="TibaAuth.showModal()" class="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                    Kirish / Ro'yxatdan o'tish
+
+            <!-- Yordamchi: Infografika & Instrumentlar -->
+            <div class="grid grid-cols-2 gap-2">
+                <a href="/create" class="mob-card-infografika flex flex-col items-center gap-2 p-3.5 rounded-2xl border active:scale-[0.97] transition-all">
+                    <div class="mob-icon-box-indigo w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="color:#fff"></i>
+                    </div>
+                    <span class="mob-card-label-indigo text-xs font-bold">Infografika</span>
+                </a>
+                <a href="/instrumentlar" class="mob-card-instrumentlar flex flex-col items-center gap-2 p-3.5 rounded-2xl border active:scale-[0.97] transition-all">
+                    <div class="mob-icon-box-violet w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-toolbox" style="color:#fff"></i>
+                    </div>
+                    <span class="mob-card-label-violet text-xs font-bold">Instrumentlar</span>
+                </a>
+            </div>
+
+            <!-- Nav Links -->
+            <div class="space-y-0.5">
+                <a href="/" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors <?= $currentPage === '/' ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">
+                    <i class="fa-solid fa-home w-5 text-center text-indigo-400 text-xs"></i> Bosh sahifa
+                </a>
+                <a href="/pricing" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors <?= $currentPage === '/pricing' ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">
+                    <i class="fa-solid fa-tag w-5 text-center text-emerald-400 text-xs"></i> Narxlar
+                </a>
+                <a href="/contact" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors <?= $currentPage === '/contact' ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">
+                    <i class="fa-solid fa-envelope w-5 text-center text-blue-400 text-xs"></i> Aloqa
+                </a>
+                <a href="/kurslar" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors <?= $currentPage === '/kurslar' ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">
+                    <i class="fa-solid fa-graduation-cap w-5 text-center text-amber-400 text-xs"></i> Kurslar
+                </a>
+            </div>
+
+            <!-- Theme + Guest -->
+            <div class="pt-2 border-t border-white/10 flex items-center justify-between">
+                <button onclick="TibaTheme.toggle()" class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <i class="fa-solid fa-circle-half-stroke w-5 text-center text-gray-500 text-xs"></i> Rejim
                 </button>
+                <div id="mobile-guest-section">
+                    <button onclick="TibaAuth.showModal()" class="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/25 active:scale-95 transition-all">
+                        <i class="fa-solid fa-user text-xs"></i> Kirish
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -742,16 +771,22 @@ const TibaAuth = (() => {
         if (currentUser) {
             loginBtn && (loginBtn.style.display = 'none');
             profile && (profile.classList.remove('hidden'));
+            // Boshlash tugmasini yashirish
+            const startBtn = $('nav-start-btn');
+            if (startBtn) startBtn.style.display = 'none';
             const initial = (currentUser.name || '?')[0].toUpperCase();
             ['nav-user-initial', 'mobile-user-initial'].forEach(id => { const el = $(id); if (el) el.textContent = initial; });
             ['nav-user-name', 'dd-user-name', 'mobile-user-name'].forEach(id => { const el = $(id); if (el) el.textContent = currentUser.name; });
-            ['nav-user-email', 'dd-user-email'].forEach(id => { const el = $(id); if (el) el.textContent = currentUser.email; });
+            ['nav-user-email', 'dd-user-email', 'mobile-user-email'].forEach(id => { const el = $(id); if (el) el.textContent = currentUser.email; });
             ['nav-user-balance', 'mobile-user-balance'].forEach(id => { const el = $(id); if (el) el.textContent = currentUser.balance ?? 0; });
             mobileUser && mobileUser.classList.remove('hidden');
             mobileGuest && mobileGuest.classList.add('hidden');
         } else {
             loginBtn && (loginBtn.style.display = 'flex');
             profile && (profile.classList.add('hidden'));
+            // Boshlash tugmasini ko'rsatish
+            const startBtn = $('nav-start-btn');
+            if (startBtn) startBtn.style.display = '';
             mobileUser && mobileUser.classList.add('hidden');
             mobileGuest && mobileGuest.classList.remove('hidden');
         }
@@ -912,11 +947,62 @@ const TibaAuth = (() => {
         document.addEventListener('click', (e) => {
             if (btn && dd && !btn.contains(e.target) && !dd.contains(e.target)) dd.classList.add('hidden');
             if (balBtn && balDd && !balBtn.contains(e.target) && !balDd.contains(e.target)) balDd.classList.add('hidden');
+            // Yordamchi dropdown
+            const yw = document.getElementById('yordamchi-wrapper');
+            const yd = document.getElementById('yordamchi-dropdown');
+            if (yw && yd && !yw.contains(e.target)) { yd.classList.add('hidden'); const ch = document.getElementById('yordamchi-chevron'); if(ch) ch.style.transform=''; }
         });
     });
 
     return { showModal, hideModal, toggleMode, togglePassword, handleSubmit, verifyOtp, resendOtp, backToStep1, logout, requireAuth, isLoggedIn: () => !!currentUser, getUser: () => currentUser, getToken, checkSession, updateBalance, initGoogle };
 })();
+</script>
+
+<!-- ========== THEME TOGGLE JS ========== -->
+<script>
+const TibaTheme = (() => {
+    function get() {
+        return document.documentElement.getAttribute('data-theme') || 'dark';
+    }
+    function set(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('tiba-theme', theme);
+    }
+    function toggle() {
+        set(get() === 'dark' ? 'light' : 'dark');
+    }
+    return { get, set, toggle };
+})();
+</script>
+
+<!-- ========== YORDAMCHI DROPDOWN JS ========== -->
+<script>
+function toggleYordamchi() {
+    const dd = document.getElementById('yordamchi-dropdown');
+    const ch = document.getElementById('yordamchi-chevron');
+    if (!dd) return;
+    const isHidden = dd.classList.contains('hidden');
+    dd.classList.toggle('hidden');
+    if (ch) ch.style.transform = isHidden ? 'rotate(180deg)' : '';
+    // Close other dropdowns
+    const userDd = document.getElementById('nav-user-dropdown');
+    const balDd = document.getElementById('nav-balance-dropdown');
+    if (userDd) userDd.classList.add('hidden');
+    if (balDd) balDd.classList.add('hidden');
+}
+
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const icon = document.getElementById('mobile-menu-icon');
+    if (!menu) return;
+    const isHidden = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden');
+    if (icon) {
+        icon.className = isHidden 
+            ? 'fa-solid fa-xmark text-lg text-white' 
+            : 'fa-solid fa-bars text-lg text-gray-400';
+    }
+}
 </script>
 
 <main class="flex-1">

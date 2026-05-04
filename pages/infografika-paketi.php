@@ -11,7 +11,7 @@
             </a>
             <div class="flex items-center gap-2 text-xs text-gray-500">
                 <i class="fa-solid fa-coins"></i>
-                <span>1 ta paket = 5 tanga</span>
+                <span>1 ta paket = 20 tanga</span>
             </div>
         </div>
 

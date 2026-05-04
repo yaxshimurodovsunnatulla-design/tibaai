@@ -77,6 +77,8 @@
             <button data-tab="payments" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">💳 To'lovlar <span id="pending-payments-badge" class="hidden ml-1 px-1.5 py-0.5 text-[9px] bg-amber-500 text-black rounded-full font-bold"></span></button>
             <button data-tab="sections" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">🗂️ Bo'limlar</button>
             <button data-tab="gallery" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">🖼️ Galeriya</button>
+            <button data-tab="samples" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">🎨 Namunalar</button>
+            <button data-tab="instruments" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">🔧 Instrumentlar</button>
             <button data-tab="users" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">👥 Foydalanuvchilar</button>
             <button data-tab="logs" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">📜 Loglar</button>
             <button data-tab="settings" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">⚙️ Sozlamalar</button>
@@ -342,6 +344,103 @@
                     <span class="text-5xl mb-4 block">🖼️</span>
                     <p class="text-gray-500">Hali rasmlar yaratilmagan</p>
                 </div>
+            </div>
+
+            <!-- Namunalar (Showcase Samples) -->
+            <div id="tab-samples" class="admin-tab hidden animate-fade-in">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">🎨 Namunalar</h2>
+                        <p class="text-xs text-gray-500 mt-1">Bosh sahifa carousel va Namunalar sahifasi uchun rasmlar</p>
+                    </div>
+                    <button onclick="loadSamples()" class="btn-secondary px-4 py-2 text-xs font-bold">🔄 Yangilash</button>
+                </div>
+
+                <!-- Upload forms -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- Tepa qator -->
+                    <div class="bg-white/[0.03] border border-white/5 rounded-2xl p-5">
+                        <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">⬆️ Tepa qator</h3>
+                        <p class="text-[10px] text-gray-500 mb-3">O'ngga aylanadigan qator</p>
+                        <form id="sample-top-form" class="space-y-3">
+                            <div>
+                                <label class="text-[10px] text-gray-400 block mb-1">Rasmlar tanlang (bir nechta)</label>
+                                <input type="file" id="st-images" accept="image/*" class="input-field text-sm" required multiple>
+                            </div>
+                            <div id="st-progress" class="hidden text-[10px] text-indigo-400 font-bold"></div>
+                            <button type="submit" class="btn-primary w-full py-2.5 text-sm font-bold">
+                                <i class="fa-solid fa-upload mr-1"></i> Yuklash
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Pastki qator -->
+                    <div class="bg-white/[0.03] border border-white/5 rounded-2xl p-5">
+                        <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">⬇️ Pastki qator</h3>
+                        <p class="text-[10px] text-gray-500 mb-3">Chapga aylanadigan qator</p>
+                        <form id="sample-bottom-form" class="space-y-3">
+                            <div>
+                                <label class="text-[10px] text-gray-400 block mb-1">Rasmlar tanlang (bir nechta)</label>
+                                <input type="file" id="sb-images" accept="image/*" class="input-field text-sm" required multiple>
+                            </div>
+                            <div id="sb-progress" class="hidden text-[10px] text-indigo-400 font-bold"></div>
+                            <button type="submit" class="btn-primary w-full py-2.5 text-sm font-bold">
+                                <i class="fa-solid fa-upload mr-1"></i> Yuklash
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Before/After -->
+                    <div class="bg-white/[0.03] border border-white/5 rounded-2xl p-5">
+                        <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">🔀 Oldin / Keyin</h3>
+                        <p class="text-[10px] text-gray-500 mb-3">Namunalar sahifasi uchun</p>
+                        <form id="sample-ba-form" class="space-y-3">
+                            <input type="text" id="sba-title" class="input-field text-sm" placeholder="Sarlavha (ixtiyoriy)">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-[10px] text-gray-500 block mb-1">Oldingi rasm</label>
+                                    <input type="file" id="sba-before" accept="image/*" class="input-field text-sm" required>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-gray-500 block mb-1">Keyingi rasm</label>
+                                    <input type="file" id="sba-after" accept="image/*" class="input-field text-sm" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary w-full py-2.5 text-sm font-bold">
+                                <i class="fa-solid fa-upload mr-1"></i> Yuklash
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Namunalar ro'yxati -->
+                <h3 class="text-sm font-bold text-white mb-3">⬆️ Tepa qator rasmlar</h3>
+                <div id="samples-list-top" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 mb-6"></div>
+                <h3 class="text-sm font-bold text-white mb-3">⬇️ Pastki qator rasmlar</h3>
+                <div id="samples-list-bottom" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 mb-6"></div>
+                <h3 class="text-sm font-bold text-white mb-3">🔀 Oldin/Keyin</h3>
+                <div id="samples-list-ba" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+                <div id="samples-empty" class="hidden text-center py-10">
+                    <span class="text-4xl block mb-3">🎨</span>
+                    <p class="text-gray-500 text-sm">Hali namunalar qo'shilmagan</p>
+                </div>
+            </div>
+
+            <!-- Instruments -->
+            <div id="tab-instruments" class="admin-tab hidden animate-fade-in">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">🔧 Instrumentlar</h2>
+                        <p class="text-xs text-gray-500 mt-1">/instrumentlar sahifasidagi bo'limlarni boshqaring</p>
+                    </div>
+                    <button onclick="loadInstruments()" class="btn-secondary px-4 py-2 text-xs font-bold">🔄 Yangilash</button>
+                </div>
+                <div class="mb-3 flex gap-2 text-[10px] font-bold text-gray-500">
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-circle text-emerald-400"></i> Faol</span>
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-circle text-amber-400"></i> Tez kunda</span>
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-circle text-red-400"></i> Yashirin</span>
+                </div>
+                <div id="instruments-list" class="space-y-2"></div>
             </div>
 
             <!-- Users -->
@@ -949,7 +1048,7 @@ document.addEventListener('DOMContentLoaded', () => {
         adminSect.classList.remove('hidden');
         // Hashdan tabni tiklash
         const hash = window.location.hash.replace('#', '');
-        const validTabs = ['dashboard','prompts','packages','payments','sections','gallery','users','logs','settings'];
+        const validTabs = ['dashboard','prompts','packages','payments','sections','gallery','samples','instruments','users','logs','settings'];
         const savedTab = validTabs.includes(hash) ? hash : 'dashboard';
         const tabBtn = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
         if (tabBtn) tabBtn.click();
@@ -977,6 +1076,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tab === 'users') loadUsers();
             if (tab === 'payments') loadPayments();
             if (tab === 'logs') loadLogs();
+            if (tab === 'samples') loadSamples();
+            if (tab === 'instruments') loadInstruments();
         };
     });
 
@@ -1010,6 +1111,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="text-[10px] text-gray-500 mt-0.5 truncate max-w-md">${s.description}</p>
                 </div>
                 <div class="flex-shrink-0 flex items-center gap-2">
+                    <button onclick="toggleSection(${s.id}, ${parseInt(s.is_active) ? 0 : 1})" title="${parseInt(s.is_active) ? "O'chirish" : 'Yoqish'}" class="p-2 rounded-lg transition-colors ${parseInt(s.is_active) ? 'text-emerald-400 hover:bg-emerald-500/10' : 'text-red-400 hover:bg-red-500/10'}">
+                        <i class="fa-solid ${parseInt(s.is_active) ? 'fa-toggle-on text-lg' : 'fa-toggle-off text-lg'}"></i>
+                    </button>
                     <button onclick="editSection(${s.id})" class="p-2 text-gray-500 hover:text-white transition-colors"><i class="fa-solid fa-pen-to-square text-sm"></i></button>
                     <div class="p-2 text-gray-700"><i class="fa-solid fa-bars-staggered cursor-grab active:cursor-grabbing"></i></div>
                 </div>
@@ -1034,6 +1138,24 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn('SortableJS kutubxonasi yuklanmadi. Drag-and-drop ishlamaydi.');
         }
     }
+
+    window.toggleSection = async (id, newState) => {
+        const s = currentSections.find(sec => sec.id === id);
+        if (!s) return;
+        const data = {
+            name: s.name,
+            description: s.description,
+            badge: s.badge || '',
+            icon: s.icon,
+            gradient: s.gradient,
+            is_active: newState
+        };
+        try {
+            await apiCall('/api/admin-services.php', { action: 'update_service', id, data });
+            showToast(newState ? '✅ Bo\'lim yoqildi' : '⛔ Bo\'lim o\'chirildi');
+            loadSections();
+        } catch (err) { showToast('❌ ' + err.message, 'error'); }
+    };
 
     window.editSection = (id) => {
         const s = currentSections.find(sec => sec.id === id);
@@ -2193,12 +2315,184 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ========== NAMUNALAR (SAMPLES) ==========
+    async function loadSamples() {
+        try {
+            const res = await fetch('/api/admin-samples.php', { headers: { 'X-Admin-Session': sessionToken } });
+            const data = await res.json();
+            const listTop = document.getElementById('samples-list-top');
+            const listBottom = document.getElementById('samples-list-bottom');
+            const listBa = document.getElementById('samples-list-ba');
+            const empty = document.getElementById('samples-empty');
+
+            if (!data.samples || data.samples.length === 0) {
+                listTop.innerHTML = ''; listBottom.innerHTML = ''; listBa.innerHTML = '';
+                empty?.classList.remove('hidden');
+                return;
+            }
+            empty?.classList.add('hidden');
+
+            const topItems = data.samples.filter(s => s.type === 'carousel-top' || s.type === 'carousel');
+            const bottomItems = data.samples.filter(s => s.type === 'carousel-bottom');
+            const baItems = data.samples.filter(s => s.type === 'before-after');
+
+            function renderCard(s) {
+                const img = s.image_path || s.after_image_path || '';
+                return `<div class="relative rounded-xl overflow-hidden border border-white/10 group">
+                    <img src="${img}" class="w-full aspect-[3/4] object-cover" alt="${s.title || ''}">
+                    ${s.title ? `<div class="absolute bottom-7 left-0 right-0 px-1.5 text-[9px] text-white font-bold truncate">${s.title}</div>` : ''}
+                    <button onclick="deleteSample(${s.id})" class="absolute bottom-1 right-1 w-6 h-6 bg-red-500/90 text-white rounded-md text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>`;
+            }
+            listTop.innerHTML = topItems.map(renderCard).join('') || '<p class="text-gray-600 text-xs col-span-full">Bo\'sh</p>';
+            listBottom.innerHTML = bottomItems.map(renderCard).join('') || '<p class="text-gray-600 text-xs col-span-full">Bo\'sh</p>';
+            listBa.innerHTML = baItems.map(renderCard).join('') || '<p class="text-gray-600 text-xs col-span-full">Bo\'sh</p>';
+        } catch (e) { console.error('loadSamples error:', e); }
+    }
+
+    async function deleteSample(id) {
+        if (!confirm("Bu namunani o'chirib yuborasizmi?")) return;
+        try {
+            await fetch(`/api/admin-samples.php?id=${id}`, { method: 'DELETE', headers: { 'X-Admin-Session': sessionToken } });
+            showToast("Namuna o'chirildi");
+            loadSamples();
+        } catch (e) { console.error(e); }
+    }
+
+    // Multi-file upload helper
+    async function uploadMultipleImages(files, type, progressEl) {
+        const total = files.length;
+        let done = 0;
+        progressEl.classList.remove('hidden');
+        for (const file of files) {
+            const fd = new FormData();
+            fd.append('type', type);
+            fd.append('image', file);
+            fd.append('sort_order', '0');
+            await fetch('/api/admin-samples.php', { method: 'POST', headers: { 'X-Admin-Session': sessionToken }, body: fd });
+            done++;
+            progressEl.textContent = `${done}/${total} yuklandi...`;
+        }
+        progressEl.classList.add('hidden');
+    }
+
+    // Tepa qator form
+    document.getElementById('sample-top-form')?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const files = document.getElementById('st-images').files;
+        if (!files.length) return;
+        const prog = document.getElementById('st-progress');
+        await uploadMultipleImages(files, 'carousel-top', prog);
+        showToast(`${files.length} ta rasm tepa qatorga qo'shildi`);
+        e.target.reset(); loadSamples();
+    });
+
+    // Pastki qator form
+    document.getElementById('sample-bottom-form')?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const files = document.getElementById('sb-images').files;
+        if (!files.length) return;
+        const prog = document.getElementById('sb-progress');
+        await uploadMultipleImages(files, 'carousel-bottom', prog);
+        showToast(`${files.length} ta rasm pastki qatorga qo'shildi`);
+        e.target.reset(); loadSamples();
+    });
+
+    // Before/After form
+    document.getElementById('sample-ba-form')?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const fd = new FormData();
+        fd.append('type', 'before-after');
+        fd.append('title', document.getElementById('sba-title').value);
+        fd.append('before_image', document.getElementById('sba-before').files[0]);
+        fd.append('after_image', document.getElementById('sba-after').files[0]);
+        try {
+            const res = await fetch('/api/admin-samples.php', { method: 'POST', headers: { 'X-Admin-Session': sessionToken }, body: fd });
+            const data = await res.json();
+            if (data.success) { showToast('Oldin/Keyin namuna qo\'shildi'); e.target.reset(); loadSamples(); }
+            else showToast(data.error || 'Xatolik', '❌');
+        } catch (err) { showToast('Xatolik: ' + err.message, '❌'); }
+    });
+
     // ========== EXPOSE TO GLOBAL SCOPE (for onclick handlers) ==========
     window.showPackageModal = showPackageModal;
     window.closePackageModal = closePackageModal;
     window.editPackage = editPackage;
     window.deletePackage = deletePackage;
     window.savePackage = savePackage;
+    window.loadSamples = loadSamples;
+    window.deleteSample = deleteSample;
+
+    // ========== INSTRUMENTS MANAGEMENT ==========
+    let currentInstruments = [];
+    async function loadInstruments() {
+        showLoading(true);
+        try {
+            const res = await fetch('/api/admin-instruments.php', {
+                headers: { 'X-Admin-Session': sessionToken }
+            });
+            const data = await res.json();
+            currentInstruments = data.instruments || [];
+            renderInstruments();
+        } catch (err) { showToast('❌ ' + err.message, 'error'); }
+        showLoading(false);
+    }
+
+    function renderInstruments() {
+        const container = document.getElementById('instruments-list');
+        const categories = { tools: '🛠️ Instrumentlar', reports: '📊 Hisobotlar', banks: '🏦 Bank Xizmatlari' };
+        let html = '';
+        for (const [cat, catLabel] of Object.entries(categories)) {
+            const items = currentInstruments.filter(i => i.category === cat);
+            if (!items.length) continue;
+            html += `<h3 class="text-xs font-bold text-gray-400 mt-4 mb-2 uppercase tracking-wider">${catLabel}</h3>`;
+            items.forEach(i => {
+                const isActive = i.status === 'active';
+                const isComingSoon = i.status === 'coming_soon';
+                const isHidden = i.status === 'hidden';
+                const statusColor = isActive ? 'emerald' : isComingSoon ? 'amber' : 'red';
+                const statusText = isActive ? 'Faol' : isComingSoon ? 'Tez kunda' : "Yashirin";
+                html += `
+                <div class="bg-white/[0.03] border border-white/5 rounded-2xl p-3 flex items-center gap-3 ${isHidden ? 'opacity-40' : ''} transition-all">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${i.gradient} flex items-center justify-center text-white text-sm shadow-lg">
+                        <i class="${i.icon}"></i>
+                    </div>
+                    <div class="flex-grow min-w-0">
+                        <div class="flex items-center gap-2">
+                            <h4 class="text-sm font-bold text-white truncate">${i.name}</h4>
+                            <span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-${statusColor}-500/20 text-${statusColor}-400 border border-${statusColor}-500/20">${statusText}</span>
+                            ${i.badge ? `<span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/20">${i.badge}</span>` : ''}
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-0.5 truncate">${i.description}</p>
+                    </div>
+                    <div class="flex-shrink-0 flex items-center gap-1">
+                        <button onclick="setInstrumentStatus(${i.id}, 'active')" title="Faol" class="p-2 rounded-lg transition-colors ${isActive ? 'text-emerald-400 bg-emerald-500/10' : 'text-gray-600 hover:text-emerald-400 hover:bg-emerald-500/10'}">
+                            <i class="fa-solid fa-circle-check text-sm"></i>
+                        </button>
+                        <button onclick="setInstrumentStatus(${i.id}, 'coming_soon')" title="Tez kunda" class="p-2 rounded-lg transition-colors ${isComingSoon ? 'text-amber-400 bg-amber-500/10' : 'text-gray-600 hover:text-amber-400 hover:bg-amber-500/10'}">
+                            <i class="fa-solid fa-clock text-sm"></i>
+                        </button>
+                        <button onclick="setInstrumentStatus(${i.id}, 'hidden')" title="Yashirish" class="p-2 rounded-lg transition-colors ${isHidden ? 'text-red-400 bg-red-500/10' : 'text-gray-600 hover:text-red-400 hover:bg-red-500/10'}">
+                            <i class="fa-solid fa-eye-slash text-sm"></i>
+                        </button>
+                    </div>
+                </div>`;
+            });
+        }
+        container.innerHTML = html;
+    }
+
+    window.setInstrumentStatus = async (id, status) => {
+        try {
+            await apiCall('/api/admin-instruments.php', { action: 'toggle', id, status });
+            const labels = { active: '✅ Faol', coming_soon: '⏳ Tez kunda', hidden: '🚫 Yashirildi' };
+            showToast(labels[status] || 'Yangilandi');
+            loadInstruments();
+        } catch (err) { showToast('❌ ' + err.message, 'error'); }
+    };
+    window.loadInstruments = loadInstruments;
 
     // ========== INIT: Show admin if session exists ==========
     // Must be at the very end, after ALL function definitions

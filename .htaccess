@@ -3,6 +3,13 @@
 # Disable directory listing
 Options -Indexes
 
+# Disable Engintron/nginx caching — har safar PHP ishlashi kerak
+<IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header set X-Accel-Expires "0"
+</IfModule>
+
 # Rewrite Engine
 RewriteEngine On
 
