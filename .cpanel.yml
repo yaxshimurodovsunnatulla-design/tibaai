@@ -1,21 +1,22 @@
 ---
 deployment:
   tasks:
-    # Asosiy papkalar (recursive)
-    - /bin/cp -R ~/repositories/tibaai/api ~/public_html/
-    - /bin/cp -R ~/repositories/tibaai/assets ~/public_html/
-    - /bin/cp -R ~/repositories/tibaai/components ~/public_html/
-    - /bin/cp -R ~/repositories/tibaai/pages ~/public_html/
-    # Root fayllar
-    - /bin/cp ~/repositories/tibaai/.htaccess ~/public_html/
-    - /bin/cp ~/repositories/tibaai/.user.ini ~/public_html/
-    - /bin/cp ~/repositories/tibaai/index.php ~/public_html/
-    - /bin/cp ~/repositories/tibaai/router.php ~/public_html/
-    - /bin/cp ~/repositories/tibaai/init.php ~/public_html/
-    - /bin/cp ~/repositories/tibaai/cleanup.php ~/public_html/
-    - /bin/cp ~/repositories/tibaai/maintenance_check.php ~/public_html/
-    - /bin/cp ~/repositories/tibaai/robots.txt ~/public_html/
-    - /bin/cp ~/repositories/tibaai/sitemap.xml ~/public_html/
     # Kerakli papkalarni yaratish
     - mkdir -p ~/public_html/generated ~/public_html/tmp ~/public_html/data ~/public_html/assets/samples
-    - chmod 755 ~/public_html/data ~/public_html/generated ~/public_html/tmp ~/public_html/assets/samples
+    # Asosiy papkalar (recursive, force overwrite)
+    - /bin/cp -Rf ~/repositories/tibaai/api/* ~/public_html/api/
+    - /bin/cp -Rf ~/repositories/tibaai/assets/* ~/public_html/assets/
+    - /bin/cp -Rf ~/repositories/tibaai/components/* ~/public_html/components/
+    - /bin/cp -Rf ~/repositories/tibaai/pages/* ~/public_html/pages/
+    # Root fayllar (force overwrite)
+    - /bin/cp -f ~/repositories/tibaai/.htaccess ~/public_html/
+    - /bin/cp -f ~/repositories/tibaai/.user.ini ~/public_html/
+    - /bin/cp -f ~/repositories/tibaai/index.php ~/public_html/
+    - /bin/cp -f ~/repositories/tibaai/router.php ~/public_html/
+    - /bin/cp -f ~/repositories/tibaai/init.php ~/public_html/
+    - /bin/cp -f ~/repositories/tibaai/cleanup.php ~/public_html/
+    - /bin/cp -f ~/repositories/tibaai/maintenance_check.php ~/public_html/
+    - /bin/cp -f ~/repositories/tibaai/robots.txt ~/public_html/
+    - /bin/cp -f ~/repositories/tibaai/sitemap.xml ~/public_html/
+    # Ruxsatlar
+    - chmod -R 755 ~/public_html/data ~/public_html/generated ~/public_html/tmp ~/public_html/assets/samples
