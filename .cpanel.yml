@@ -1,16 +1,21 @@
 ---
 deployment:
   tasks:
+    # Asosiy papkalar (recursive)
     - /bin/cp -R ~/repositories/tibaai/api ~/public_html/
     - /bin/cp -R ~/repositories/tibaai/assets ~/public_html/
     - /bin/cp -R ~/repositories/tibaai/components ~/public_html/
     - /bin/cp -R ~/repositories/tibaai/pages ~/public_html/
+    # Root fayllar
     - /bin/cp ~/repositories/tibaai/.htaccess ~/public_html/
+    - /bin/cp ~/repositories/tibaai/.user.ini ~/public_html/
     - /bin/cp ~/repositories/tibaai/index.php ~/public_html/
     - /bin/cp ~/repositories/tibaai/router.php ~/public_html/
     - /bin/cp ~/repositories/tibaai/init.php ~/public_html/
     - /bin/cp ~/repositories/tibaai/cleanup.php ~/public_html/
+    - /bin/cp ~/repositories/tibaai/maintenance_check.php ~/public_html/
     - /bin/cp ~/repositories/tibaai/robots.txt ~/public_html/
     - /bin/cp ~/repositories/tibaai/sitemap.xml ~/public_html/
-    - mkdir -p ~/public_html/generated ~/public_html/tmp ~/public_html/data
-    - chmod 755 ~/public_html/data ~/public_html/generated ~/public_html/tmp
+    # Kerakli papkalarni yaratish
+    - mkdir -p ~/public_html/generated ~/public_html/tmp ~/public_html/data ~/public_html/assets/samples
+    - chmod 755 ~/public_html/data ~/public_html/generated ~/public_html/tmp ~/public_html/assets/samples
