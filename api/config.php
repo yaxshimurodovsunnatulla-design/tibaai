@@ -861,7 +861,16 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
     // Random kalit tanlash (load balancing)
     $apiKey = $apiKeys[array_rand($apiKeys)];
 
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=$apiKey";
+    // Ishlaydigan modellar (tezlikdan sifatga qarab)
+    $imageModels = [
+        'gemini-3.1-flash-image-preview',  // Tez va sifatli
+        'gemini-2.5-flash-image',           // Fallback — yuqori sifat
+    ];
+    
+    // Random model tanlash (load balancing)
+    $selectedModel = $imageModels[array_rand($imageModels)];
+
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/$selectedModel:generateContent?key=$apiKey";
 
     $payload = json_encode([
         'contents' => [['parts' => $parts]],
@@ -916,10 +925,11 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
                 $jitter = random_int(0, 3);
                 $delay = $baseDelay + $jitter;
                 
-                // Boshqa API key bilan qayta urinish
+                // Boshqa API key va model bilan qayta urinish
                 if (count($apiKeys) > 1) {
                     $apiKey = $apiKeys[array_rand($apiKeys)];
-                    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=$apiKey";
+                    $selectedModel = $imageModels[array_rand($imageModels)];
+                    $url = "https://generativelanguage.googleapis.com/v1beta/models/$selectedModel:generateContent?key=$apiKey";
                     $delay = max(2, $delay / 2); // Boshqa key bilan tezroq
                 }
                 
