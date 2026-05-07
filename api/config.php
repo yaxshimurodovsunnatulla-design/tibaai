@@ -861,14 +861,23 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
     // Random kalit tanlash (load balancing)
     $apiKey = $apiKeys[array_rand($apiKeys)];
 
-    // Modellar: Pro (yuqori sifat) → Flash (tez, fallback)
+    // Modellar: navbatma-navbat (round-robin)
     $imageModels = [
-        'gemini-3-pro-image-preview',       // #1 — Eng yuqori sifat
-        'gemini-3.1-flash-image-preview',   // #2 — Tez fallback
+        'gemini-3-pro-image-preview',      // 0 → toq so'rovlar (1, 3, 5...)
+        'gemini-3.1-flash-image-preview',  // 1 → juft so'rovlar (2, 4, 6...)
     ];
-    
-    // Har doim Pro dan boshla, xato bo'lsa Flash ga o't
-    $selectedModel = $imageModels[0];
+
+    // Atomik counter — har so'rovda Pro/Flash navbatlashadi
+    $counterFile = __DIR__ . '/../tmp/model_counter.txt';
+    $fp = fopen($counterFile, 'c+');
+    flock($fp, LOCK_EX); // Bir vaqtda faqat bitta so'rov o'qib-yozadi
+    $counter = (int) fread($fp, 20);
+    $selectedModel = $imageModels[$counter % count($imageModels)];
+    ftruncate($fp, 0);
+    rewind($fp);
+    fwrite($fp, $counter + 1);
+    flock($fp, LOCK_UN);
+    fclose($fp);
 
     $url = "https://generativelanguage.googleapis.com/v1beta/models/$selectedModel:generateContent?key=$apiKey";
 
