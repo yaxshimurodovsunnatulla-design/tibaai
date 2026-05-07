@@ -917,6 +917,14 @@
             <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Gradient (Tailwind classes)</label>
             <input type="text" id="edit-section-gradient" class="input-field text-sm font-mono" placeholder="from-blue-500 to-indigo-600">
         </div>
+        <div>
+            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                Video Qo'llanma URL (YouTube)
+            </label>
+            <input type="url" id="edit-section-video-url" class="input-field text-sm font-mono" placeholder="https://www.youtube.com/watch?v=... (bo'sh = tugma ko'rinmaydi)">
+            <p class="text-[9px] text-gray-500 mt-1">Bo'sh qoldiring — foydalanuvchilarda «Video qo'llanma» tugmasi ko'rinmaydi</p>
+        </div>
         <div class="flex gap-3 pt-2">
             <button onclick="saveServiceData()" class="btn-primary flex-1 py-3 font-bold">Saqlash</button>
             <button onclick="document.getElementById('section-edit-modal').classList.add('hidden')" class="btn-secondary px-6">Bekor qilish</button>
@@ -1133,6 +1141,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h4 class="text-sm font-bold text-white">${s.name}</h4>
                         ${s.badge ? `<span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/20">${s.badge}</span>` : ''}
                         ${!parseInt(s.is_active) ? `<span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/20">O'chirilgan</span>` : ''}
+                        ${s.video_url ? `<span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/20 flex items-center gap-1">▶ Video</span>` : ''}
                     </div>
                     <p class="text-[10px] text-gray-500 mt-0.5 truncate max-w-md">${s.description}</p>
                 </div>
@@ -1174,7 +1183,8 @@ document.addEventListener('DOMContentLoaded', () => {
             badge: s.badge || '',
             icon: s.icon,
             gradient: s.gradient,
-            is_active: newState
+            is_active: newState,
+            video_url: s.video_url || ''
         };
         try {
             await apiCall('/api/admin-services.php', { action: 'update_service', id, data });
@@ -1193,6 +1203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('edit-section-icon').value = s.icon;
         document.getElementById('edit-section-gradient').value = s.gradient;
         document.getElementById('edit-section-active').value = s.is_active;
+        document.getElementById('edit-section-video-url').value = s.video_url || '';
         document.getElementById('section-edit-modal').classList.remove('hidden');
     };
 
@@ -1204,7 +1215,8 @@ document.addEventListener('DOMContentLoaded', () => {
             badge: document.getElementById('edit-section-badge').value,
             icon: document.getElementById('edit-section-icon').value,
             gradient: document.getElementById('edit-section-gradient').value,
-            is_active: parseInt(document.getElementById('edit-section-active').value)
+            is_active: parseInt(document.getElementById('edit-section-active').value),
+            video_url: document.getElementById('edit-section-video-url').value.trim()
         };
 
         try {

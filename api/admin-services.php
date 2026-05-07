@@ -47,7 +47,7 @@ switch ($action) {
         if (!$id || empty($data)) jsonResponse(['error' => 'Missing data'], 400);
 
         try {
-            $stmt = $db->prepare("UPDATE services SET name = ?, description = ?, badge = ?, icon = ?, gradient = ?, is_active = ? WHERE id = ?");
+            $stmt = $db->prepare("UPDATE services SET name = ?, description = ?, badge = ?, icon = ?, gradient = ?, is_active = ?, video_url = ? WHERE id = ?");
             $stmt->execute([
                 $data['name'],
                 $data['description'],
@@ -55,9 +55,10 @@ switch ($action) {
                 $data['icon'],
                 $data['gradient'],
                 $data['is_active'],
+                $data['video_url'] ?? '',
                 $id
             ]);
-            jsonResponse(['success' => true, 'message' => 'Ma\'lumotlar saqlandi']);
+            jsonResponse(['success' => true, 'message' => "Ma'lumotlar saqlandi"]);
         } catch (Exception $e) {
             jsonResponse(['error' => $e->getMessage()], 500);
         }
