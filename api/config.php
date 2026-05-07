@@ -861,14 +861,14 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
     // Random kalit tanlash (load balancing)
     $apiKey = $apiKeys[array_rand($apiKeys)];
 
-    // Ishlaydigan modellar (tezlikdan sifatga qarab)
+    // Modellar: Pro (yuqori sifat) → Flash (tez, fallback)
     $imageModels = [
-        'gemini-3.1-flash-image-preview',  // Tez va sifatli
-        'gemini-2.5-flash-image',           // Fallback — yuqori sifat
+        'gemini-3-pro-image-preview',       // #1 — Eng yuqori sifat
+        'gemini-3.1-flash-image-preview',   // #2 — Tez fallback
     ];
     
-    // Random model tanlash (load balancing)
-    $selectedModel = $imageModels[array_rand($imageModels)];
+    // Har doim Pro dan boshla, xato bo'lsa Flash ga o't
+    $selectedModel = $imageModels[0];
 
     $url = "https://generativelanguage.googleapis.com/v1beta/models/$selectedModel:generateContent?key=$apiKey";
 
@@ -915,29 +915,33 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
         
         if ($httpCode === 200) break;
 
-        // Rate limit (429) yoki server xatosi — exponential backoff bilan qayta urinish
+        // Rate limit (429) yoki server xatosi — model + key rotatsiyasi bilan qayta urinish
         if (in_array($httpCode, [500, 503, 429]) && $retryCount < $maxRetries) {
             $retryCount++;
             
+            // Har retry da keyingi modelga o'tish (Pro → Flash → Pro → Flash ...)
+            $nextModelIndex = $retryCount % count($imageModels);
+            $selectedModel = $imageModels[$nextModelIndex];
+            
+            // API key ham rotatsiya (agar bir nechta bo'lsa)
+            $apiKey = $apiKeys[array_rand($apiKeys)];
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/$selectedModel:generateContent?key=$apiKey";
+            
             // 429 uchun — exponential backoff + jitter
             if ($httpCode === 429) {
-                $baseDelay = min(pow(2, $retryCount), 30); // 2, 4, 8, 16, 30 soniya
-                $jitter = random_int(0, 3);
+                $baseDelay = min(pow(2, $retryCount), 20); // 2, 4, 8, 16, 20 soniya
+                $jitter = random_int(0, 2);
                 $delay = $baseDelay + $jitter;
                 
-                // Boshqa API key va model bilan qayta urinish
-                if (count($apiKeys) > 1) {
-                    $apiKey = $apiKeys[array_rand($apiKeys)];
-                    $selectedModel = $imageModels[array_rand($imageModels)];
-                    $url = "https://generativelanguage.googleapis.com/v1beta/models/$selectedModel:generateContent?key=$apiKey";
-                    $delay = max(2, $delay / 2); // Boshqa key bilan tezroq
-                }
-                
-                $logMsg = date('[Y-m-d H:i:s] ') . "Rate limit 429 — retry #{$retryCount}, waiting {$delay}s\n";
+                $logMsg = date('[Y-m-d H:i:s] ') . "Rate limit 429 — retry #{$retryCount}, model={$selectedModel}, waiting {$delay}s\n";
                 file_put_contents(__DIR__ . '/../tmp/gemini_error.log', $logMsg, FILE_APPEND);
                 sleep($delay);
             } else {
-                sleep(3 + $retryCount); // 500/503 uchun oddiy delay
+                // 500/503 uchun qisqa delay
+                $delay = 2 + $retryCount;
+                $logMsg = date('[Y-m-d H:i:s] ') . "Server error {$httpCode} — retry #{$retryCount}, switching to model={$selectedModel}\n";
+                file_put_contents(__DIR__ . '/../tmp/gemini_error.log', $logMsg, FILE_APPEND);
+                sleep($delay);
             }
             continue;
         }
