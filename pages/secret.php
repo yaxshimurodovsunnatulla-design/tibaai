@@ -2492,29 +2492,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isHidden = i.status === 'hidden';
                 const statusColor = isActive ? 'emerald' : isComingSoon ? 'amber' : 'red';
                 const statusText = isActive ? 'Faol' : isComingSoon ? 'Tez kunda' : "Yashirin";
+                const hasVideo = !!i.video_url;
                 html += `
-                <div class="bg-white/[0.03] border border-white/5 rounded-2xl p-3 flex items-center gap-3 ${isHidden ? 'opacity-40' : ''} transition-all">
-                    <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${i.gradient} flex items-center justify-center text-white text-sm shadow-lg">
-                        <i class="${i.icon}"></i>
-                    </div>
-                    <div class="flex-grow min-w-0">
-                        <div class="flex items-center gap-2">
-                            <h4 class="text-sm font-bold text-white truncate">${i.name}</h4>
-                            <span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-${statusColor}-500/20 text-${statusColor}-400 border border-${statusColor}-500/20">${statusText}</span>
-                            ${i.badge ? `<span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/20">${i.badge}</span>` : ''}
+                <div class="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden ${isHidden ? 'opacity-40' : ''} transition-all mb-2">
+                    <div class="p-3 flex items-center gap-3">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${i.gradient} flex items-center justify-center text-white text-sm shadow-lg">
+                            <i class="${i.icon}"></i>
                         </div>
-                        <p class="text-[10px] text-gray-500 mt-0.5 truncate">${i.description}</p>
+                        <div class="flex-grow min-w-0">
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-sm font-bold text-white truncate">${i.name}</h4>
+                                <span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-${statusColor}-500/20 text-${statusColor}-400 border border-${statusColor}-500/20">${statusText}</span>
+                                ${i.badge ? `<span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/20">${i.badge}</span>` : ''}
+                                ${hasVideo ? `<span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/20">▶ Video</span>` : ''}
+                            </div>
+                            <p class="text-[10px] text-gray-500 mt-0.5 truncate">${i.description}</p>
+                        </div>
+                        <div class="flex-shrink-0 flex items-center gap-1">
+                            <button onclick="setInstrumentStatus(${i.id}, 'active')" title="Faol" class="p-2 rounded-lg transition-colors ${isActive ? 'text-emerald-400 bg-emerald-500/10' : 'text-gray-600 hover:text-emerald-400 hover:bg-emerald-500/10'}">
+                                <i class="fa-solid fa-circle-check text-sm"></i>
+                            </button>
+                            <button onclick="setInstrumentStatus(${i.id}, 'coming_soon')" title="Tez kunda" class="p-2 rounded-lg transition-colors ${isComingSoon ? 'text-amber-400 bg-amber-500/10' : 'text-gray-600 hover:text-amber-400 hover:bg-amber-500/10'}">
+                                <i class="fa-solid fa-clock text-sm"></i>
+                            </button>
+                            <button onclick="setInstrumentStatus(${i.id}, 'hidden')" title="Yashirish" class="p-2 rounded-lg transition-colors ${isHidden ? 'text-red-400 bg-red-500/10' : 'text-gray-600 hover:text-red-400 hover:bg-red-500/10'}">
+                                <i class="fa-solid fa-eye-slash text-sm"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex-shrink-0 flex items-center gap-1">
-                        <button onclick="setInstrumentStatus(${i.id}, 'active')" title="Faol" class="p-2 rounded-lg transition-colors ${isActive ? 'text-emerald-400 bg-emerald-500/10' : 'text-gray-600 hover:text-emerald-400 hover:bg-emerald-500/10'}">
-                            <i class="fa-solid fa-circle-check text-sm"></i>
-                        </button>
-                        <button onclick="setInstrumentStatus(${i.id}, 'coming_soon')" title="Tez kunda" class="p-2 rounded-lg transition-colors ${isComingSoon ? 'text-amber-400 bg-amber-500/10' : 'text-gray-600 hover:text-amber-400 hover:bg-amber-500/10'}">
-                            <i class="fa-solid fa-clock text-sm"></i>
-                        </button>
-                        <button onclick="setInstrumentStatus(${i.id}, 'hidden')" title="Yashirish" class="p-2 rounded-lg transition-colors ${isHidden ? 'text-red-400 bg-red-500/10' : 'text-gray-600 hover:text-red-400 hover:bg-red-500/10'}">
-                            <i class="fa-solid fa-eye-slash text-sm"></i>
-                        </button>
+                    <!-- Video URL row -->
+                    <div class="px-3 pb-3 flex items-center gap-2 border-t border-white/5 pt-2">
+                        <svg class="w-3 h-3 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        <input type="url" id="inst-video-${i.id}" value="${i.video_url || ''}" placeholder="YouTube URL (bo'sh = tugma ko'rinmaydi)"
+                            class="flex-1 text-[10px] bg-white/[0.03] border border-white/8 rounded-lg px-2 py-1.5 text-gray-300 font-mono placeholder-gray-600 outline-none focus:border-red-500/40 transition-colors">
+                        <button onclick="saveInstrumentVideoUrl(${i.id})" class="flex-shrink-0 px-2.5 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold hover:bg-red-500/20 transition-all">Saqlash</button>
                     </div>
                 </div>`;
             });
@@ -2528,6 +2539,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const labels = { active: '✅ Faol', coming_soon: '⏳ Tez kunda', hidden: '🚫 Yashirildi' };
             showToast(labels[status] || 'Yangilandi');
             loadInstruments();
+        } catch (err) { showToast('❌ ' + err.message, 'error'); }
+    };
+
+    window.saveInstrumentVideoUrl = async (id) => {
+        const input = document.getElementById(`inst-video-${id}`);
+        if (!input) return;
+        const videoUrl = input.value.trim();
+        try {
+            await apiCall('/api/admin-instruments.php', { action: 'save_video_url', id, video_url: videoUrl });
+            showToast(videoUrl ? '✅ Video URL saqlandi' : '✅ Video URL o\'chirildi');
+            // local update
+            const inst = currentInstruments.find(i => i.id === id);
+            if (inst) inst.video_url = videoUrl;
+            renderInstruments();
         } catch (err) { showToast('❌ ' + err.message, 'error'); }
     };
     window.loadInstruments = loadInstruments;

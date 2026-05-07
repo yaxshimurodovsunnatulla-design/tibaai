@@ -2,7 +2,7 @@
 /**
  * Tiba AI — Admin Instruments API
  * GET  — barcha instrumentlar
- * POST — status o'zgartirish (toggle)
+ * POST — status o'zgartirish (toggle), video_url saqlash
  */
 require_once __DIR__ . '/config.php';
 
@@ -31,6 +31,23 @@ if ($method === 'POST') {
         }
         $db->prepare("UPDATE instruments SET status = ? WHERE id = ?")->execute([$status, $id]);
         jsonResponse(['success' => true, 'message' => "Status o'zgartirildi"]);
+    }
+
+    if ($action === 'save_video_url') {
+        $id = (int)($input['id'] ?? 0);
+        $videoUrl = trim($input['video_url'] ?? '');
+
+        if ($id <= 0) jsonResponse(['error' => 'ID kerak'], 400);
+
+        // YouTube URL validatsiya (bo'sh yoki to'g'ri YouTube link)
+        if (!empty($videoUrl)) {
+            if (!preg_match('#^https?://(www\.)?(youtube\.com|youtu\.be)/#', $videoUrl)) {
+                jsonResponse(['error' => "Faqat YouTube havolalarini qo'yish mumkin"], 400);
+            }
+        }
+
+        $db->prepare("UPDATE instruments SET video_url = ? WHERE id = ?")->execute([$videoUrl, $id]);
+        jsonResponse(['success' => true, 'message' => 'Video URL saqlandi']);
     }
 
     jsonResponse(['error' => 'Invalid action'], 400);
