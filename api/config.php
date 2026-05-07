@@ -41,7 +41,7 @@ if (in_array($origin, $allowedOrigins) || (strpos($origin, 'http://localhost:') 
     header('Access-Control-Allow-Credentials: true');
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
@@ -98,6 +98,12 @@ function getDB() {
     return $pdo;
 }
 
+// ========== REFERRAL TRACKING ==========
+if (isset($_GET['ref']) && is_numeric($_GET['ref'])) {
+    setcookie('ref_id', (int)$_GET['ref'], time() + (30 * 24 * 60 * 60), '/');
+    $_COOKIE['ref_id'] = (int)$_GET['ref'];
+}
+
 function runMigrations($pdo) {
     // Migratsiya versiyasini tekshirish (keraksiz ishlarni oldini olish)
     $currentVersion = 0;
@@ -111,7 +117,7 @@ function runMigrations($pdo) {
         }
     } catch (Exception $e) {}
 
-    $targetVersion = 5; // Har yangi migratsiya qo'shganda +1 qiling
+    $targetVersion = 6; // Har yangi migratsiya qo'shganda +1 qiling
     if ($currentVersion >= $targetVersion) return; // Allaqachon yangilangan
 
     // 1. Users table
@@ -142,6 +148,21 @@ function runMigrations($pdo) {
         $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id)");
     } catch (Exception $e) { /* Ignore */ }
 
+    // Add referral columns
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN referred_by INTEGER DEFAULT NULL");
+    } catch (Exception $e) { /* Ignore */ }
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN phone TEXT");
+    } catch (Exception $e) { /* Ignore */ }
+
+    // Telegram OTP table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS telegram_otps (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        telegram_id TEXT NOT NULL,
+        otp_code TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
 
     // 2. Configs table
     $pdo->exec("CREATE TABLE IF NOT EXISTS configs (
@@ -1114,9 +1135,9 @@ function processImageInput($input) {
 /**
  * Telegramga xabar/rasm yuborish
  */
-function sendToTelegram($message, $imagePath = null, $asDocument = true) {
+function sendToTelegram($message, $imagePath = null, $asDocument = true, $targetChatId = null) {
     $token = getenv('TELEGRAM_BOT_TOKEN');
-    $chatId = getenv('TELEGRAM_CHANNEL_ID');
+    $chatId = $targetChatId ?: getenv('TELEGRAM_CHANNEL_ID');
 
     if (!$token || !$chatId) {
         error_log("Telegram Skip: Token/ID missing. BotToken: " . ($token ? 'OK' : 'MISSING') . ", ChatID: " . ($chatId ?: 'MISSING'));
@@ -1170,6 +1191,14 @@ function sendToTelegram($message, $imagePath = null, $asDocument = true) {
     }
     curl_close($ch);
     
+    // Foydalanuvchiga nusxasini yuborish
+    if (!$targetChatId) {
+        $u = getAuthUser();
+        if ($u && !empty($u['telegram_id']) && $u['telegram_id'] != getenv('TELEGRAM_CHANNEL_ID')) {
+            sendToTelegram($message, $imagePath, $asDocument, $u['telegram_id']);
+        }
+    }
+    
     return $res;
 }
 
@@ -1195,9 +1224,9 @@ function getTelegramCurlOpts() {
     return $opts;
 }
 
-function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true) {
+function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true, $targetChatId = null) {
     $token = getenv('TELEGRAM_BOT_TOKEN');
-    $chatId = getenv('TELEGRAM_CHANNEL_ID');
+    $chatId = $targetChatId ?: getenv('TELEGRAM_CHANNEL_ID');
     $debugLog = __DIR__ . '/../tmp/telegram_debug.log';
 
     $logEntry = date('[Y-m-d H:i:s] ') . "sendMediaGroupToTelegram called\n";
@@ -1266,6 +1295,14 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
     
     if ($curlErr) error_log('Telegram MediaGroup Curl Error: ' . $curlErr);
     if ($httpCode !== 200) error_log("Telegram MediaGroup API Error ($httpCode): " . $res);
+    
+    // Foydalanuvchiga nusxasini yuborish
+    if (!$targetChatId) {
+        $u = getAuthUser();
+        if ($u && !empty($u['telegram_id']) && $u['telegram_id'] != getenv('TELEGRAM_CHANNEL_ID')) {
+            sendMediaGroupToTelegram($message, $imagePaths, $asDocument, $u['telegram_id']);
+        }
+    }
     
     return $res;
 }

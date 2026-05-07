@@ -48,6 +48,9 @@ switch ($action) {
         if (!$currentUser) jsonResponse(['error' => 'Tizimga kiring'], 401);
         handleCheckPayment($input, $currentUser);
         break;
+    case 'validate_promo':
+        handleValidatePromo($input);
+        break;
     default:
         jsonResponse(['error' => "Noto'g'ri amal"], 400);
 }
@@ -63,6 +66,7 @@ function handleGetPackages() {
         foreach ($packages as &$p) {
             $p['credits'] = intval($p['credits']);
             $p['price'] = intval($p['price']);
+            $p['original_price'] = intval($p['original_price'] ?? 0);
             $p['features'] = json_decode($p['features'] ?? '[]', true) ?: [];
         }
     } catch (Exception $e) {
@@ -119,15 +123,12 @@ function handleSubmitPayment($input, $user) {
     $packageId = $input['package_id'] ?? '';
     $receiptImage = $input['receipt_image'] ?? ''; // base64
 
-    // Paket validatsiya
-    $packages = [
-        'starter'      => ['name' => "Boshlang'ich", 'credits' => 50,   'price' => 69000],
-        'professional' => ['name' => 'Professional', 'credits' => 150,  'price' => 189000],
-        'business'     => ['name' => 'Biznes',       'credits' => 500,  'price' => 549000],
-        'enterprise'   => ['name' => 'Enterprise',   'credits' => 1500, 'price' => 1449000],
-    ];
+    $db = getDB();
+    $stmtPkg = $db->prepare("SELECT * FROM packages WHERE id = ? AND is_active = 1");
+    $stmtPkg->execute([$packageId]);
+    $pkg = $stmtPkg->fetch(PDO::FETCH_ASSOC);
 
-    if (!isset($packages[$packageId])) {
+    if (!$pkg) {
         jsonResponse(['error' => "Noto'g'ri paket"], 400);
     }
 
@@ -149,8 +150,27 @@ function handleSubmitPayment($input, $user) {
         jsonResponse(['error' => 'Rasm hajmi 10MB dan oshmasligi kerak'], 400);
     }
 
-    $pkg = $packages[$packageId];
-    $db = getDB();
+    $promoCode = strtoupper(trim($input['promo_code'] ?? ''));
+    $finalPrice = intval($pkg['price']);
+    $discountAmount = 0;
+
+    if (!empty($promoCode)) {
+        $stmtPromo = $db->prepare("SELECT * FROM promo_codes WHERE code = ? AND status = 'active' AND expires_at > ? AND used_count < max_uses");
+        $stmtPromo->execute([$promoCode, date('Y-m-d H:i:s')]);
+        $promo = $stmtPromo->fetch(PDO::FETCH_ASSOC);
+
+        if ($promo) {
+            if ($promo['discount_type'] === 'percentage') {
+                $discountAmount = round($finalPrice * ($promo['discount_value'] / 100));
+            } else {
+                $discountAmount = intval($promo['discount_value']);
+            }
+            $finalPrice = max(0, $finalPrice - $discountAmount);
+            
+            // Promokod ishlatilganini belgilash
+            $db->prepare("UPDATE promo_codes SET used_count = used_count + 1 WHERE id = ?")->execute([$promo['id']]);
+        }
+    }
 
     // payments jadvali yaratish
 
@@ -164,12 +184,12 @@ function handleSubmitPayment($input, $user) {
     file_put_contents($filePath, $imageData);
 
     // DB ga yozish
-    $stmt = $db->prepare("INSERT INTO payments (user_id, package_id, package_name, credits, amount, status, receipt_path) VALUES (?, ?, ?, ?, ?, 'pending', ?)");
-    $stmt->execute([$user['id'], $packageId, $pkg['name'], $pkg['credits'], $pkg['price'], $fileName]);
+    $stmt = $db->prepare("INSERT INTO payments (user_id, package_id, package_name, credits, amount, status, receipt_path, promo_code, discount_amount) VALUES (?, ?, ?, ?, ?, 'pending', ?, ?, ?)");
+    $stmt->execute([$user['id'], $packageId, $pkg['name'], $pkg['credits'], $finalPrice, $fileName, $promoCode ?: null, $discountAmount]);
     $paymentId = $db->lastInsertId();
 
     // Telegram'ga yuborish
-    sendPaymentToTelegram($user, $pkg, $paymentId, $filePath);
+    sendPaymentToTelegram($user, $pkg, $paymentId, $filePath, $promoCode, $discountAmount, $finalPrice);
 
     jsonResponse([
         'success' => true,
@@ -194,15 +214,35 @@ function handleCheckPayment($input, $user) {
     }
 
     // Oxirgi to'lovlarni ko'rsatish
-    $stmt = $db->prepare("SELECT id, package_name, credits, amount, status, admin_note, created_at FROM payments WHERE user_id = ? ORDER BY id DESC LIMIT 10");
+    $stmt = $db->prepare("SELECT id, package_name, credits, amount, status, admin_note, created_at, promo_code, discount_amount FROM payments WHERE user_id = ? ORDER BY id DESC LIMIT 10");
     $stmt->execute([$user['id']]);
     $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     jsonResponse(['success' => true, 'payments' => $payments]);
 }
 
+function handleValidatePromo($input) {
+    $code = strtoupper(trim($input['code'] ?? ''));
+    if (empty($code)) jsonResponse(['error' => 'Kod kiritilmagan'], 400);
+
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM promo_codes WHERE code = ? AND status = 'active' AND expires_at > ? AND used_count < max_uses");
+    $stmt->execute([$code, date('Y-m-d H:i:s')]);
+    $promo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$promo) {
+        jsonResponse(['error' => "Promokod noto'g'ri, muddati o'tgan yoki tugagan"], 400);
+    }
+
+    jsonResponse([
+        'success' => true,
+        'discount_type' => $promo['discount_type'],
+        'discount_value' => $promo['discount_value']
+    ]);
+}
+
 // ========== TELEGRAM ==========
 
-function sendPaymentToTelegram($user, $pkg, $paymentId, $imagePath) {
+function sendPaymentToTelegram($user, $pkg, $paymentId, $imagePath, $promoCode = '', $discountAmount = 0, $finalPrice = 0) {
     $botToken = getenv('TELEGRAM_BOT_TOKEN');
     $envVars = readEnvFile();
     $chatId = $envVars['PAYMENT_ADMIN_CHAT_ID'] ?? getenv('TELEGRAM_CHANNEL_ID');
@@ -210,6 +250,8 @@ function sendPaymentToTelegram($user, $pkg, $paymentId, $imagePath) {
     if (!$botToken || !$chatId) return;
 
     $priceFormatted = number_format($pkg['price'], 0, '', ',');
+    $finalPriceFormatted = number_format($finalPrice ?: $pkg['price'], 0, '', ',');
+    $discountFormatted = number_format($discountAmount, 0, '', ',');
 
     $caption = "💰 <b>YANGI TO'LOV #{$paymentId}</b>\n\n"
         . "👤 <b>Foydalanuvchi:</b> {$user['name']}\n"
@@ -217,8 +259,17 @@ function sendPaymentToTelegram($user, $pkg, $paymentId, $imagePath) {
         . "🆔 <b>User ID:</b> {$user['id']}\n\n"
         . "📦 <b>Paket:</b> {$pkg['name']}\n"
         . "🪙 <b>Tanga:</b> {$pkg['credits']}\n"
-        . "💵 <b>Summa:</b> {$priceFormatted} so'm\n\n"
-        . "⏰ <b>Vaqt:</b> " . date('d.m.Y H:i') . "\n"
+        . "💵 <b>Narxi:</b> {$priceFormatted} so'm\n";
+
+    if (!empty($promoCode)) {
+        $caption .= "🎟️ <b>Promokod:</b> <code>{$promoCode}</code>\n"
+            . "📉 <b>Chegirma:</b> -{$discountFormatted} so'm\n"
+            . "💳 <b>To'lanishi kerak:</b> <u>{$finalPriceFormatted} so'm</u>\n";
+    } else {
+        $caption .= "💵 <b>Jami summa:</b> {$finalPriceFormatted} so'm\n";
+    }
+
+    $caption .= "\n⏰ <b>Vaqt:</b> " . date('d.m.Y H:i') . "\n"
         . "📋 <b>Status:</b> ⏳ Kutilmoqda\n\n"
         . "✅ Tasdiqlash: <code>/approve {$paymentId}</code>\n"
         . "❌ Rad etish: <code>/reject {$paymentId} [sabab]</code>";

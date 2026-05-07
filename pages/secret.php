@@ -61,19 +61,13 @@
             </div>
         </div>
 
-        <!-- Toast -->
-        <div id="status-toast" class="hidden fixed top-24 right-8 z-50 animate-slide-up">
-            <div class="bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10 backdrop-blur-md">
-                <span id="toast-icon">✅</span>
-                <span id="toast-msg">Muvaffaqiyatli!</span>
-            </div>
-        </div>
 
         <!-- Tabs -->
         <div class="flex flex-wrap gap-2 mb-8 bg-white/5 p-1.5 rounded-2xl border border-white/5">
             <button data-tab="dashboard" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all bg-indigo-600 text-white shadow-lg">📊 Dashboard</button>
             <button data-tab="prompts" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">📝 Promptlar</button>
             <button data-tab="packages" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">💰 Paketlar</button>
+            <button data-tab="promo" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">🎟️ Promokodlar</button>
             <button data-tab="payments" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">💳 To'lovlar <span id="pending-payments-badge" class="hidden ml-1 px-1.5 py-0.5 text-[9px] bg-amber-500 text-black rounded-full font-bold"></span></button>
             <button data-tab="sections" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">🗂️ Bo'limlar</button>
             <button data-tab="gallery" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">🖼️ Galeriya</button>
@@ -595,6 +589,63 @@
                 <div id="packages-list" class="space-y-3"></div>
             </div>
 
+            <!-- Promo Codes -->
+            <div id="tab-promo" class="admin-tab hidden animate-fade-in">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">🎟️ Promokodlar</h2>
+                        <p class="text-xs text-gray-500 mt-1">Sotuvlar uchun chegirma kodlarini boshqaring</p>
+                    </div>
+                    <button onclick="showPromoModal()" class="btn-primary px-5 py-2.5 text-sm font-bold shadow-lg shadow-indigo-500/20">
+                        <i class="fa-solid fa-plus mr-1"></i> Yangi promokod
+                    </button>
+                </div>
+                <div id="promo-list" class="space-y-3"></div>
+            </div>
+
+            <!-- Promo Create Modal -->
+            <div id="promo-create-modal" class="hidden fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4" style="position:fixed;">
+                <div class="glass-card max-w-md w-full p-6 space-y-4 border border-white/10 shadow-2xl">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-bold text-white">Yangi promokod</h3>
+                        <button onclick="closePromoModal()" class="text-gray-500 hover:text-white text-xl">✕</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Kod</label>
+                            <input type="text" id="promo-code" class="input-field text-sm font-mono uppercase" placeholder="SUMMER2026">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Turi</label>
+                                <select id="promo-type" class="input-field text-sm">
+                                    <option value="percentage">Foiz (%)</option>
+                                    <option value="fixed">Aniq summa (so'm)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Qiymati</label>
+                                <input type="number" id="promo-value" class="input-field text-sm" placeholder="10">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Maks. ishlatish</label>
+                                <input type="number" id="promo-max-uses" class="input-field text-sm" value="10">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Amal qilish muddati</label>
+                                <input type="date" id="promo-expires" class="input-field text-sm">
+                            </div>
+                        </div>
+                        <div id="promo-error" class="hidden bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg text-xs text-center"></div>
+                        <button onclick="savePromo()" id="promo-save-btn" class="btn-primary w-full py-3 font-bold">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> Yaratish
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Package Edit Modal -->
             <div id="package-edit-modal" class="hidden fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4" style="position:fixed;">
                 <div class="glass-card max-w-lg w-full p-6 space-y-4 border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -617,8 +668,12 @@
                             <input type="number" id="pkg-edit-credits" class="input-field text-sm" placeholder="50">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Narxi (so'm)</label>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Hozirgi narxi (so'm)</label>
                             <input type="number" id="pkg-edit-price" class="input-field text-sm" placeholder="69000">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Usti urilgan narx (bo'sh = 0)</label>
+                            <input type="number" id="pkg-edit-original-price" class="input-field text-sm" placeholder="99000">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Ikonka (FA class)</label>
@@ -703,6 +758,29 @@
                             <button id="cleanup-btn" class="btn-primary px-6 py-2.5 text-sm font-bold">🗑️ Tozalash</button>
                         </div>
                         <div id="cleanup-result" class="hidden mt-4 bg-green-500/10 border border-green-500/20 text-green-400 p-3 rounded-lg text-xs"></div>
+                    </div>
+
+                    <!-- Referal tizimi sozlamalari -->
+                    <div class="bg-white/[0.03] border border-white/5 rounded-2xl p-6">
+                        <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-users text-indigo-400"></i> Referal tizimi
+                        </h3>
+                        <p class="text-xs text-gray-500 mb-4">Ro'yxatdan o'tish va to'lovlar uchun referal bonuslari</p>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Taklif uchun bonus (Tanga)</label>
+                                    <input type="number" id="settings-ref-signup" class="input-field text-sm" value="1" min="0">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">To'lovdan ulush (%)</label>
+                                    <input type="number" id="settings-ref-percent" class="input-field text-sm" value="10" min="0" max="100">
+                                </div>
+                            </div>
+                            <button onclick="saveSiteSettings()" class="w-full btn-primary py-2.5 text-xs font-bold">
+                                💾 Referal sozlamalarini saqlash
+                            </button>
+                        </div>
                     </div>
 
                     <!-- To'lov sozlamalari -->
@@ -2169,7 +2247,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="flex items-center gap-4 mt-1 text-xs text-gray-400">
                         <span><i class="fa-solid fa-coins text-amber-400 text-[10px] mr-1"></i>${pkg.credits} tanga</span>
-                        <span><i class="fa-solid fa-tag text-emerald-400 text-[10px] mr-1"></i>${Number(pkg.price).toLocaleString('uz-UZ')} so'm</span>
+                        <span class="flex items-center gap-1">
+                            <i class="fa-solid fa-tag text-emerald-400 text-[10px] mr-1"></i>
+                            ${Number(pkg.price).toLocaleString('uz-UZ')} so'm
+                            ${pkg.original_price > pkg.price ? `<span class="text-[10px] text-gray-600 line-through">${Number(pkg.original_price).toLocaleString('uz-UZ')}</span>` : ''}
+                        </span>
                         <span class="text-gray-600">1 tanga = ${perCoin.toLocaleString('uz-UZ')} so'm</span>
                     </div>
                     ${features ? `<div class="text-[10px] text-gray-600 mt-1 truncate">${features}</div>` : ''}
@@ -2195,6 +2277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('pkg-edit-name').value = pkg?.name || '';
         document.getElementById('pkg-edit-credits').value = pkg?.credits || '';
         document.getElementById('pkg-edit-price').value = pkg?.price || '';
+        document.getElementById('pkg-edit-original-price').value = pkg?.original_price || '';
         document.getElementById('pkg-edit-icon').value = pkg?.icon || 'fa-coins';
         document.getElementById('pkg-edit-gradient').value = pkg?.gradient || 'from-gray-600 to-gray-500';
         document.getElementById('pkg-edit-badge').value = pkg?.badge || '';
@@ -2237,6 +2320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = document.getElementById('pkg-edit-name').value.trim();
         const credits = parseInt(document.getElementById('pkg-edit-credits').value) || 0;
         const price = parseInt(document.getElementById('pkg-edit-price').value) || 0;
+        const originalPrice = parseInt(document.getElementById('pkg-edit-original-price').value) || 0;
         const icon = document.getElementById('pkg-edit-icon').value.trim() || 'fa-coins';
         const gradient = document.getElementById('pkg-edit-gradient').value.trim() || 'from-gray-600 to-gray-500';
         const badge = document.getElementById('pkg-edit-badge').value.trim();
@@ -2261,7 +2345,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Saqlanmoqda...';
 
         try {
-            const data = { id, name, credits, price, icon, gradient, badge, badge_gradient: badgeGradient, features, is_active };
+            const data = { id, name, credits, price, original_price: originalPrice, icon, gradient, badge, badge_gradient: badgeGradient, features, is_active };
             if (isEdit) {
                 await apiCall('/api/admin-packages.php', { action: 'update', id: oldId, data });
             } else {
@@ -2287,19 +2371,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ========== UTILS ==========
     function showLoading(show) {
-        document.getElementById('tab-loading').classList.toggle('hidden', !show);
+        const el = document.getElementById('tab-loading');
+        if (el) el.classList.toggle('hidden', !show);
     }
 
-    function showToast(msg, type = 'success') {
-        const toast = document.getElementById('status-toast');
-        const toastDiv = toast.querySelector('div');
-        document.getElementById('toast-msg').innerText = msg;
-        toastDiv.className = type === 'error' 
-            ? 'bg-red-600 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10 backdrop-blur-md'
-            : 'bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10 backdrop-blur-md';
-        toast.classList.remove('hidden');
-        setTimeout(() => toast.classList.add('hidden'), 4000);
-    }
     // ========== MAINTENANCE MODE ==========
     async function loadMaintenanceStatus() {
         try {
@@ -2562,8 +2637,16 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const data = await apiCall('/api/admin-stats.php', { action: 'get-site-settings' });
             const link = data.settings?.youtube_link || '';
+            const refSignup = data.settings?.ref_signup_reward || '1';
+            const refPercent = data.settings?.ref_payment_percent || '10';
+            
             const input = document.getElementById('settings-youtube-link');
+            const refSignupInput = document.getElementById('settings-ref-signup');
+            const refPercentInput = document.getElementById('settings-ref-percent');
+            
             if (input) input.value = link;
+            if (refSignupInput) refSignupInput.value = refSignup;
+            if (refPercentInput) refPercentInput.value = refPercent;
         } catch (err) {
             console.error('loadSiteSettings error:', err);
         }
@@ -2573,25 +2656,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('save-site-settings-btn');
         const statusEl = document.getElementById('site-settings-status');
         const link = document.getElementById('settings-youtube-link')?.value?.trim() || '';
+        const refSignup = document.getElementById('settings-ref-signup')?.value?.trim() || '1';
+        const refPercent = document.getElementById('settings-ref-percent')?.value?.trim() || '10';
 
-        btn.disabled = true;
-        btn.textContent = '⏳ Saqlanmoqda...';
-        statusEl.classList.add('hidden');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = '⏳ Saqlanmoqda...';
+        }
+        if (statusEl) statusEl.classList.add('hidden');
 
         try {
-            await apiCall('/api/admin-stats.php', { action: 'save-site-settings', youtube_link: link });
-            statusEl.textContent = '✅ Muvaffaqiyatli saqlandi!';
-            statusEl.classList.remove('hidden');
-            showToast('✅ YouTube havola saqlandi!');
-            setTimeout(() => statusEl.classList.add('hidden'), 3000);
+            await apiCall('/api/admin-stats.php', { 
+                action: 'save-site-settings', 
+                youtube_link: link,
+                ref_signup_reward: refSignup,
+                ref_payment_percent: refPercent
+            });
+            if (statusEl) {
+                statusEl.textContent = '✅ Muvaffaqiyatli saqlandi!';
+                statusEl.classList.remove('hidden');
+            }
+            showToast('✅ Sozlamalar saqlandi!');
+            setTimeout(() => { if(statusEl) statusEl.classList.add('hidden'); }, 3000);
         } catch (err) {
-            statusEl.textContent = '❌ ' + err.message;
-            statusEl.classList.remove('hidden');
-            statusEl.style.color = '#f87171';
+            if (statusEl) {
+                statusEl.textContent = '❌ ' + err.message;
+                statusEl.classList.remove('hidden');
+                statusEl.style.color = '#f87171';
+            }
             showToast('❌ ' + err.message, 'error');
         }
-        btn.disabled = false;
-        btn.textContent = '💾 YouTube havolasini saqlash';
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = '💾 YouTube havolasini saqlash';
+        }
     };
 
     window.previewYoutube = () => {
@@ -2614,12 +2712,110 @@ document.addEventListener('DOMContentLoaded', () => {
         wrap.classList.remove('hidden');
     };
 
-    // Settings tab yuklanishi
+    // ========== PROMO CODES ==========
+    let currentPromos = [];
+    async function loadPromos() {
+        showLoading(true);
+        try {
+            const res = await apiCall('/api/admin-promo.php', { action: 'get' });
+            currentPromos = res.promos || [];
+            renderPromos();
+        } catch (err) { showToast('❌ ' + err.message, 'error'); }
+        showLoading(false);
+    }
+
+    function renderPromos() {
+        const container = document.getElementById('promo-list');
+        if (!container) return;
+        if (!currentPromos.length) {
+            container.innerHTML = '<div class="text-center text-gray-500 py-10">Promokodlar topilmadi</div>';
+            return;
+        }
+        container.innerHTML = currentPromos.map(p => {
+            const isExpired = new Date(p.expires_at) < new Date();
+            const isFull = p.used_count >= p.max_uses;
+            const status = isExpired ? 'Muddati o\'tgan' : (isFull ? 'Tugagan' : 'Faol');
+            const color = isExpired || isFull ? 'red' : 'emerald';
+            return `
+            <div class="bg-white/[0.03] border border-white/5 rounded-2xl p-4 flex items-center gap-4 hover:bg-white/[0.05] transition-all group">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold font-mono text-sm">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-white font-mono uppercase tracking-wider">${p.code}</span>
+                        <span class="text-[9px] px-2 py-0.5 rounded-full bg-${color}-500/10 text-${color}-400 border border-${color}-500/20 font-bold">${status}</span>
+                    </div>
+                    <div class="flex items-center gap-4 mt-1 text-[11px] text-gray-500">
+                        <span class="text-indigo-400 font-bold">${p.discount_type === 'percentage' ? p.discount_value+'%' : Number(p.discount_value).toLocaleString()+' so\'m'} chegirma</span>
+                        <span>👥 ${p.used_count} / ${p.max_uses}</span>
+                        <span>📅 ${new Date(p.expires_at).toLocaleDateString()} gacha</span>
+                    </div>
+                </div>
+                <button onclick="deletePromo(${p.id})" class="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+            </div>`;
+        }).join('');
+    }
+
+    window.showPromoModal = () => {
+        document.getElementById('promo-code').value = '';
+        document.getElementById('promo-value').value = '';
+        document.getElementById('promo-expires').value = new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0];
+        document.getElementById('promo-error').classList.add('hidden');
+        document.getElementById('promo-create-modal').classList.remove('hidden');
+    };
+    window.closePromoModal = () => document.getElementById('promo-create-modal').classList.add('hidden');
+
+    window.savePromo = async () => {
+        const code = document.getElementById('promo-code').value.trim();
+        const type = document.getElementById('promo-type').value;
+        const value = parseInt(document.getElementById('promo-value').value);
+        const maxUses = parseInt(document.getElementById('promo-max-uses').value);
+        const expiresAt = document.getElementById('promo-expires').value;
+        const errEl = document.getElementById('promo-error');
+
+        if (!code || isNaN(value) || !expiresAt) {
+            errEl.textContent = 'Barcha maydonlarni to\'ldiring';
+            errEl.classList.remove('hidden');
+            return;
+        }
+
+        const btn = document.getElementById('promo-save-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Saqlanmoqda...';
+
+        try {
+            await apiCall('/api/admin-promo.php', { action: 'create', code, discount_type: type, discount_value: value, max_uses: maxUses, expires_at: expiresAt });
+            showToast('✅ Promokod yaratildi');
+            closePromoModal();
+            loadPromos();
+        } catch (err) {
+            errEl.textContent = err.message;
+            errEl.classList.remove('hidden');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-1"></i> Yaratish';
+        }
+    };
+
+    window.deletePromo = async (id) => {
+        if (!confirm('Ushbu promokodni o\'chirib yuborasizmi?')) return;
+        try {
+            await apiCall('/api/admin-promo.php', { action: 'delete', id });
+            showToast('✅ Promokod o\'chirildi');
+            loadPromos();
+        } catch (err) { showToast('❌ ' + err.message, 'error'); }
+    };
+
+    // Tab switch yuklanishi
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (btn.dataset.tab === 'settings') {
-                loadSiteSettings();
-            }
+            const tab = btn.dataset.tab;
+            if (tab === 'packages') loadPackages();
+            if (tab === 'promo') loadPromos();
+            if (tab === 'settings') loadSiteSettings();
         });
     });
 

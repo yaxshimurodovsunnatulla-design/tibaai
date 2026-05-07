@@ -110,6 +110,20 @@ try {
 </head>
 <body class="min-h-screen flex flex-col">
 
+<!-- ========== TELEGRAM BIND NOTIFICATION ========== -->
+<div id="tg-bind-banner" class="hidden bg-indigo-600 text-white px-4 py-2.5 text-center text-sm shadow-md relative z-[60]">
+    <span class="mr-2">🚀</span> Tiba AI Telegram botini ulang va o'z infografikalaringizni to'g'ridan to'g'ri Telegramda qabul qilib oling!
+    <button onclick="openTgBindModal()" class="ml-2 px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg font-bold transition-colors">Ulash</button>
+</div>
+
+<!-- ========== GLOBAL TOAST ========== -->
+<div id="status-toast" class="hidden fixed top-24 right-8 z-[100] animate-slide-up">
+    <div class="bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10 backdrop-blur-md">
+        <span id="toast-icon">✅</span>
+        <span id="toast-msg">Muvaffaqiyatli!</span>
+    </div>
+</div>
+
 <!-- Navbar -->
 <nav class="sticky top-0 z-50 glass-card border-t-0 border-x-0 rounded-none">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1004,6 +1018,117 @@ function toggleMobileMenu() {
             : 'fa-solid fa-bars text-lg text-gray-400';
     }
 }
+
+// ========== GLOBAL UTILS ==========
+function showToast(msg, type = 'success') {
+    const toast = document.getElementById('status-toast');
+    if (!toast) return;
+    const toastDiv = toast.querySelector('div');
+    const toastMsg = document.getElementById('toast-msg');
+    const toastIcon = document.getElementById('toast-icon');
+    
+    if (toastMsg) toastMsg.innerText = msg;
+    if (toastIcon) toastIcon.innerText = type === 'error' ? '❌' : '✅';
+    
+    if (toastDiv) {
+        toastDiv.className = type === 'error' 
+            ? 'bg-red-600 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10 backdrop-blur-md'
+            : 'bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10 backdrop-blur-md';
+    }
+    
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 4000);
+}
+</script>
+
+<!-- ========== TG BIND MODAL ========== -->
+<div id="tg-bind-modal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/90 backdrop-blur-md" onclick="closeTgBindModal()"></div>
+    <div class="relative w-full max-w-md animate-fade-in-up bg-[#0d0d15] border border-white/10 shadow-2xl rounded-2xl p-6 sm:p-8 text-center">
+        <button onclick="closeTgBindModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        
+        <div class="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-400 text-2xl shadow-lg shadow-blue-500/20">
+            <i class="fa-brands fa-telegram"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">Telegramni ulash</h3>
+        <p class="text-xs text-gray-400 mb-6">Botga kiring, /start tugmasini bosing va olingan maxfiy kodni shu yerga kiriting.</p>
+        
+        <div class="space-y-4 text-left">
+            <div>
+                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Telefon raqamingiz (Ixtiyoriy)</label>
+                <input type="tel" id="tg-bind-phone" placeholder="+998 90 123 45 67" class="input-field text-sm font-mono">
+                <p class="text-[9px] text-gray-600 mt-1">Aloqa uchun kerak bo'ladi.</p>
+            </div>
+            
+            <a href="https://t.me/<?= htmlspecialchars($botUsername) ?>" target="_blank" class="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-xl py-3 text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 transition-all">
+                <i class="fa-brands fa-telegram text-xl"></i> Botga o'tish va kodni olish
+            </a>
+            
+            <div class="pt-2">
+                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Maxfiy OTP kod (6 xona)</label>
+                <input type="text" id="tg-bind-otp" maxlength="6" placeholder="000000" class="input-field text-center text-2xl tracking-[0.5em] font-mono h-14">
+            </div>
+            
+            <button onclick="submitTgBind()" id="tg-bind-submit-btn" class="w-full btn-primary py-3 text-sm font-bold mt-2">Tasdiqlash va Ulash</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openTgBindModal() { document.getElementById('tg-bind-modal').classList.remove('hidden'); }
+function closeTgBindModal() { document.getElementById('tg-bind-modal').classList.add('hidden'); }
+
+async function submitTgBind() {
+    const btn = document.getElementById('tg-bind-submit-btn');
+    const otp = document.getElementById('tg-bind-otp').value.trim();
+    const phone = document.getElementById('tg-bind-phone').value.trim();
+    
+    if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+        return showToast("6 xonali raqamli OTP kod kiriting", "error");
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Tekshirilmoqda...';
+    
+    try {
+        const token = TibaAuth.getToken();
+        const res = await fetch('/api/auth.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-User-Token': token },
+            body: JSON.stringify({ action: 'link-telegram-otp', otp_code: otp, phone: phone })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        
+        showToast("Telegram muvaffaqiyatli ulandi!");
+        document.getElementById('tg-bind-banner').classList.add('hidden');
+        closeTgBindModal();
+        
+        // Update user state manually or reload
+        const user = TibaAuth.getUser();
+        if (user) {
+            user.telegram_id = "linked";
+            localStorage.setItem('tiba_user', JSON.stringify(user));
+        }
+    } catch (e) {
+        showToast(e.message, "error");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Tasdiqlash va Ulash';
+    }
+}
+
+// Show banner if logged in but no telegram linked
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (typeof TibaAuth !== 'undefined' && TibaAuth.isLoggedIn()) {
+            const user = TibaAuth.getUser();
+            if (user && !user.telegram_id) {
+                document.getElementById('tg-bind-banner').classList.remove('hidden');
+            }
+        }
+    }, 1000);
+});
 </script>
 
 <main class="flex-1">

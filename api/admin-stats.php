@@ -612,12 +612,16 @@ function handleGetSiteSettings() {
         'success' => true,
         'settings' => [
             'youtube_link' => getSetting('youtube_link', ''),
+            'ref_signup_reward' => getSetting('ref_signup_reward', '1'),
+            'ref_payment_percent' => getSetting('ref_payment_percent', '10'),
         ]
     ]);
 }
 
 function handleSaveSiteSettings($input) {
     $youtubeLink = trim($input['youtube_link'] ?? '');
+    $refSignup = trim($input['ref_signup_reward'] ?? '1');
+    $refPercent = trim($input['ref_payment_percent'] ?? '10');
 
     // YouTube URL validatsiya (bo'sh yoki to'g'ri YouTube link)
     if (!empty($youtubeLink)) {
@@ -628,6 +632,8 @@ function handleSaveSiteSettings($input) {
     }
 
     setSetting('youtube_link', $youtubeLink);
+    setSetting('ref_signup_reward', $refSignup);
+    setSetting('ref_payment_percent', $refPercent);
     jsonResponse(['success' => true, 'message' => 'Sozlamalar saqlandi']);
 }
 

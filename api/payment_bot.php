@@ -87,6 +87,21 @@ function handleBotUpdate($input) {
             processPaymentAction($botToken, $chatId, null, null, intval($m[1]), 'approve', $adminName);
         } elseif (preg_match('/^\/reject\s+(\d+)\s*(.*)/i', $text, $m)) {
             processPaymentAction($botToken, $chatId, null, null, intval($m[1]), 'reject', $adminName, trim($m[2]));
+        } elseif (preg_match('/^\/start/i', $text)) {
+            $db = getDB();
+            
+            // Generate OTP
+            $otp = rand(100000, 999999);
+            $stmt = $db->prepare("INSERT INTO telegram_otps (telegram_id, otp_code) VALUES (?, ?)");
+            $stmt->execute([$chatId, $otp]);
+            
+            $msg = "🤖 <b>Assalomu alaykum! Tiba AI botiga xush kelibsiz.</b>\n\n";
+            $msg .= "Saytga ulanish uchun maxfiy kodingiz:\n";
+            $msg .= "<code>{$otp}</code>\n\n";
+            $msg .= "Iltimos, ushbu kodni saytdagi <b>Telegramni ulash</b> oynasiga kiriting.";
+            
+            sendTgMessage($botToken, $chatId, $msg);
+            return;
         }
     }
 
@@ -125,7 +140,7 @@ function processPaymentAction($botToken, $chatId, $messageId, $callbackId, $paym
 
         // Payment mavjudligini tekshirish
         botDebug("Fetching payment #$paymentId with user details...");
-        $stmt = $db->prepare("SELECT p.*, u.name as user_name, u.email as user_email, u.balance as current_balance FROM payments p JOIN users u ON p.user_id = u.id WHERE p.id = ?");
+        $stmt = $db->prepare("SELECT p.*, u.name as user_name, u.email as user_email, u.balance as current_balance, u.referred_by FROM payments p JOIN users u ON p.user_id = u.id WHERE p.id = ?");
         $stmt->execute([$paymentId]);
         $payment = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -162,6 +177,18 @@ function processPaymentAction($botToken, $chatId, $messageId, $callbackId, $paym
                 botDebug("Adding $creditsToAdd credits to user #$userId...");
                 $stmt = $db->prepare("UPDATE users SET balance = balance + ? WHERE id = ?");
                 $stmt->execute([$creditsToAdd, $userId]);
+                
+                // Referal egasiga bonus (agar mavjud bo'lsa)
+                $referredBy = $payment['referred_by'] ? (int)$payment['referred_by'] : 0;
+                $refPercent = (int)getSetting('ref_payment_percent', 10);
+                if ($referredBy > 0 && $refPercent > 0) {
+                    $refReward = ceil($creditsToAdd * ($refPercent / 100));
+                    if ($refReward > 0) {
+                        $stmt = $db->prepare("UPDATE users SET balance = balance + ? WHERE id = ?");
+                        $stmt->execute([$refReward, $referredBy]);
+                        botDebug("Added $refReward credits to referrer #$referredBy");
+                    }
+                }
                 
                 $db->commit();
                 botDebug("DB updated successfully (Approved).");

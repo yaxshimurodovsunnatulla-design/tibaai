@@ -49,6 +49,7 @@ switch ($action) {
     case 'google_login': handleGoogleLogin($input); break;
     case 'webapp_login': handleWebAppLogin($input); break;
     case 'telegram_login': handleTelegramLogin($input); break;
+    case 'link-telegram-otp': handleLinkTelegramOtp($input); break;
     default: jsonResponse(['error' => 'Noto\'g\'ri amal'], 400);
 }
 
@@ -146,7 +147,7 @@ function createUserSession($db, $userId) {
 function getUserByToken($db, $token) {
     if (empty($token) || strlen($token) < 32) return null;
     $now = date('Y-m-d H:i:s');
-    $stmt = $db->prepare("SELECT u.id, u.name, u.email, u.balance FROM users u JOIN user_sessions s ON u.id = s.user_id WHERE s.token = ? AND s.expires_at > ?");
+    $stmt = $db->prepare("SELECT u.id, u.name, u.email, u.balance, u.telegram_id FROM users u JOIN user_sessions s ON u.id = s.user_id WHERE s.token = ? AND s.expires_at > ?");
     $stmt->execute([$token, $now]);
     return $stmt->fetch();
 }
@@ -344,6 +345,7 @@ function handleRegister($input) {
     $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
     $db->prepare("INSERT INTO users (name, email, password_hash, balance) VALUES (?, ?, ?, 10)")->execute([sanitize($name), $email, $hash]);
     $userId = $db->lastInsertId();
+    handleNewUserReferral($db, $userId);
     $token = createUserSession($db, $userId);
 
     jsonResponse([
@@ -483,6 +485,7 @@ function handleGoogleLogin($input) {
         if (!$user) {
             $db->prepare("INSERT INTO users (name, email, google_id, balance) VALUES (?, ?, ?, 10)")->execute([$name, $email, $googleId]);
             $userId = $db->lastInsertId();
+            handleNewUserReferral($db, $userId);
             $stmt = $db->prepare("SELECT * FROM users WHERE id = ?"); $stmt->execute([$userId]); $user = $stmt->fetch();
         }
 
@@ -518,7 +521,9 @@ function handleWebAppLogin($input) {
         $stmt = $db->prepare("SELECT * FROM users WHERE telegram_id = ?"); $stmt->execute([$tgId]); $user = $stmt->fetch();
         if (!$user) {
             $db->prepare("INSERT INTO users (name, telegram_id, balance) VALUES (?, ?, 10)")->execute([$name, $tgId]);
-            $stmt = $db->prepare("SELECT * FROM users WHERE id = ?"); $stmt->execute([$db->lastInsertId()]); $user = $stmt->fetch();
+            $userId = $db->lastInsertId();
+            handleNewUserReferral($db, $userId);
+            $stmt = $db->prepare("SELECT * FROM users WHERE id = ?"); $stmt->execute([$userId]); $user = $stmt->fetch();
         }
         $token = createUserSession($db, $user['id']);
         jsonResponse(['success' => true, 'user' => ['id' => (int)$user['id'], 'name' => $user['name'], 'email' => $user['email'] ?? 'TG:' . $tgId, 'balance' => (int)($user['balance'] ?? 0)], 'token' => $token]);
@@ -543,9 +548,74 @@ function handleTelegramLogin($input) {
         $stmt = $db->prepare("SELECT * FROM users WHERE telegram_id = ?"); $stmt->execute([$tgId]); $user = $stmt->fetch();
         if (!$user) {
             $db->prepare("INSERT INTO users (name, telegram_id, balance) VALUES (?, ?, 10)")->execute([$name, $tgId]);
-            $stmt = $db->prepare("SELECT * FROM users WHERE id = ?"); $stmt->execute([$db->lastInsertId()]); $user = $stmt->fetch();
+            $userId = $db->lastInsertId();
+            handleNewUserReferral($db, $userId);
+            $stmt = $db->prepare("SELECT * FROM users WHERE id = ?"); $stmt->execute([$userId]); $user = $stmt->fetch();
         }
         $token = createUserSession($db, $user['id']);
         jsonResponse(['success' => true, 'user' => ['id' => (int)$user['id'], 'name' => $user['name'], 'email' => $user['email'] ?? 'TG:' . $tgId, 'balance' => (int)($user['balance'] ?? 0)], 'token' => $token]);
     } catch (Exception $e) { jsonResponse(['error' => 'Telegram xatosi'], 500); }
+}
+
+function handleNewUserReferral($db, $newUserId) {
+    if (!isset($_COOKIE['ref_id']) || !is_numeric($_COOKIE['ref_id'])) return;
+    $refId = (int)$_COOKIE['ref_id'];
+    
+    // Check if referrer exists and is not the same user
+    if ($refId == $newUserId) return;
+    
+    $stmt = $db->prepare("SELECT id FROM users WHERE id = ?");
+    $stmt->execute([$refId]);
+    if ($stmt->fetch()) {
+        $db->prepare("UPDATE users SET referred_by = ? WHERE id = ?")->execute([$refId, $newUserId]);
+        
+        // Give signup reward
+        $reward = (int)getSetting('ref_signup_reward', 1);
+        if ($reward > 0) {
+            $db->prepare("UPDATE users SET balance = balance + ? WHERE id = ?")->execute([$reward, $refId]);
+        }
+    }
+}
+
+function handleLinkTelegramOtp($input) {
+    $token = $_SERVER['HTTP_X_USER_TOKEN'] ?? '';
+    if (!$token) jsonResponse(['error' => 'Sessiya topilmadi'], 401);
+    
+    $db = getDB();
+    $stmt = $db->prepare("SELECT user_id FROM user_sessions WHERE token = ? AND expires_at > ?");
+    $stmt->execute([$token, date('Y-m-d H:i:s')]);
+    $session = $stmt->fetch();
+    if (!$session) jsonResponse(['error' => 'Sessiya yaroqsiz'], 401);
+    
+    $userId = $session['user_id'];
+    $otp = trim($input['otp_code'] ?? '');
+    $phone = trim($input['phone'] ?? ''); // Optional phone
+    
+    if (strlen($otp) !== 6 || !is_numeric($otp)) {
+        jsonResponse(['error' => 'OTP kod 6 xonali raqam bo\'lishi kerak'], 400);
+    }
+    
+    // Find OTP
+    $stmt = $db->prepare("SELECT telegram_id FROM telegram_otps WHERE otp_code = ? AND created_at > datetime('now', '-30 minutes')");
+    $stmt->execute([$otp]);
+    $row = $stmt->fetch();
+    if (!$row) {
+        jsonResponse(['error' => 'OTP kod xato yoki muddati o\'tgan'], 400);
+    }
+    
+    $tgId = $row['telegram_id'];
+    
+    // Update user
+    try {
+        $db->prepare("UPDATE users SET telegram_id = ?, phone = ? WHERE id = ?")->execute([$tgId, $phone, $userId]);
+        // Delete OTP
+        $db->prepare("DELETE FROM telegram_otps WHERE telegram_id = ?")->execute([$tgId]);
+        
+        jsonResponse(['success' => true, 'message' => 'Telegram muvaffaqiyatli ulandi!']);
+    } catch (PDOException $e) {
+        if ($e->getCode() == 23000) {
+            jsonResponse(['error' => 'Ushbu Telegram akkaunt allaqachon boshqa profilga ulangan.'], 400);
+        }
+        jsonResponse(['error' => 'Xatolik yuz berdi'], 500);
+    }
 }

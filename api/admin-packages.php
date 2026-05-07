@@ -34,11 +34,12 @@ switch ($action) {
 
         try {
             $features = json_encode($data['features'] ?? [], JSON_UNESCAPED_UNICODE);
-            $stmt = $db->prepare("UPDATE packages SET name = ?, credits = ?, price = ?, icon = ?, gradient = ?, badge = ?, badge_gradient = ?, features = ?, is_active = ? WHERE id = ?");
+            $stmt = $db->prepare("UPDATE packages SET name = ?, credits = ?, price = ?, original_price = ?, icon = ?, gradient = ?, badge = ?, badge_gradient = ?, features = ?, is_active = ? WHERE id = ?");
             $stmt->execute([
                 $data['name'],
                 intval($data['credits']),
                 intval($data['price']),
+                intval($data['original_price'] ?? 0),
                 $data['icon'] ?? 'fa-coins',
                 $data['gradient'] ?? 'from-gray-600 to-gray-500',
                 $data['badge'] ?: null,
@@ -66,12 +67,13 @@ switch ($action) {
             $features = json_encode($data['features'] ?? [], JSON_UNESCAPED_UNICODE);
             $maxOrder = $db->query("SELECT COALESCE(MAX(sort_order), 0) FROM packages")->fetchColumn();
 
-            $stmt = $db->prepare("INSERT INTO packages (id, name, credits, price, icon, gradient, badge, badge_gradient, features, sort_order, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $db->prepare("INSERT INTO packages (id, name, credits, price, original_price, icon, gradient, badge, badge_gradient, features, sort_order, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $data['id'],
                 $data['name'],
                 intval($data['credits'] ?? 0),
                 intval($data['price'] ?? 0),
+                intval($data['original_price'] ?? 0),
                 $data['icon'] ?? 'fa-coins',
                 $data['gradient'] ?? 'from-gray-600 to-gray-500',
                 $data['badge'] ?: null,

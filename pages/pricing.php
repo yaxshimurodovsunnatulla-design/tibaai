@@ -78,6 +78,9 @@ $paymeEnabled = getSetting('payme_enabled', '1') !== '0';
                     <div class="flex items-baseline gap-1">
                         <span class="text-2xl font-extrabold text-white"><?= number_format($pkg['price'], 0, '', ',') ?></span>
                         <span class="text-sm text-gray-500">so'm</span>
+                        <?php if (!empty($pkg['original_price']) && $pkg['original_price'] > $pkg['price']): ?>
+                        <span class="text-xs text-gray-600 line-through ml-1"><?= number_format($pkg['original_price'], 0, '', ',') ?></span>
+                        <?php endif; ?>
                     </div>
                     <div class="flex items-center gap-2 mt-1">
                         <p class="text-[11px] text-gray-600">1 tanga = <?= number_format(round($perCoin), 0, '', ',') ?> so'm</p>
@@ -96,6 +99,36 @@ $paymeEnabled = getSetting('payme_enabled', '1') !== '0';
                 <button onclick="PaymentModal.open('<?= htmlspecialchars($pkg['id']) ?>')" class="<?= ($hasBadge && $idx === 1) ? 'btn-primary' : 'btn-secondary' ?> w-full text-center text-sm py-3 cursor-pointer">Sotib olish</button>
             </div>
             <?php endforeach; ?>
+        </div>
+
+        <!-- ========== REFERAL TIZIMI ========== -->
+        <div id="referral-section" class="mb-16 hidden">
+            <div class="glass-card p-6 sm:p-8 border-indigo-500/20 border-2 shadow-[0_0_30px_rgba(99,102,241,0.1)] relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
+                
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="flex-1">
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-4">
+                            <i class="fa-solid fa-gift text-sm text-indigo-400"></i>
+                            <span class="text-xs font-medium text-indigo-300">Referal dasturi</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">
+                            Do'stlaringizni taklif qiling va <span class="gradient-text">bepul tanga</span> oling!
+                        </h2>
+                        <ul class="space-y-2 mb-6 text-sm text-gray-400">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Sizning havolangiz orqali ro'yxatdan o'tgan har bir foydalanuvchi uchun <b class="text-white"><?= getSetting('ref_signup_reward', 1) ?> tanga</b> qo'shiladi.</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Ular to'lov qilganda, sizga <b class="text-white">to'lov summasidan <?= getSetting('ref_payment_percent', 10) ?>% tanga</b> taqdim etiladi!</li>
+                        </ul>
+                        
+                        <div class="bg-black/30 p-2 rounded-xl border border-white/5 flex items-center gap-2 max-w-md">
+                            <input type="text" id="referral-link-input" class="bg-transparent border-none text-white text-sm w-full focus:ring-0 px-2 font-mono" readonly>
+                            <button onclick="copyReferralLink()" class="btn-primary py-2 px-4 text-xs shrink-0 rounded-lg flex items-center gap-2">
+                                <i class="fa-solid fa-copy"></i> Nusxa olish
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- ========== TO'LOVLAR TARIXI ========== -->
@@ -608,6 +641,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkAndLoad = () => {
         if (typeof TibaAuth !== 'undefined' && TibaAuth.isLoggedIn()) {
             loadPaymentHistory();
+            
+            // Show referral section
+            const user = TibaAuth.getUser();
+            if (user && user.id) {
+                document.getElementById('referral-section').classList.remove('hidden');
+                document.getElementById('referral-link-input').value = window.location.origin + '/?ref=' + user.id;
+            }
+
             // Hash bo'lsa scroll qil
             if (window.location.hash === '#history') {
                 setTimeout(() => {
@@ -620,6 +661,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Biroz kutish — TibaAuth session tekshirishi tugasin
     setTimeout(checkAndLoad, 1500);
 });
+
+function copyReferralLink() {
+    const input = document.getElementById('referral-link-input');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value).then(() => {
+        showToast('Referal havola nusxalandi!');
+    }).catch(err => {
+        showToast('Nusxa olishda xatolik yuz berdi', 'error');
+    });
+}
 </script>
 
 <!-- ========== TO'LOV MODAL ========== -->
@@ -642,7 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <!-- Tanlangan paket -->
-                <div id="pay-selected-pkg" class="glass-card p-4 border border-indigo-500/20 bg-gradient-to-r from-indigo-900/10 to-purple-900/10 mb-5">
+                <div id="pay-selected-pkg" class="glass-card p-4 border border-indigo-500/20 bg-gradient-to-r from-indigo-900/10 to-purple-900/10 mb-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div id="pay-pkg-icon" class="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-600">
@@ -658,6 +710,16 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="text-[10px] text-gray-500">so'm</div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Promokod qismi -->
+                <div class="mb-5 px-1">
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 px-0.5">Promokod (agar bo'lsa)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="pay-promo-input" placeholder="KOD..." class="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500/40 uppercase font-mono">
+                        <button onclick="PaymentModal.applyPromo()" id="pay-promo-btn" class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-bold hover:bg-white/10 transition-all">Qo'llash</button>
+                    </div>
+                    <div id="pay-promo-msg" class="hidden text-[10px] mt-1.5 px-0.5"></div>
                 </div>
 
                 <!-- To'lov usullari -->
@@ -884,6 +946,9 @@ const PaymentModal = (() => {
     let receiptBase64 = null;
     let currentPaymentId = null;
     let pollingInterval = null;
+    let appliedPromo = null;
+    let basePrice = 0;
+    let finalPrice = 0;
 
     function open(packageId) {
         // Auth tekshirish
@@ -896,6 +961,10 @@ const PaymentModal = (() => {
         const pkg = packages[packageId];
         if (!pkg) return;
 
+        basePrice = pkg.price;
+        finalPrice = pkg.price;
+        appliedPromo = null;
+
         // Paket ma'lumotlarini ko'rsatish
         $('pay-pkg-icon').className = `w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${pkg.gradient}`;
         $('pay-pkg-icon').innerHTML = `<i class="fa-solid ${pkg.icon} text-white"></i>`;
@@ -903,6 +972,13 @@ const PaymentModal = (() => {
         $('pay-pkg-credits').innerHTML = `<i class="fa-solid fa-coins text-amber-400 text-[10px]"></i> ${pkg.credits} tanga`;
         $('pay-pkg-price').textContent = pkg.price.toLocaleString('uz-UZ');
         $('pay-amount').textContent = pkg.price.toLocaleString('uz-UZ');
+
+        // Reset promo
+        $('pay-promo-input').value = '';
+        $('pay-promo-input').disabled = false;
+        $('pay-promo-btn').classList.remove('hidden');
+        $('pay-promo-msg').className = 'hidden text-[10px] mt-1.5 px-0.5';
+        $('pay-promo-msg').textContent = '';
 
         // Reset
         receiptBase64 = null;
@@ -914,6 +990,60 @@ const PaymentModal = (() => {
 
         // Karta ma'lumotlarini API'dan olish
         loadCardInfo();
+    }
+
+    async function applyPromo() {
+        const input = $('pay-promo-input');
+        const code = input.value.trim().toUpperCase();
+        const msg = $('pay-promo-msg');
+        const btn = $('pay-promo-btn');
+
+        if (!code) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+
+        try {
+            const res = await fetch('/api/payment.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'validate_promo', code })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                appliedPromo = code;
+                let discount = 0;
+                if (data.discount_type === 'percentage') {
+                    discount = Math.round(basePrice * (data.discount_value / 100));
+                } else {
+                    discount = data.discount_value;
+                }
+                finalPrice = Math.max(0, basePrice - discount);
+
+                $('pay-pkg-price').innerHTML = `
+                    <span class="text-xs text-gray-500 line-through mr-1">${basePrice.toLocaleString('uz-UZ')}</span>
+                    <span class="text-emerald-400 font-extrabold">${finalPrice.toLocaleString('uz-UZ')}</span>
+                `;
+                $('pay-amount').textContent = finalPrice.toLocaleString('uz-UZ');
+                
+                msg.textContent = `✅ ${data.discount_type === 'percentage' ? data.discount_value+'%' : data.discount_value.toLocaleString()+' so\'m'} chegirma qo'llanildi!`;
+                msg.className = 'text-[10px] mt-1.5 px-0.5 text-emerald-400 font-bold';
+                
+                input.disabled = true;
+                btn.classList.add('hidden');
+                showToast('✅ Promokod qo\'llanildi!');
+            } else {
+                throw new Error(data.error || 'Xato');
+            }
+        } catch (err) {
+            msg.textContent = '❌ ' + err.message;
+            msg.className = 'text-[10px] mt-1.5 px-0.5 text-red-400 font-bold';
+            showToast('❌ ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Qo\'llash';
+        }
     }
 
     async function loadCardInfo() {
@@ -1241,6 +1371,7 @@ const PaymentModal = (() => {
                     action: 'submit_payment',
                     package_id: selectedPackage,
                     receipt_image: receiptBase64,
+                    promo_code: appliedPromo
                 }),
             });
             const data = await resp.json();
@@ -1254,7 +1385,7 @@ const PaymentModal = (() => {
                 const pkg = packages[selectedPackage];
                 $('pay-result-id').textContent = '#' + data.payment_id;
                 $('pay-result-pkg').textContent = pkg.name + ' (' + pkg.credits + ' tanga)';
-                $('pay-result-amount').textContent = pkg.price.toLocaleString('uz-UZ') + " so'm";
+                $('pay-result-amount').textContent = finalPrice.toLocaleString('uz-UZ') + " so'm";
                 showStep(3);
             }
         } catch (err) {
@@ -1266,7 +1397,7 @@ const PaymentModal = (() => {
         }
     }
 
-    return { open, close, selectMethod, backToStep1, copyCard, handleFile, removeFile, submit, createInvoice, checkPaymentStatus };
+    return { open, close, selectMethod, backToStep1, copyCard, handleFile, removeFile, submit, createInvoice, checkPaymentStatus, applyPromo };
 })();
 </script>
 
