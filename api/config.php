@@ -974,7 +974,7 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
         }
     }
 
-    return ['imageBase64' => $imageBase64, 'mimeType' => $mimeType];
+    return ['imageBase64' => $imageBase64, 'mimeType' => $mimeType, 'model' => $selectedModel];
 }
 
 function callGeminiTextAPI($parts) {

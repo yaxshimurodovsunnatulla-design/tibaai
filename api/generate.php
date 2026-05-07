@@ -120,6 +120,9 @@ if ($processedImage) {
 
 // Gemini'ga so'rov
 $result = callGeminiAPI($parts, $aspectRatio);
+$usedModel = $result['model'] ?? 'unknown';
+// Model qisqa nomi (pro / flash)
+$modelLabel = str_contains($usedModel, 'pro') ? '🟣 Pro' : '⚡ Flash';
 
 // Foydalanuvchi ma'lumotlarini olish (Telegram uchun)
 $authUser = $balanceInfo['user'];
@@ -138,6 +141,7 @@ if (empty($result['imageBase64'])) {
         $errMsg .= "📧 *Email:* " . sanitize($userEmail) . "\n";
         $errMsg .= "🛍 *Mahsulot:* " . sanitize($productName) . "\n";
         $errMsg .= "🎨 *Stil:* " . ucfirst($style) . " | 🌍 *Til:* " . $targetLang . "\n";
+        $errMsg .= "🤖 *Model:* {$modelLabel} (`{$usedModel}`)\n";
         $errMsg .= "⚠️ *Xatolik:* Rasm yaratilmadi (AI javob bermadi)\n";
         $errMsg .= "💰 *Balans:* {$prevBalance} → refund +{$cost} → {$prevBalance}\n";
         $errMsg .= "\n🤖 _Tiba AI_";
@@ -235,6 +239,7 @@ $msg .= "👤 *Foydalanuvchi:* " . sanitize($userName) . "\n";
 $msg .= "📧 *Email:* " . sanitize($userEmail) . "\n";
 $msg .= "🛍 *Mahsulot:* " . sanitize($productName) . "\n";
 $msg .= "🎨 *Stil:* " . ucfirst($style) . " | 🌍 *Til:* " . $targetLang . "\n";
+$msg .= "🤖 *Model:* {$modelLabel} (`{$usedModel}`)\n";
 $msg .= "💰 *Balans:* {$prevBalance} → -{$cost} → " . (int)$newBalance . "\n";
 $msg .= "\n🤖 _Tiba AI_";
 

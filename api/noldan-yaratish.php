@@ -49,6 +49,8 @@ $parts[] = ['text' => $finalPrompt];
 
 // Gemini'ga so'rov
 $result = callGeminiAPI($parts, $aspectRatio);
+$usedModel = $result['model'] ?? 'unknown';
+$modelLabel = str_contains($usedModel, 'pro') ? '🟣 Pro' : '⚡ Flash';
 
 if (empty($result['imageBase64'])) {
     refundBalance($balanceInfo['user']['id'], $balanceInfo['cost']);
@@ -60,9 +62,13 @@ $imageUrl = saveImage($result['imageBase64'], $result['mimeType'], 'noldan');
 
 // Telegram
 $telegramMsgId = null;
+$authUser = $balanceInfo['user'];
 $msg = "🎨 *Noldan Yaratish*\n\n";
+$msg .= "👤 *Foydalanuvchi:* " . sanitize($authUser['name'] ?? '') . "\n";
+$msg .= "📧 *Email:* " . sanitize($authUser['email'] ?? '') . "\n";
 $msg .= "📝 *Prompt:* " . sanitize($prompt) . "\n";
 $msg .= "🖼️ *Stil:* {$style}\n";
+$msg .= "🤖 *AI Model:* {$modelLabel} (`{$usedModel}`)\n";
 $msg .= "\n🤖 _Tiba AI_";
 
 try {
