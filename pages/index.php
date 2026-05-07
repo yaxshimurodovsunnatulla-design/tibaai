@@ -8,8 +8,9 @@ try {
     $genCount = (int)$db->query("SELECT COUNT(*) FROM generations")->fetchColumn();
     $userCount = (int)$db->query("SELECT COUNT(*) FROM users")->fetchColumn();
     $serviceCount = (int)$db->query("SELECT COUNT(*) FROM services WHERE is_active = 1")->fetchColumn();
+    $youtubeLink = getSetting('youtube_link', '');
 } catch (Exception $e) {
-    $genCount = 0; $userCount = 0; $serviceCount = 0;
+    $genCount = 0; $userCount = 0; $serviceCount = 0; $youtubeLink = '';
 }
 
 function formatStat($num) {
@@ -66,6 +67,16 @@ $userDisplay = formatStat($userCount);
                     Boshlash
                 </button>
                 <a href="/pricing" class="btn-secondary text-lg">Narxlarni ko'rish</a>
+                <?php if (!empty($youtubeLink)): ?>
+                <button onclick="openYoutubeModal()" id="video-tutorial-btn"
+                    class="group inline-flex items-center gap-3 px-7 py-4 rounded-2xl text-base font-semibold transition-all duration-300 border border-red-500/30 hover:border-red-500/60 hover:bg-red-500/10"
+                    style="color:var(--text-secondary)">
+                    <span class="w-9 h-9 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform flex-shrink-0">
+                        <svg class="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </span>
+                    Video qo'llanma
+                </button>
+                <?php endif; ?>
             </div>
 
             <!-- Stats -->
@@ -477,5 +488,55 @@ function closeStartPopup() {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeStartPopup(); });
 </script>
+
+<?php if (!empty($youtubeLink)): ?>
+<!-- YouTube Tutorial Modal -->
+<div id="youtube-modal" class="hidden fixed inset-0 z-[95] flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/85 backdrop-blur-md" onclick="closeYoutubeModal()"></div>
+    <div class="relative w-full max-w-3xl animate-fade-in-up">
+        <button onclick="closeYoutubeModal()" class="absolute -top-4 -right-4 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-xl text-white hover:scale-110 transition-transform" style="background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2)">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <!-- Modal header -->
+        <div class="flex items-center gap-3 mb-4 px-1">
+            <span class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </span>
+            <h3 class="text-white font-bold text-lg">Video qo'llanma</h3>
+        </div>
+        <!-- YouTube iframe wrapper -->
+        <div class="rounded-2xl overflow-hidden shadow-2xl border" style="border-color:var(--border-color);aspect-ratio:16/9">
+            <iframe id="yt-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+        </div>
+        <p class="text-center text-xs mt-3" style="color:var(--text-muted)">Tiba AI platformasidan qanday foydalanish haqida batafsil video qo'llanma</p>
+    </div>
+</div>
+
+<script>
+const _ytLink = <?= json_encode($youtubeLink) ?>;
+function _getYtEmbed(url) {
+    // youtu.be/ID yoki youtube.com/watch?v=ID yoki youtube.com/embed/ID
+    let id = '';
+    const m1 = url.match(/youtu\.be\/([\w-]+)/);
+    const m2 = url.match(/[?&]v=([\w-]+)/);
+    const m3 = url.match(/\/embed\/([\w-]+)/);
+    if (m1) id = m1[1];
+    else if (m2) id = m2[1];
+    else if (m3) id = m3[1];
+    return id ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0` : url;
+}
+function openYoutubeModal() {
+    document.getElementById('yt-iframe').src = _getYtEmbed(_ytLink);
+    document.getElementById('youtube-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+function closeYoutubeModal() {
+    document.getElementById('youtube-modal').classList.add('hidden');
+    document.getElementById('yt-iframe').src = '';
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeYoutubeModal(); });
+</script>
+<?php endif; ?>
 
 <?php include __DIR__ . '/../components/footer.php'; ?>

@@ -781,6 +781,32 @@
                         </div>
                     </div>
 
+                    <!-- YouTube Video Qo'llanma -->
+                    <div class="bg-white/[0.03] border border-white/5 rounded-2xl p-6">
+                        <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            Video Qo'llanma (YouTube)
+                        </h3>
+                        <p class="text-xs text-gray-500 mb-4">Bosh sahifadagi «Video qo'llanma» tugmasi uchun YouTube havola. Bo'sh qoldirsangiz — tugma ko'rinmaydi.</p>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">YouTube URL</label>
+                                <div class="flex gap-2">
+                                    <input type="url" id="settings-youtube-link" class="input-field text-sm flex-1 font-mono" placeholder="https://www.youtube.com/watch?v=...">
+                                    <button onclick="previewYoutube()" class="btn-secondary px-3 py-2 text-xs" title="Ko'rib chiqish">▶</button>
+                                </div>
+                                <p class="text-[9px] text-gray-500 mt-1">youtube.com yoki youtu.be havolasi. Bo'sh = tugma yashirin.</p>
+                            </div>
+                            <div id="yt-preview-wrap" class="hidden rounded-xl overflow-hidden border border-white/10" style="aspect-ratio:16/9">
+                                <iframe id="yt-admin-preview" src="" allow="autoplay" allowfullscreen class="w-full h-full"></iframe>
+                            </div>
+                            <button onclick="saveSiteSettings()" id="save-site-settings-btn" class="w-full btn-primary py-2.5 text-xs font-bold">
+                                💾 YouTube havolasini saqlash
+                            </button>
+                            <div id="site-settings-status" class="hidden mt-1 text-center text-[10px] text-emerald-400">✅ Saqlandi</div>
+                        </div>
+                    </div>
+
                     <!-- Google Auth Warning/Info -->
                     <div class="bg-white/[0.03] border border-white/5 rounded-2xl p-6">
                         <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
@@ -2493,6 +2519,72 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) { showToast('❌ ' + err.message, 'error'); }
     };
     window.loadInstruments = loadInstruments;
+
+    // ========== SITE SETTINGS (YouTube link) ==========
+    async function loadSiteSettings() {
+        try {
+            const data = await apiCall('/api/admin-stats.php', { action: 'get-site-settings' });
+            const link = data.settings?.youtube_link || '';
+            const input = document.getElementById('settings-youtube-link');
+            if (input) input.value = link;
+        } catch (err) {
+            console.error('loadSiteSettings error:', err);
+        }
+    }
+
+    window.saveSiteSettings = async () => {
+        const btn = document.getElementById('save-site-settings-btn');
+        const statusEl = document.getElementById('site-settings-status');
+        const link = document.getElementById('settings-youtube-link')?.value?.trim() || '';
+
+        btn.disabled = true;
+        btn.textContent = '⏳ Saqlanmoqda...';
+        statusEl.classList.add('hidden');
+
+        try {
+            await apiCall('/api/admin-stats.php', { action: 'save-site-settings', youtube_link: link });
+            statusEl.textContent = '✅ Muvaffaqiyatli saqlandi!';
+            statusEl.classList.remove('hidden');
+            showToast('✅ YouTube havola saqlandi!');
+            setTimeout(() => statusEl.classList.add('hidden'), 3000);
+        } catch (err) {
+            statusEl.textContent = '❌ ' + err.message;
+            statusEl.classList.remove('hidden');
+            statusEl.style.color = '#f87171';
+            showToast('❌ ' + err.message, 'error');
+        }
+        btn.disabled = false;
+        btn.textContent = '💾 YouTube havolasini saqlash';
+    };
+
+    window.previewYoutube = () => {
+        const link = document.getElementById('settings-youtube-link')?.value?.trim();
+        if (!link) return showToast('⚠️ URL kiriting', 'error');
+
+        let id = '';
+        const m1 = link.match(/youtu\.be\/([\w-]+)/);
+        const m2 = link.match(/[?&]v=([\w-]+)/);
+        const m3 = link.match(/\/embed\/([\w-]+)/);
+        if (m1) id = m1[1];
+        else if (m2) id = m2[1];
+        else if (m3) id = m3[1];
+
+        if (!id) return showToast('⚠️ Noto\'g\'ri YouTube URL', 'error');
+
+        const wrap = document.getElementById('yt-preview-wrap');
+        const iframe = document.getElementById('yt-admin-preview');
+        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+        wrap.classList.remove('hidden');
+    };
+
+    // Settings tab yuklanishi
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.dataset.tab === 'settings') {
+                loadSiteSettings();
+            }
+        });
+    });
 
     // ========== INIT: Show admin if session exists ==========
     // Must be at the very end, after ALL function definitions

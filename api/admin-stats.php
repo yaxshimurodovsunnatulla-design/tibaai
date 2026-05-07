@@ -81,8 +81,14 @@ switch ($action) {
     case 'cleanup-receipts':
         handleCleanupReceipts();
         break;
+    case 'get-site-settings':
+        handleGetSiteSettings();
+        break;
+    case 'save-site-settings':
+        handleSaveSiteSettings($input);
+        break;
     default:
-        jsonResponse(['error' => 'Noma\'lum action'], 400);
+        jsonResponse(['error' => "Noma'lum action"], 400);
 }
 
 function handleUsers($db) {
@@ -597,6 +603,32 @@ function timeAgo($timestamp) {
     if ($diff < 86400) return floor($diff / 3600) . ' soat oldin';
     if ($diff < 604800) return floor($diff / 86400) . ' kun oldin';
     return date('d.m.Y', $timestamp);
+}
+
+// ========== SITE SETTINGS (YouTube va boshqa umumiy sozlamalar) ==========
+
+function handleGetSiteSettings() {
+    jsonResponse([
+        'success' => true,
+        'settings' => [
+            'youtube_link' => getSetting('youtube_link', ''),
+        ]
+    ]);
+}
+
+function handleSaveSiteSettings($input) {
+    $youtubeLink = trim($input['youtube_link'] ?? '');
+
+    // YouTube URL validatsiya (bo'sh yoki to'g'ri YouTube link)
+    if (!empty($youtubeLink)) {
+        $isYoutube = preg_match('#^https?://(www\.)?(youtube\.com|youtu\.be)/#', $youtubeLink);
+        if (!$isYoutube) {
+            jsonResponse(['error' => "Faqat YouTube havolalarini qo'yish mumkin (youtube.com yoki youtu.be)"], 400);
+        }
+    }
+
+    setSetting('youtube_link', $youtubeLink);
+    jsonResponse(['success' => true, 'message' => 'Sozlamalar saqlandi']);
 }
 
 function handleAllActivity($db) {
