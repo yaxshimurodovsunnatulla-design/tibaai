@@ -7,6 +7,9 @@ $pageDescription = 'Sotuvlaringizni tahlil qiling va biznesingiz o\'sishini kuza
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- html2canvas + jsPDF (Sahifani aynan ko'rinishida PDF qilish) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 @media print {
@@ -73,8 +76,9 @@ $pageDescription = 'Sotuvlaringizni tahlil qiling va biznesingiz o\'sishini kuza
                     <option value="30" selected>So'nggi 30 kun</option>
                     <option value="90">So'nggi 3 oy</option>
                 </select>
-                <button onclick="syncUzumData()" id="sync-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-600/20 active:scale-95 whitespace-nowrap w-full sm:w-auto">
-                    <i class="fa-solid fa-sync-alt mr-2"></i> Tahlil qilish
+                <button onclick="syncUzumData()" id="sync-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-600/20 active:scale-95 whitespace-nowrap w-full sm:w-auto flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-sync-alt"></i> Tahlil qilish
+                    <span class="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">30 🪙</span>
                 </button>
             </div>
         </div>
@@ -218,6 +222,24 @@ $pageDescription = 'Sotuvlaringizni tahlil qiling va biznesingiz o\'sishini kuza
     </div>
 </div>
 
+<!-- ========== TARIX BO'LIMI ========== -->
+<div class="py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-emerald-500"></i> Tahlil Tarixi
+            </h2>
+            <button onclick="loadAnalyticsHistory()" class="text-xs text-gray-500 hover:text-white flex items-center gap-1 transition-colors">
+                <i class="fa-solid fa-rotate"></i> Yangilash
+            </button>
+        </div>
+
+        <div id="analytics-history-list" class="space-y-3">
+            <div class="text-center py-8 text-gray-600 text-sm"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Yuklanmoqda...</div>
+        </div>
+    </div>
+</div>
+
 <script>
 let salesChart = null;
 
@@ -240,14 +262,17 @@ async function syncUzumData() {
     const loader = document.getElementById('chart-loader');
     
     if (!apiKey) {
-        alert('Iltimos, API kalitni kiriting');
+        showToast('Iltimos, API kalitni kiriting', 'error');
         return;
     }
 
+    // Confirm cost
+    if (!confirm('Tahlil qilish uchun balansingizdan 30 tanga yechiladi. Davom etasizmi?')) return;
+
     try {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Yuklanmoqda...';
-        loader.classList.remove('hidden');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Yuklanmoqda...';
+        if (loader) loader.classList.remove('hidden');
 
         const response = await fetch('/api/uzum-stats.php', {
             method: 'POST',
@@ -255,27 +280,40 @@ async function syncUzumData() {
                 'Content-Type': 'application/json',
                 'X-User-Token': TibaAuth.getToken()
             },
-            body: JSON.stringify({ api_key: apiKey, period: period })
+            body: JSON.stringify({ api_key: apiKey, period: parseInt(period) })
         });
 
         const data = await response.json();
 
-        if (data.error && !data.shops) {
-            alert(data.error);
+        if (data.insufficient_balance) {
+            showNoBalance(data.cost, data.balance);
+        } else if (data.error && !data.shops) {
+            showToast(data.error, 'error');
         } else {
-            if (data.order_fetch_error) {
-                console.warn('Orders error:', data.order_fetch_error);
-                // Optionally show a subtler notification
-            }
+            if (data.order_fetch_error) console.warn('Orders error:', data.order_fetch_error);
             updateUI(data);
+            // Navbardagi balansni yangilash
+            if (data.new_balance !== undefined) {
+                const balEl = document.getElementById('nav-user-balance');
+                const ddBalEl = document.getElementById('dd-balance-value');
+                const mBalEl = document.getElementById('mobile-user-balance');
+                if (balEl) balEl.textContent = data.new_balance;
+                if (ddBalEl) ddBalEl.textContent = data.new_balance;
+                if (mBalEl) mBalEl.textContent = data.new_balance;
+                const u = TibaAuth.getUser();
+                if (u) { u.balance = data.new_balance; localStorage.setItem('tiba_user', JSON.stringify(u)); }
+            }
+            showToast('Tahlil muvaffaqiyatli bajarildi!');
+            // Tarixni yangilash
+            setTimeout(loadAnalyticsHistory, 500);
         }
     } catch (error) {
         console.error('Sync error:', error);
-        alert('Ma\'lumotlarni olishda xatolik yuz berdi');
+        showToast("Ma'lumotlarni olishda xatolik yuz berdi", 'error');
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-sync-alt mr-2"></i> Tahlil qilish';
-        loader.classList.add('hidden');
+        btn.innerHTML = '<i class="fa-solid fa-sync-alt"></i> Tahlil qilish <span class="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full ml-2">30 🪙</span>';
+        if (loader) loader.classList.add('hidden');
     }
 }
 
@@ -573,8 +611,11 @@ function updateUI(data) {
                     </div>
             
             <div class="mt-8 pt-6 border-t border-white/5 text-center flex flex-col sm:flex-row justify-center items-center gap-4 print-hide">
+                <button onclick="savePDF()" class="text-xs text-gray-500 hover:text-white transition-colors bg-white/5 px-4 py-2.5 rounded-lg border border-white/10 flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf text-red-400"></i> PDF yuklash
+                </button>
                 <button onclick="window.print()" class="text-xs text-gray-500 hover:text-white transition-colors bg-white/5 px-4 py-2.5 rounded-lg border border-white/10 flex items-center gap-2">
-                    <i class="fa-solid fa-file-pdf"></i> PDF qilib saqlash (Print)
+                    <i class="fa-solid fa-print"></i> Chop etish
                 </button>
                 <div class="text-[10px] text-gray-500 max-w-[200px] text-left hidden sm:block">
                     *Yuklash oynasi ochilganda maqsaddan "Save as PDF" ni tanlang.
@@ -673,9 +714,274 @@ function updateChart(data) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initial empty chart or mock data can be here
-    // For now we wait for user to click Sync
+    loadAnalyticsHistory();
 });
+
+// ========== TARIX FUNKSIYALARI ==========
+async function loadAnalyticsHistory() {
+    const container = document.getElementById('analytics-history-list');
+    if (!container) return;
+    try {
+        const res = await fetch('/api/analytics-history.php', {
+            headers: { 'X-User-Token': TibaAuth.getToken() }
+        });
+        const data = await res.json();
+        const items = data.items || [];
+        if (!items.length) {
+            container.innerHTML = '<div class="text-center py-8 text-gray-600 text-sm">Hozircha tahlil tarixi yo\'q. Tahlil qilgach bu yerda saqlanib qoladi.</div>';
+            return;
+        }
+        const fmt = v => new Intl.NumberFormat('uz-UZ').format(Math.round(v));
+        container.innerHTML = items.map(item => {
+            const d = new Date(item.created_at);
+            const dateStr = d.toLocaleString('uz-UZ', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+            const profit = parseFloat(item.net_profit);
+            const profitColor = profit >= 0 ? 'text-emerald-400' : 'text-red-400';
+            return `
+            <div class="glass-card p-4 border border-white/5 flex flex-col sm:flex-row sm:items-center gap-4">
+                <div class="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div>
+                        <div class="text-[10px] text-gray-500 uppercase tracking-widest mb-0.5">Sana</div>
+                        <div class="text-xs font-bold text-white">${dateStr}</div>
+                        <div class="text-[10px] text-gray-600">${item.period} kunlik</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-gray-500 uppercase tracking-widest mb-0.5">Sotuv</div>
+                        <div class="text-sm font-bold text-white">${fmt(item.total_sales)} <span class="text-[10px] font-normal text-gray-500">so'm</span></div>
+                        <div class="text-[10px] text-gray-600">${fmt(item.order_count)} buyurtma</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-gray-500 uppercase tracking-widest mb-0.5">Xarajat</div>
+                        <div class="text-sm font-bold text-rose-400">${fmt(item.total_expenses)} <span class="text-[10px] font-normal text-gray-500">so'm</span></div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-gray-500 uppercase tracking-widest mb-0.5">Sof Foyda</div>
+                        <div class="text-sm font-bold ${profitColor}">${fmt(profit)} <span class="text-[10px] font-normal text-gray-500">so'm</span></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="downloadHistoryPDF(${item.id})" title="PDF yuklash" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors">
+                        <i class="fa-solid fa-file-pdf text-xs"></i>
+                    </button>
+                    <button onclick="deleteHistory(${item.id})" title="O'chirish" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-colors">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) {
+        container.innerHTML = '<div class="text-center py-8 text-gray-600 text-sm">Tarixni yuklashda xatolik</div>';
+    }
+}
+
+async function deleteHistory(id) {
+    if (!confirm("Bu tahlilni o'chirasizmi?")) return;
+    await fetch('/api/analytics-history.php', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'X-User-Token': TibaAuth.getToken() },
+        body: JSON.stringify({ id })
+    });
+    loadAnalyticsHistory();
+}
+
+// ========== PDF SAQLASH (Sahifaning aynan ko'rinishida) ==========
+async function savePDF() {
+    const btn = event?.currentTarget;
+    const origText = btn?.innerHTML || '';
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Tayyorlanmoqda...'; }
+    showToast('PDF tayyorlanmoqda...');
+
+    // Capture elements
+    const targets = [
+        document.getElementById('analytics-content'),
+        document.getElementById('ai-advisor')
+    ].filter(Boolean);
+
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const pageW = 210;
+        let yOffset = 0;
+        let isFirst = true;
+
+        for (const el of targets) {
+            if (el.classList.contains('hidden')) continue;
+
+            // Temporarily hide print-hide elements for capture
+            const printHideEls = el.querySelectorAll('.print-hide');
+            printHideEls.forEach(e => e.style.display = 'none');
+
+            const canvas = await html2canvas(el, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#0a0a0f',
+                logging: false,
+                allowTaint: true,
+            });
+
+            printHideEls.forEach(e => e.style.display = '');
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.92);
+            const imgW = pageW;
+            const imgH = (canvas.height * imgW) / canvas.width;
+
+            if (!isFirst) { doc.addPage(); yOffset = 0; }
+
+            // If image taller than page — split into multiple pages
+            let remainH = imgH;
+            let srcY = 0;
+            while (remainH > 0) {
+                const pageH = 297;
+                const sliceH = Math.min(remainH, pageH - yOffset);
+                // Draw portion of image
+                doc.addImage(imgData, 'JPEG', 0, yOffset, imgW, imgH, undefined, 'FAST');
+                if (sliceH < remainH) {
+                    doc.addPage();
+                    yOffset = -srcY - sliceH;
+                    srcY += sliceH;
+                }
+                remainH -= sliceH;
+                break; // jsPDF handles full height; multi-page via addPage per element
+            }
+
+            isFirst = false;
+        }
+
+        const filename = 'tiba-ai-analitika-' + new Date().toISOString().slice(0,10) + '.pdf';
+        doc.save(filename);
+        showToast('PDF muvaffaqiyatli yuklab olindi! 📄');
+    } catch(err) {
+        console.error('PDF error:', err);
+        showToast('PDF yaratishda xatolik. Brauzer chop etish funksiyasidan foydalaning.', 'error');
+        window.print();
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = origText; }
+    }
+}
+
+async function downloadHistoryPDF(id) {
+    showToast('Tarix PDF tayyorlanmoqda...');
+    try {
+        // Fetch record stats_json
+        const res = await fetch('/api/analytics-history.php?id=' + id, {
+            headers: { 'X-User-Token': TibaAuth.getToken() }
+        });
+        const data = await res.json();
+        const items = data.items || [];
+        const item = items.find(i => i.id == id);
+        if (!item) { showToast('Tarix topilmadi', 'error'); return; }
+
+        const fmt = v => new Intl.NumberFormat('uz-UZ').format(Math.round(v));
+        const profit = parseFloat(item.net_profit);
+        const profitColor = profit >= 0 ? '#10b981' : '#f87171';
+        const d = new Date(item.created_at);
+        const dateStr = d.toLocaleString();
+
+        // Build rich visual HTML for capture
+        const overlay = document.createElement('div');
+        overlay.id = 'pdf-history-overlay';
+        overlay.style.cssText = 'position:fixed;top:-9999px;left:0;width:1200px;background:#0a0a0f;padding:40px;font-family:Inter,sans-serif;color:#fff;z-index:-1;';
+
+        // Try to get top products from stats_json
+        let statsObj = {};
+        try { statsObj = JSON.parse(item.stats_json || '{}'); } catch(e) {}
+        const topProds = statsObj.top_products || [];
+        const returns = statsObj.returns || {};
+        const statusBd = statsObj.status_breakdown || {};
+
+        overlay.innerHTML = `
+        <div style="background:linear-gradient(135deg,#065f46,#1e3a5f);border-radius:16px;padding:28px 32px;margin-bottom:28px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+                <div style="font-size:24px;font-weight:900;letter-spacing:-0.5px;">📊 Sotuvlar Analitikasi Hisoboti</div>
+                <div style="color:#6ee7b7;font-size:13px;margin-top:6px;">${item.period} kunlik davr &nbsp;•&nbsp; ${dateStr}</div>
+            </div>
+            <div style="font-size:32px;font-weight:900;color:#34d399;">${item.period} kun</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:28px;">
+            ${[
+                ['Umumiy Sotuv', fmt(item.total_sales), "so'm", '#fff'],
+                ['Buyurtmalar', fmt(item.order_count), 'ta', '#fff'],
+                ['Xarajatlar', fmt(item.total_expenses), "so'm", '#f87171'],
+                ['Qaytarilgan', fmt(returns.value||0), "so'm", '#f87171'],
+                ['Sof Foyda', fmt(profit), "so'm", profitColor],
+            ].map(([label, val, unit, color]) => `
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:18px;">
+                    <div style="font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">${label}</div>
+                    <div style="font-size:22px;font-weight:900;color:${color};">${val}</div>
+                    <div style="font-size:11px;color:#6b7280;">${unit}</div>
+                </div>
+            `).join('')}
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:24px;">
+                <div style="font-size:14px;font-weight:700;margin-bottom:16px;">👑 TOP Mahsulotlar</div>
+                ${topProds.length ? topProds.map((p,i) => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span style="background:rgba(16,185,129,0.2);color:#34d399;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">${i+1}</span>
+                            <span style="font-size:12px;color:#e5e7eb;max-width:220px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.title||'Mahsulot'}</span>
+                        </div>
+                        <span style="font-size:12px;color:#34d399;font-weight:700;white-space:nowrap;">${fmt(p.sales||0)} so'm</span>
+                    </div>
+                `).join('') : '<div style="color:#6b7280;font-size:12px;padding:20px 0;text-align:center;">Ma\'lumot yo\'q</div>'}
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:24px;">
+                <div style="font-size:14px;font-weight:700;margin-bottom:16px;">📊 Holat tahlili</div>
+                ${Object.entries(statusBd).map(([st, cnt]) => {
+                    const labels = { PROCESSING:'Jarayonda', TO_WITHDRAW:"To'lovga tayyor", CANCELED:'Bekor qilindi', PARTIALLY_CANCELLED:'Qisman qaytarildi' };
+                    const colors = { PROCESSING:'#fbbf24', TO_WITHDRAW:'#34d399', CANCELED:'#f87171', PARTIALLY_CANCELLED:'#fb923c' };
+                    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+                        <span style="font-size:12px;color:${colors[st]||'#9ca3af'}">${labels[st]||st}</span>
+                        <span style="font-size:13px;font-weight:700;color:#fff;">${cnt}</span>
+                    </div>`;
+                }).join('')}
+                <div style="margin-top:20px;">
+                    <div style="font-size:14px;font-weight:700;margin-bottom:12px;">↩️ Qaytarishlar</div>
+                    <div style="font-size:28px;font-weight:900;color:#f87171;">${fmt(returns.qty||0)} ta</div>
+                    <div style="font-size:12px;color:#6b7280;">${fmt(returns.value||0)} so'm qiymatida</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:20px;text-align:center;color:#374151;font-size:11px;">
+            Tiba AI • tibaai.uz • ${dateStr}
+        </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+        const canvas = await html2canvas(overlay, {
+            scale: 1.5,
+            useCORS: true,
+            backgroundColor: '#0a0a0f',
+            logging: false,
+            width: 1200,
+        });
+
+        document.body.removeChild(overlay);
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.92);
+        const pageW = 297; const pageH = 210;
+        const imgH = (canvas.height * pageW) / canvas.width;
+
+        doc.addImage(imgData, 'JPEG', 0, 0, pageW, Math.min(imgH, pageH));
+        if (imgH > pageH) {
+            doc.addPage();
+            doc.addImage(imgData, 'JPEG', 0, -(pageH), pageW, imgH);
+        }
+        doc.save('tiba-ai-tarix-' + id + '-' + new Date().toISOString().slice(0,10) + '.pdf');
+        showToast('Tarix PDF muvaffaqiyatli yuklab olindi! 📄');
+    } catch(err) {
+        console.error('History PDF error:', err);
+        showToast('PDF yaratishda xatolik', 'error');
+    }
+}
 </script>
 
 <?php include __DIR__ . '/../components/footer.php'; ?>

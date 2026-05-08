@@ -19,6 +19,33 @@ if (!$user) {
     jsonResponse(['error' => 'Tizimga kiring'], 401);
 }
 
+$db = getDB();
+
+// ===== ATOMIK BALANS TEKSHIRISH VA YECHISH =====
+// requireBalance() patteriga o'xshash: bir SQL da tekshirish + yechish
+$analyticsCost = 30;
+$updateStmt = $db->prepare("UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?");
+$updateStmt->execute([$analyticsCost, $user['id'], $analyticsCost]);
+
+if ($updateStmt->rowCount() === 0) {
+    // Yetarli tanga yo'q — hozirgi balansni o'qib xabar berish
+    $balStmt = $db->prepare("SELECT balance FROM users WHERE id = ?");
+    $balStmt->execute([$user['id']]);
+    $currentBalance = (int)($balStmt->fetchColumn() ?? 0);
+    jsonResponse([
+        'error'                => "Balansingiz yetarli emas. Tahlil uchun {$analyticsCost} tanga kerak, sizda {$currentBalance} tanga bor.",
+        'insufficient_balance' => true,
+        'cost'                 => $analyticsCost,
+        'balance'              => $currentBalance,
+    ], 402);
+}
+
+// Yechilgandan keyingi balans
+$balStmt2 = $db->prepare("SELECT balance FROM users WHERE id = ?");
+$balStmt2->execute([$user['id']]);
+$newBalance = (int)($balStmt2->fetchColumn() ?? 0);
+
+
 const UZUM_BASE_URL = 'https://api-seller.uzum.uz/api/seller-openapi/v1/';
 
 function callUzumAPI($endpoint, $apiKey, $params = []) {
@@ -381,5 +408,27 @@ $stats = [
         'slow_movers' => $slowMovers
     ]
 ];
+
+// Tarixga saqlash + javob
+try {
+    $statsJson = json_encode([
+        'total_sales'      => $stats['total_sales'],
+        'order_count'      => $stats['order_count'],
+        'total_expenses'   => $stats['total_expenses'],
+        'net_profit'       => $stats['net_profit'],
+        'returns'          => $stats['returns'],
+        'status_breakdown' => $stats['status_breakdown'],
+        'top_products'     => array_slice($stats['top_products'], 0, 5),
+        'period'           => $period,
+    ], JSON_UNESCAPED_UNICODE);
+    $db->prepare("INSERT INTO analytics_history (user_id, period, total_sales, order_count, total_expenses, net_profit, stats_json, cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+       ->execute([$user['id'], $period, $stats['total_sales'], $stats['order_count'], $stats['total_expenses'], $stats['net_profit'], $statsJson, $analyticsCost]);
+    $stats['history_id']  = $db->lastInsertId();
+} catch (Exception $e) {
+    error_log("Analytics History Save Error: " . $e->getMessage());
+}
+
+$stats['new_balance'] = $newBalance;
+$stats['cost']        = $analyticsCost;
 
 jsonResponse($stats);

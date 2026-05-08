@@ -117,7 +117,7 @@ function runMigrations($pdo) {
         }
     } catch (Exception $e) {}
 
-    $targetVersion = 6; // Har yangi migratsiya qo'shganda +1 qiling
+    $targetVersion = 7; // Har yangi migratsiya qo'shganda +1 qiling
     if ($currentVersion >= $targetVersion) return; // Allaqachon yangilangan
 
     // 1. Users table
@@ -408,6 +408,22 @@ function runMigrations($pdo) {
         $stmt = $pdo->prepare("INSERT OR REPLACE INTO configs (id, data) VALUES ('prompts', ?)");
         $stmt->execute([$prompts]);
     }
+
+    // Analytics Tarix jadvali
+    $pdo->exec("CREATE TABLE IF NOT EXISTS analytics_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        period INTEGER NOT NULL,
+        total_sales REAL DEFAULT 0,
+        order_count INTEGER DEFAULT 0,
+        total_expenses REAL DEFAULT 0,
+        net_profit REAL DEFAULT 0,
+        stats_json TEXT,
+        pdf_path TEXT,
+        cost INTEGER DEFAULT 30,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(user_id) REFERENCES users(id)
+    )");
 
     // Migratsiya versiyasini yangilash
     $pdo->exec("UPDATE migration_version SET version = $targetVersion WHERE id = 1");
