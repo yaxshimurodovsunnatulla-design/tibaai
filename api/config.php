@@ -117,7 +117,7 @@ function runMigrations($pdo) {
         }
     } catch (Exception $e) {}
 
-    $targetVersion = 7; // Har yangi migratsiya qo'shganda +1 qiling
+    $targetVersion = 8; // Har yangi migratsiya qo'shganda +1 qiling
     if ($currentVersion >= $targetVersion) return; // Allaqachon yangilangan
 
     // 1. Users table
@@ -325,6 +325,9 @@ function runMigrations($pdo) {
     try { $pdo->exec("ALTER TABLE payments ADD COLUMN provider TEXT"); } catch (Exception $e) {}
     try { $pdo->exec("ALTER TABLE payments ADD COLUMN gateway_payment_id TEXT"); } catch (Exception $e) {}
     try { $pdo->exec("ALTER TABLE payments ADD COLUMN external_id TEXT"); } catch (Exception $e) {}
+    // Migration: Add promo columns to payments
+    try { $pdo->exec("ALTER TABLE payments ADD COLUMN promo_code TEXT"); } catch (Exception $e) {}
+    try { $pdo->exec("ALTER TABLE payments ADD COLUMN discount_amount INTEGER DEFAULT 0"); } catch (Exception $e) {}
 
     // 8. Support tables
     $pdo->exec("CREATE TABLE IF NOT EXISTS support_sessions (
@@ -425,7 +428,36 @@ function runMigrations($pdo) {
         FOREIGN KEY(user_id) REFERENCES users(id)
     )");
 
-    // Migratsiya versiyasini yangilash
+    // 11. Promo Codes table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS promo_codes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        code TEXT NOT NULL UNIQUE,
+        discount_type TEXT NOT NULL DEFAULT 'percentage', -- percentage | fixed
+        discount_value INTEGER NOT NULL DEFAULT 0,
+        max_uses INTEGER NOT NULL DEFAULT 1,
+        used_count INTEGER NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT 'active', -- active | disabled
+        expires_at DATETIME NOT NULL DEFAULT (datetime('now', '+1 year')),
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    // 12. Packages: original_price ustunini qo'shish (eski bazalar uchun)
+    try { $pdo->exec("ALTER TABLE packages ADD COLUMN original_price INTEGER DEFAULT 0"); } catch (Exception $e) {}
+
+    // 13. Telegram Contacts (bot orqali yig'ilgan kontaktlar)
+    $pdo->exec("CREATE TABLE IF NOT EXISTS telegram_contacts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        telegram_id TEXT NOT NULL UNIQUE,
+        username TEXT,
+        first_name TEXT,
+        last_name TEXT,
+        phone TEXT,
+        user_id INTEGER,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(user_id) REFERENCES users(id)
+    )");
+
+    // 14. Migratsiya versiyasini yangilash
     $pdo->exec("UPDATE migration_version SET version = $targetVersion WHERE id = 1");
 }
 
