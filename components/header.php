@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // ========== TEXNIK ISHLAR TEKSHIRUVI ==========
 $_mFlag = __DIR__ . '/../data/maintenance.flag';
 if (file_exists($_mFlag)) {
@@ -1120,17 +1120,23 @@ function showToast(msg, type = 'success') {
 <div id="tg-bind-modal" class="hidden fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="absolute inset-0 bg-black/80 backdrop-blur-xl" style="z-index:0;" onclick="closeTgBindModal()"></div>
 
-    <div class="tg-modal-card relative w-full sm:max-w-[400px] overflow-hidden"
-        style="background:linear-gradient(160deg,#0f1117 0%,#080b13 100%);border:1px solid rgba(255,255,255,0.07);border-radius:28px;box-shadow:0 40px 100px rgba(0,0,0,0.8),0 0 0 1px rgba(41,167,225,0.08),inset 0 1px 0 rgba(255,255,255,0.05);z-index:1;position:relative;">
+    <!-- Wrapper: X tugma + card birgalikda -->
+    <div class="relative w-full sm:max-w-[400px]" style="z-index:2;">
 
-        <!-- Ambient glow -->
-        <div style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:280px;height:140px;background:radial-gradient(ellipse,rgba(41,167,225,0.15) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
-        <div style="position:absolute;bottom:-40px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(99,102,241,0.07) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
-
-        <!-- Close btn -->
-        <button onclick="closeTgBindModal()" class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.color='rgba(255,255,255,0.4)'">
-            <i class="fa-solid fa-xmark text-sm"></i>
+        <!-- X close button — card tashqarida, overflow:hidden ta'sir qilmaydi -->
+        <button onclick="closeTgBindModal()"
+            style="position:absolute;top:-14px;right:-14px;z-index:30;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(20,20,35,0.95);border:1.5px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.7);cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(0,0,0,0.5);"
+            onmouseover="this.style.background='rgba(239,68,68,0.9)';this.style.borderColor='rgba(239,68,68,0.5)';this.style.color='#fff'"
+            onmouseout="this.style.background='rgba(20,20,35,0.95)';this.style.borderColor='rgba(255,255,255,0.18)';this.style.color='rgba(255,255,255,0.7)'">
+            <i class="fa-solid fa-xmark" style="font-size:13px;"></i>
         </button>
+
+        <div class="tg-modal-card relative w-full overflow-hidden"
+            style="background:linear-gradient(160deg,#0f1117 0%,#080b13 100%);border:1px solid rgba(255,255,255,0.07);border-radius:28px;box-shadow:0 40px 100px rgba(0,0,0,0.8),0 0 0 1px rgba(41,167,225,0.08),inset 0 1px 0 rgba(255,255,255,0.05);">
+
+            <!-- Ambient glow -->
+            <div style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:280px;height:140px;background:radial-gradient(ellipse,rgba(41,167,225,0.15) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
+            <div style="position:absolute;bottom:-40px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(99,102,241,0.07) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
 
         <!-- Top section: icon + title -->
         <div class="relative z-10 px-7 pt-7 pb-0 text-center">
@@ -1243,6 +1249,7 @@ function showToast(msg, type = 'success') {
                 <i class="fa-solid fa-arrow-left text-[10px] mr-1"></i> Orqaga
             </button>
         </div>
+        </div>
     </div>
 </div>
 
@@ -1343,15 +1350,35 @@ async function submitTgBind() {
         const data = await res.json();
         if (data.error) throw new Error(data.error);
 
-        showToast("✅ Telegram muvaffaqiyatli ulandi!", "success");
+        // Muvaffaqiyat: yashil holat
+        const boxes = document.querySelectorAll('.tg-otp-box');
+        boxes.forEach(b => { b.style.borderColor='rgba(16,185,129,0.6)'; b.style.background='rgba(16,185,129,0.08)'; });
+        showToast("Telegram muvaffaqiyatli ulandi!", "success");
         document.getElementById('tg-bind-banner').classList.add('hidden');
-        closeTgBindModal();
+        setTimeout(() => closeTgBindModal(), 800);
         const user = TibaAuth.getUser();
         if (user) { user.telegram_id='linked'; TibaAuth.updateTgBadge('linked'); }
     } catch(e) {
         const boxes = document.querySelectorAll('.tg-otp-box');
-        boxes.forEach(b => { b.style.borderColor='rgba(239,68,68,0.6)'; b.style.background='rgba(239,68,68,0.05)'; });
-        showToast(e.message, 'error');
+        boxes.forEach(b => {
+            b.style.borderColor='rgba(239,68,68,0.6)';
+            b.style.background='rgba(239,68,68,0.05)';
+            b.style.boxShadow='0 0 0 3px rgba(239,68,68,0.12)';
+        });
+        setTimeout(() => boxes.forEach(b => {
+            b.style.borderColor='rgba(255,255,255,0.1)';
+            b.style.background='rgba(255,255,255,0.05)';
+            b.style.boxShadow='';
+        }), 2000);
+        const wrap = document.getElementById('tg-otp-boxes');
+        if(wrap){ wrap.classList.add('tg-otp-shake'); setTimeout(()=>wrap.classList.remove('tg-otp-shake'),400); }
+
+        // Xato xabarini aniqlashtirish
+        let errMsg = e.message;
+        if (errMsg.includes('xato yoki muddati')) errMsg = "Kod xato yoki muddati tugagan. Botdan yangi kod oling.";
+        else if (errMsg.includes('allaqachon boshqa')) errMsg = "Bu Telegram boshqa akkauntga ulangan.";
+        else if (errMsg.includes('Sessiya')) errMsg = "Iltimos, sahifani yangilab qayta kiring.";
+        showToast(errMsg, 'error');
     } finally {
         btn.disabled=false;
         btn.innerHTML='<i class="fa-solid fa-check-circle mr-2 relative z-10"></i><span class="relative z-10">Tasdiqlash va Ulash</span>';
