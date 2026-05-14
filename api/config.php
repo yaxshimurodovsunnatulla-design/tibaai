@@ -494,86 +494,147 @@ function initDB($pdo) {
 function getDefaultPrompts() {
     return [
         'infografika' => [
-            'ozon' => "HIGH-QUALITY Marketplace creative for \"{productName}\".
-STYLE: Modern, professional, and reliable. Professional ecommerce aesthetic.
-LAYOUT: Balanced composition with rounded badges.
-FEATURES: List {featuresList} using clear, friendly yet professional icons.
-COLOR: Blue used as the primary accent color.
-QUALITY: Photorealistic 8K quality, perfect studio lighting, razor-sharp textures.
-LANGUAGE: STRICT - All text MUST be in {targetLang} only. TRANSLATE perfectly if input is different.
-STRICT RULE: DO NOT use restricted words like 'Premium', 'Original', 'Hit', 'Xit', 'Best Seller', or 'N1' in any language.
-Aspect Ratio: 3:4.",
-            'instagram' => "SENSATIONAL, high-end Instagram ad creative for \"{productName}\".
-CONCEPT: Viral social media aesthetic. High-energy, luxury lifestyle advertisement.
-VISUALS:
-- Product in dynamic cinematic motion with volumetric lighting and lens flares.
-- Background: Trendy abstract elements, glowing neon accents, and high-fashion textures.
-- Typography: Bold, experimental headline text that commands attention.
-- Features: {featuresList} presented as interactive 'story stickers' or floating glassmorphism UI elements.
-- Quality: Saturated, rich colors, high contrast, 8K razor-sharp details.
-- Language: ALWAYS in {targetLang} only. Translate everything perfectly.
-STRICT RULE: NO restricted words like 'Premium', 'Original', 'Hit', 'Xit', 'Best Seller', or 'N1'.
-Format: Square (1:1).",
-            'minimal' => "HIGH-QUALITY minimalist presentation for \"{productName}\".
-CONCEPT: Silent elegance, high-end lifestyle aesthetic.
-VISUALS:
-- Palette: Soft neutrals, silk-like textures, or pure white matte studio.
-- Composition: Large negative space to emphasize product's form and high-quality materials.
-- Lighting: Soft natural window light with gentle transitions and soft bokeh.
-- Typography: Elegant, thin serif fonts for a sophisticated brand feel.
-- Features: {featuresList} displayed as tiny, precise micro-details or elegant subtext.
-- Quality: Razor-sharp focus, 8K photorealistic, museum-grade display.
-- Language: MUST be {targetLang}. Translate all features to {targetLang}.
-STRICT RULE: DO NOT use restricted words like 'Premium', 'Original', 'Hit', 'Xit', 'Best Seller', or 'N1' in any language.
-Aspect Ratio: 3:4.",
-            'uzum' => "ULTRA-ELITE E-commerce Infographic for product \"{productName}\".
-DESIGN PHILOSOPHY: Create a world-class marketplace card for Uzum (mirroring Apple or high-end tech brands). 
-SCENE: Professional high-end studio hero shot. Use cinematic 3-point lighting to emphasize every detail and texture of the product.
-COMPOSITION:
-- Product is the STAR: Recreate it faithfully, centered and perfectly sharp.
-- Layout: Balanced, spacious, and highly professional layout with elegant margins.
-- Features: List {featuresList} using ultra-modern, custom-designed glassmorphism badges and premium icons.
-- Accents: Use subtle glows and soft dynamic shadows for a 3D depth effect.
-VISUAL STYLE:
-- Typography: Use bold, premium Sans-Serif fonts (Inter, Montserrat) with perfect kerning.
-- Background: Luxury studio gradient with subtle atmospheric haze or professional depth-of-field.
-QUALITY: Absolute photorealism, 8K ultra-sharp rendering, ray-traced shadows, zero artifacts.
-LANGUAGE: MANDATORY - Every single word MUST be perfectly translated into {targetLang}. 
-STRICT RULE: NO restricted words like 'Premium', 'Original', 'Hit', 'Xit', 'Best Seller', or 'N1'.
-Aspect Ratio: 3:4.",
-            'marketplace' => "ULTRA-PROFESSIONAL E-commerce Infographic for product \"{productName}\".
-DESIGN PHILOSOPHY: Create a high-converting, high-quality marketplace card suitable for Uzum, Ozon, and Wildberries.
-SCENE: Professional studio hero shot. High-end lighting (Key, Fill, and Rim lighting) to emphasize product textures and depth.
-COMPOSITION: 
-- Dominant product visual, perfectly sharp and centered.
-- List {featuresList} as a clean hierarchy of professional icons and short, bold titles.
-- Use elegant marketing badges (e.g., 'High Quality', 'Top Choice') and technical callouts.
-VISUAL STYLE: 
-- Elegant, modern, and trust-inspiring. 
-- Background: Professional studio gradient with subtle atmospheric depth.
-- Typography: Use professional, easy-to-read sans-serif fonts (Inter or Montserrat).
-QUALITY: 8K resolution, photorealistic, cinematic rendering, razor-sharp edges.
-LANGUAGE: ABSOLUTE REQUIREMENT - Every single word on the infographic MUST be in {targetLang} only. You MUST translate all product names and features accurately into {targetLang}.
-STRICT RULE: DO NOT use restricted words like 'Premium', 'Original', 'Hit', 'Xit', 'Best Seller', or 'N1' in any language.
-Aspect Ratio: 3:4.",
-            'yandex' => "HIGH-FIDELITY Yandex Market commercial graphic for \"{productName}\".
-STYLE: Clean, technical, and minimalist. Information-dense but highly organized.
-COMPOSITION: Product as the hero, centered or slightly offset to allow technical badges.
-BADGES: Display {featuresList} as clear technical specifications using Yandex-style minimalist badges.
-COLOR: Neutral studio background with subtle Yandex Yellow (#FFCC00) highlights.
-QUALITY: Sharp 8K rendering, studio lighting, professional e-commerce post-processing.
-LANGUAGE: MANDATORY - Output only {targetLang} text. All specifications and headings must be TRANSLATED to {targetLang}. No other language permitted.
-STRICT RULE: DO NOT use restricted words like 'Premium', 'Original', 'Hit', 'Xit', 'Best Seller', or 'N1' in any language.
-Aspect Ratio: 3:4.",
-            'wb' => "SENSATIONAL Wildberries (WB) high-converting sales card for \"{productName}\".
-CONCEPT: Viral, attention-grabbing, and bold. Scroll-stopping marketing design.
-GRAPHICS: Large, punchy headings. Use {featuresList} in bright, high-contrast stickers, round badges, and ribbons (e.g., 'New Arrival', 'High Quality').
-COLOR: Dynamic use of WB corporate colors (Purple/Pink gradient: #CB11AB to #481173).
-QUALITY: Ultra-crisp, 8K, high contrast, vivid colors, photorealistic product details.
-LANGUAGE: URGENT - All text in {targetLang} only. Bold headlines and sales labels must be in {targetLang}. If the input is in another language, TRANSLATE it to {targetLang}.
-STRICT RULE: DO NOT use restricted words like 'Premium', 'Original', 'Hit', 'Xit', 'Best Seller', or 'N1' in any language.
-Aspect Ratio: 3:4.",
+            'uzum' => "MARKETPLACE INFOGRAPHIC — \"{productName}\" — Uzum style.
+
+⛔ RULE 1 — FORBIDDEN WORDS (zero tolerance — scan and eliminate ALL of these):
+NEVER write any of these on the image in any language or script:
+Premium, Original, Hit, Xit, Yangi, NEW, TOP, N1, Best Seller, Bestseller, Reyting, any star rating (★4.8 etc), Kafolat, Garantiya, Sifatli, Bepul yetkazish, Uzum, Ozon, WB, Wildberries, Eng yaxshi, Tavsiya, Chegirma, Aksiya, 'Sotib oling', 'Xarid qiling', any call-to-action, any trust buzzword.
+
+📐 RULE 2 — TWO-ZONE LAYOUT (mandatory):
+ZONE A — PRODUCT ZONE (right 50%): Product only. COMPLETELY TEXT-FREE. 30px minimum gap. No badge, label, or overlay touches the product.
+ZONE B — INFO ZONE (left 50%): ALL text, badges, features placed here ONLY.
+
+📋 RULE 3 — ACCURACY: Show ONLY features from: {featuresList}. Do NOT invent specs.
+Feature format: [icon] + [BOLD VALUE large] + [short description small]
+
+🎨 DESIGN: Background color and style are determined by the CATEGORY DESIGN TEMPLATE below — follow it exactly. Do NOT default to blue or generic gradient. Product name \"{productName}\": large bold at top of Zone B. Key spec: GIANT text, most dominant.
+
+🌍 LANGUAGE: {targetLang} only. 📐 Aspect Ratio: 3:4.",
+
+            'wb' => "MARKETPLACE INFOGRAPHIC — \"{productName}\" — bold high-energy style.
+
+⛔ RULE 1 — FORBIDDEN WORDS (zero tolerance):
+NEVER render: Premium, Original, Hit, Xit, Yangi, NEW, TOP, N1, Best Seller, star ratings (★4.8 etc), Kafolat, Garantiya, Sifatli, Chegirma, Aksiya, Bepul, Wildberries, WB, Uzum, Ozon, any marketplace name, any call-to-action phrase.
+
+📐 RULE 2 — TWO-ZONE LAYOUT:
+ZONE A — PRODUCT ZONE (center-right, 50%): Product only. ZERO text touches the product. 30px gap minimum.
+ZONE B — TEXT ZONE (left panel + top/bottom strips): ALL text and badges here exclusively.
+
+📋 RULE 3 — ACCURACY: Show ONLY features from: {featuresList}. Do NOT add invented specs.
+Each badge: bold key value + small descriptive label + icon.
+
+🎨 DESIGN: Background color and composition are determined by the CATEGORY DESIGN TEMPLATE below — follow it exactly, do NOT default to blue. Product name \"{productName}\": EXTRA LARGE bold at top of Zone B. Key spec: GIANT — most eye-catching. Typography: Extra-bold heavy sans-serif.
+
+🌍 LANGUAGE: {targetLang} only. 📐 Aspect Ratio: 3:4.",
+
+            'ozon' => "MARKETPLACE INFOGRAPHIC — \"{productName}\" — clean professional style.
+
+⛔ RULE 1 — FORBIDDEN WORDS (zero tolerance):
+NEVER write: Premium, Original, Hit, TOP, N1, star ratings, Kafolat, Garantiya, Chegirma, Aksiya, Ozon, Uzum, WB, any marketplace name, any call-to-action phrase.
+
+📐 RULE 2 — TWO-ZONE LAYOUT:
+ZONE A — PRODUCT ZONE (55% center/right): Product only. COMPLETELY TEXT-FREE. Clear 30px margin.
+ZONE B — INFO ZONE (45% left or top/bottom): Product name and all feature badges here only.
+
+📋 RULE 3 — ACCURACY: Show ONLY features from: {featuresList}. Do not invent specs.
+Each feature: clean icon + bold value + small label below.
+
+🎨 DESIGN: Background color and visual style are determined by the CATEGORY DESIGN TEMPLATE below — follow it exactly. Do NOT use a plain blue background. Product name bold large at top of Zone B. Feature badges: clean minimal rounded, high readability. Key spec: LARGEST dominant text element.
+
+🌍 LANGUAGE: {targetLang} only. 📐 Aspect Ratio: 3:4.",
+
+            'yandex' => "MARKETPLACE INFOGRAPHIC — \"{productName}\" — Yandex Market technical style.
+
+⛔ RULE 1 — FORBIDDEN WORDS (zero tolerance):
+NEVER write: Premium, Original, Hit, TOP, N1, star ratings (★4.8 etc), Kafolat, Garantiya, Chegirma, Aksiya, Yandex, any marketplace name, call-to-action phrases.
+
+📐 RULE 2 — TWO-ZONE LAYOUT:
+ZONE A — PRODUCT ZONE (50% right or center): Product only. ZERO text overlaps product. Strict 30px text-free margin around product edges.
+ZONE B — SPECS ZONE (50% left): Product name + technical specifications listed here only.
+
+📋 RULE 3 — ACCURACY:
+Show ONLY features from: {featuresList}. Technical, factual, no invented specs.
+Format: specification name left | bold value right — technical table style.
+
+🎨 DESIGN:
+Background: Light neutral gray (#F5F5F5) or clean white with yellow (#FFCC00) accents.
+Product name: Clean bold black/dark text at top of Zone B.
+Key spec: Large yellow-highlighted number — most prominent element.
+Feature layout: Technical specification rows — clean, information-dense, Yandex aesthetic.
+Typography: Clear readable sans-serif. Data-first presentation.
+Quality: 8K sharp, clinical precision.
+
+🌍 LANGUAGE: {targetLang} only.
+📐 Aspect Ratio: 3:4.",
+
+            'instagram' => "INSTAGRAM AD CREATIVE — \"{productName}\".
+
+⛔ RULE 1 — FORBIDDEN WORDS (zero tolerance):
+NEVER write: Premium, Original, Hit, TOP, N1, star ratings, Kafolat, Garantiya, Chegirma, Aksiya, any marketplace name, 'Buy now', 'Order now', any call-to-action phrase.
+
+📐 RULE 2 — LAYOUT (square format):
+PRODUCT ZONE (center 55%): Product large and centered. NO text, NO sticker, NO badge touches or overlaps the product itself. Min 30px clear gap.
+TEXT ZONES: Top strip + bottom strip + side margins only for text and badges.
+
+📋 RULE 3 — ACCURACY:
+Show ONLY features from: {featuresList}. Maximum 3-4 badges. Clean and punchy.
+Do not invent specs or claims.
+
+🎨 DESIGN:
+Background: Vibrant gradient or dynamic lifestyle scene — eye-catching, scroll-stopping social media aesthetic.
+Product name \"{productName}\": Bold headline in top text zone.
+Feature badges: Floating pill stickers or story-sticker style — placed in text zones, NOT on the product.
+Typography: Bold modern, high contrast, Instagram-native feel.
+Quality: 8K sharp, saturated, viral creative quality.
+
+🌍 LANGUAGE: {targetLang} only.
+📐 Aspect Ratio: 1:1.",
+
+            'minimal' => "MINIMALIST PRODUCT PRESENTATION — \"{productName}\".
+
+⛔ RULE 1 — FORBIDDEN WORDS (zero tolerance):
+NEVER write: Premium, Original, Hit, TOP, N1, star ratings, Kafolat, Garantiya, Chegirma, Aksiya, any marketplace name, any marketing cliché.
+
+📐 RULE 2 — LAYOUT:
+PRODUCT ZONE (center, large): Product prominent with generous white space around it. ZERO text overlaps product. 40px minimum text-free margin.
+TEXT ZONES: Elegant text placement above, below, or to the sides — never on the product.
+
+📋 RULE 3 — ACCURACY:
+Show ONLY features from: {featuresList}. Maximum 4 features. Presented as minimal clean text lines or micro-labels.
+No invented specs.
+
+🎨 DESIGN:
+Background: Pure white or soft neutral (warm gray, off-white, cream). No complex gradients.
+Product: Studio-lit, perfect shadows, museum-quality rendering. Center stage.
+Typography: Thin elegant serif or light sans-serif. Dark text on light. Refined hierarchy.
+Features: Simple horizontal text lines or minimal tags — no flashy badges.
+Overall: Apple Store / Muji / Aesop aesthetic — silent luxury.
+Quality: 8K photorealistic, print-quality sharpness.
+
+🌍 LANGUAGE: {targetLang} only.
+📐 Aspect Ratio: 3:4.",
+
+            'marketplace' => "UNIVERSAL MARKETPLACE INFOGRAPHIC — \"{productName}\".
+
+⛔ RULE 1 — FORBIDDEN WORDS (zero tolerance, checked twice):
+NEVER render ANY of these: Premium, Original, Hit, Xit, Yangi, NEW, TOP, N1, Best Seller, Bestseller, Reyting, star ratings (★4.8 etc), Kafolat, Garantiya, Chegirma, Aksiya, Bepul yetkazish, Uzum, Ozon, Wildberries, WB, Eng yaxshi, Tavsiya etamiz, 'Sotib oling', 'Xarid qiling', any call-to-action or trust buzzword.
+
+📐 RULE 2 — TWO-ZONE LAYOUT (mandatory):
+ZONE A — PRODUCT ZONE (right 50-55%): Product large and prominent. COMPLETELY TEXT-FREE. No badge within 30px of product edges.
+ZONE B — INFO ZONE (left 45-50%): ALL text and badges placed here ONLY.
+
+📋 RULE 3 — ACCURACY:
+Display ONLY features from: {featuresList}. DO NOT invent specs, ratings, or percentages.
+If empty — pick 3-4 physical specs from product image only.
+Feature format: [icon] + [BOLD VALUE] + [short description small]
+
+🎨 RULE 4 — DESIGN: Background color, textures, and visual style are determined ENTIRELY by the CATEGORY DESIGN TEMPLATE specified below — follow it precisely. Do NOT default to generic blue or plain gradient. Match the exact colors, mood, and composition described.
+Product name \"{productName}\": Large bold at top of Zone B. Key spec: EXTRA LARGE 3x — most dominant. Typography: bold modern sans-serif. Quality: 8K, commercially publishable.
+
+🌍 RULE 5 — LANGUAGE: ALL text in {targetLang}. 📐 Aspect Ratio: 3:4.",
         ],
+
+
         'foto-tahrir' => [
             'minimalist' => "Elite studio product photography. Pure white seamless cyclorama wall, softbox lighting, 100% sharp product details, professional catalog style.",
             'bright' => "High-end commercial photography. Vibrant multi-color gradient background, energetic key lighting, rim light for product separation, crisp and saturated.",
@@ -609,13 +670,7 @@ STRICT WORD RULE: NEVER use 'Premium', 'Original', 'Hit', 'Xit', 'Best Seller', 
             ]
         ],
         'system' => [
-            'infografika_suffix' => "\n\nCRITICAL DESIGN RULES:
-1. PRESERVE the product's original details, shape, and labels exactly from the image.
-2. ALL text MUST be in {targetLang}. Use professional, modern fonts with perfect readability.
-3. VISUALS: Use glassmorphism, soft shadows, and high-end studio lighting for elite quality.
-4. QUALITY: 8K resolution, ray-traced rendering, razor-sharp edges, museum-grade aesthetic.
-5. COMPOSITION: Balanced commercial layout with professional spacing.
-6. ASPECT RATIO: {aspectRatio}.",
+            'infografika_suffix' => "\n\n🔒 FINAL MANDATORY CHECKS:\n1. PRODUCT FAITHFULNESS: Product in output = pixel-perfect copy of input image. Same shape, color, label, proportions.\n2. TEXT-FREE PRODUCT ZONE: No text, badge, or element touches/overlaps the product. Minimum 30px clear gap around product.\n3. FORBIDDEN WORDS: None of these on image: Premium, Original, Hit, TOP, N1, Best Seller, star ratings, Kafolat, Garantiya, Chegirma, Aksiya, marketplace names, call-to-action.\n4. ACCURACY: Only provided features shown. No invented specs.\n5. LANGUAGE: 100% in {targetLang}.\n6. QUALITY: {aspectRatio}, 8K resolution.",
             'foto_tahrir_suffix' => "\n\nCRITICAL PHOTOGRAPHY RULES:
 1. DO NOT ALTER THE PRODUCT. Preserve every pixel of the original item's labels, text, and form.
 2. ONLY RE-RENDER THE BACKGROUND according to the style chosen.
@@ -898,6 +953,8 @@ function releaseGenerationLock($userId) {
 }
 
 function getPrompts() {
+    // Kod ichidagi defaults DOIM asosiy manba — DB faqat system va paket konfiglarini override qila oladi.
+    // Bu stale/eski DB promptlarining sifatni buzishini oldini oladi.
     $defaults = getDefaultPrompts();
     try {
         $db = getDB();
@@ -907,8 +964,16 @@ function getPrompts() {
         if ($row) {
             $saved = json_decode($row['data'], true);
             if (is_array($saved)) {
-                // Bazadagi promptlarni standartlar bilan birlashtiramiz (yangi stillar yo'qolib qolmasligi uchun)
-                return array_replace_recursive($defaults, $saved);
+                // Faqat system va paket sozlamalarini DB dan olish (admin o'zgartira oladigan qism)
+                // infografika, foto-tahrir promptlari DOIM kod ichidan keladi
+                $merged = $defaults;
+                if (isset($saved['system'])) {
+                    $merged['system'] = array_replace($defaults['system'] ?? [], $saved['system']);
+                }
+                if (isset($saved['paket'])) {
+                    $merged['paket'] = array_replace_recursive($defaults['paket'] ?? [], $saved['paket']);
+                }
+                return $merged;
             }
         }
     } catch (Exception $e) {}
@@ -930,7 +995,7 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
     // Random kalit tanlash (load balancing)
     $apiKey = $apiKeys[array_rand($apiKeys)];
 
-    // Modellar: navbatma-navbat (round-robin)
+    // Modellar: navbatma-navbat (round-robin) — Pro va Flash almashib ishlaydi
     $imageModels = [
         'gemini-3-pro-image-preview',      // 0 → toq so'rovlar (1, 3, 5...)
         'gemini-3.1-flash-image-preview',  // 1 → juft so'rovlar (2, 4, 6...)
@@ -939,7 +1004,7 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
     // Atomik counter — har so'rovda Pro/Flash navbatlashadi
     $counterFile = __DIR__ . '/../tmp/model_counter.txt';
     $fp = fopen($counterFile, 'c+');
-    flock($fp, LOCK_EX); // Bir vaqtda faqat bitta so'rov o'qib-yozadi
+    flock($fp, LOCK_EX);
     $counter = (int) fread($fp, 20);
     $selectedModel = $imageModels[$counter % count($imageModels)];
     ftruncate($fp, 0);
@@ -947,6 +1012,9 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
     fwrite($fp, $counter + 1);
     flock($fp, LOCK_UN);
     fclose($fp);
+    
+    // Fallback model: agar tanlangan model fail bo'lsa, boshqasiga o'tish
+    $fallbackModel = $imageModels[($counter + 1) % count($imageModels)];
 
     $url = "https://generativelanguage.googleapis.com/v1beta/models/$selectedModel:generateContent?key=$apiKey";
 
@@ -954,6 +1022,7 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
         'contents' => [['parts' => $parts]],
         'generationConfig' => [
             'responseModalities' => ['IMAGE', 'TEXT'],
+            'maxOutputTokens' => 8192,
         ],
     ]);
 
@@ -980,13 +1049,20 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
         $curlError = curl_error($ch);
         curl_close($ch);
 
-        if ($curlError) {
+        // HTTP 0 = ulanmadi (connection reset) — darhol fallback modelga o'tish
+        if ($httpCode === 0 || $curlError) {
             if ($retryCount < $maxRetries) {
                 $retryCount++;
+                // Ishlamagan modeldan fallback modelga o'tish (Pro↔Flash)
+                $selectedModel = $fallbackModel;
+                $apiKey = $apiKeys[array_rand($apiKeys)];
+                $url = "https://generativelanguage.googleapis.com/v1beta/models/$selectedModel:generateContent?key=$apiKey";
+                $logMsg = date('[Y-m-d H:i:s] ') . "Connection error (HTTP 0 / cURL: $curlError) — switching to fallback: $selectedModel, retry #{$retryCount}\n";
+                file_put_contents(__DIR__ . '/../tmp/gemini_error.log', $logMsg, FILE_APPEND);
                 sleep(2);
                 continue;
             }
-            jsonResponse(['error' => "cURL xatosi: $curlError"], 500);
+            jsonResponse(['error' => 'Ulanish xatosi. Qayta urinib ko\'ring.'], 500);
         }
 
         $data = json_decode($response, true);
@@ -997,27 +1073,25 @@ function callGeminiAPI($parts, $aspectRatio = '3:4') {
         if (in_array($httpCode, [500, 503, 429]) && $retryCount < $maxRetries) {
             $retryCount++;
             
-            // Har retry da keyingi modelga o'tish (Pro → Flash → Pro → Flash ...)
+            // Modellar ichida navbatlash
             $nextModelIndex = $retryCount % count($imageModels);
             $selectedModel = $imageModels[$nextModelIndex];
             
-            // API key ham rotatsiya (agar bir nechta bo'lsa)
+            // API key rotatsiya (agar bir nechta bo'lsa)
             $apiKey = $apiKeys[array_rand($apiKeys)];
             $url = "https://generativelanguage.googleapis.com/v1beta/models/$selectedModel:generateContent?key=$apiKey";
             
             // 429 uchun — exponential backoff + jitter
             if ($httpCode === 429) {
-                $baseDelay = min(pow(2, $retryCount), 20); // 2, 4, 8, 16, 20 soniya
+                $baseDelay = min(pow(2, $retryCount), 20);
                 $jitter = random_int(0, 2);
                 $delay = $baseDelay + $jitter;
-                
                 $logMsg = date('[Y-m-d H:i:s] ') . "Rate limit 429 — retry #{$retryCount}, model={$selectedModel}, waiting {$delay}s\n";
                 file_put_contents(__DIR__ . '/../tmp/gemini_error.log', $logMsg, FILE_APPEND);
                 sleep($delay);
             } else {
-                // 500/503 uchun qisqa delay
                 $delay = 2 + $retryCount;
-                $logMsg = date('[Y-m-d H:i:s] ') . "Server error {$httpCode} — retry #{$retryCount}, switching to model={$selectedModel}\n";
+                $logMsg = date('[Y-m-d H:i:s] ') . "Server error {$httpCode} — retry #{$retryCount}, model={$selectedModel}\n";
                 file_put_contents(__DIR__ . '/../tmp/gemini_error.log', $logMsg, FILE_APPEND);
                 sleep($delay);
             }
@@ -1290,10 +1364,11 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
 
     $message = (string)$message;
     $media = [];
-    $postData = ['chat_id' => $chatId];
-    
     $fileIndex = 0;
+    $postData = ['chat_id' => $chatId];
+
     foreach ($imagePaths as $path) {
+
         $realPath = realpath(__DIR__ . '/../' . ltrim($path, '/'));
         $logEntry .= "  File[$fileIndex]: path='$path' → realpath='" . ($realPath ?: 'FAILED') . "'";
         if ($realPath && is_file($realPath)) {

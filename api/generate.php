@@ -102,21 +102,21 @@ $processedImage = processImageInput($productImage);
 if ($processedImage) {
     $parts[] = ['inline_data' => $processedImage];
     
-    $suffix = $config['system']['infografika_suffix'] ?? "\n\n🚨🚨🚨 ABSOLUTE #1 PRIORITY — PRODUCT FAITHFULNESS (VIOLATION = TOTAL FAILURE):
-1. PIXEL-PERFECT COPY: The product in the uploaded image is the REAL product. You MUST reproduce it EXACTLY — same shape, same color, same label text, same logo, same proportions, same cap/lid/packaging design. NOT SIMILAR — IDENTICAL. Copy it pixel-by-pixel.
-2. ZERO MODIFICATIONS: Do NOT change the bottle shape. Do NOT change packaging color. Do NOT rewrite, translate, move, or remove ANY text on the product label. Do NOT add shadows, glows, or effects that alter how the product looks.
-3. NO REIMAGINING: Do NOT create a 'better version' or 'artistic interpretation' of the product. Do NOT add elements (ribbons, stickers, badges) ON TOP of the product itself. The product is sacred — touch NOTHING.
-4. PHOTO-REALISTIC: The product must appear as a HIGH-RESOLUTION STUDIO PHOTOGRAPH of the EXACT SAME physical item. Sharp edges, correct lighting, no distortion.
-5. PLACEMENT ONLY: Place the product into the infographic design layout, but the product rendering itself MUST be 100% unchanged and identical to the uploaded image.
-6. LANGUAGE RULE: ALL text on badges, descriptions, and titles MUST be in {targetLang}. But text ON the product label stays EXACTLY as-is from the original image.
-7. QUALITY: Ultra high resolution, 8K, crisp readable text. Image dimensions: {imageSize}. Aspect Ratio: {aspectRatio}.
-🚨 IF THE PRODUCT LOOKS EVEN SLIGHTLY DIFFERENT FROM THE UPLOADED PHOTO, THE ENTIRE DESIGN IS REJECTED.";
+    $suffix = $config['system']['infografika_suffix'] ?? "\n\n🔒 FINAL CHECKS:\n1. Product IDENTICAL to uploaded photo.\n2. ZERO text touches the product.\n3. No forbidden words.\n4. Only provided features shown.\n5. All text in {targetLang}.\n6. Aspect ratio: {aspectRatio}.";
     $suffix = str_replace(['{targetLang}', '{aspectRatio}', '{imageSize}'], [$targetLang, $aspectRatio, $imageSize], $suffix);
-    
+
+    // Prompt juda uzun bo'lsa qisqartirish (token limit xatosini oldini olish)
+    if (strlen($prompt) > 4800) {
+        $prompt = mb_substr($prompt, 0, 4800, 'UTF-8');
+    }
     $parts[] = ['text' => $prompt . $suffix];
 } else {
+    if (strlen($prompt) > 4500) {
+        $prompt = mb_substr($prompt, 0, 4500, 'UTF-8');
+    }
     $parts[] = ['text' => $prompt];
 }
+
 
 // Gemini'ga so'rov
 $result = callGeminiAPI($parts, $aspectRatio);
