@@ -418,6 +418,38 @@
                     <span class="text-4xl block mb-3">🎨</span>
                     <p class="text-gray-500 text-sm">Hali namunalar qo'shilmagan</p>
                 </div>
+
+                <!-- Carousel aylanish tezligi -->
+                <div class="mt-8 bg-white/[0.03] border border-white/5 rounded-2xl p-6">
+                    <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-gauge-high text-indigo-400"></i> Carousel aylanish tezligi
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-4">Bosh sahifadagi namunalar slayderining tezligi. Har bir rasm uchun qancha soniyada o'tishi. Katta son = sekinroq.</p>
+                    <div class="flex items-center gap-5">
+                        <div class="flex-1">
+                            <input type="range" id="settings-carousel-speed" min="1" max="10" value="2" step="0.5"
+                                class="w-full h-2 rounded-full appearance-none cursor-pointer accent-indigo-500"
+                                oninput="updateCarouselSpeedLabel(this.value)">
+                            <div class="flex justify-between text-[9px] text-gray-600 mt-1">
+                                <span>Tez (1s)</span>
+                                <span>O'rtacha (2s)</span>
+                                <span>Sekin (10s)</span>
+                            </div>
+                        </div>
+                        <div class="w-32 text-center flex-shrink-0">
+                            <div id="carousel-speed-val" class="text-xl font-bold text-indigo-400">2s</div>
+                            <div class="text-[9px] text-gray-500">rasm boshiga</div>
+                        </div>
+                    </div>
+                    <div class="mt-3 p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/10 text-[10px] text-gray-400">
+                        <i class="fa-solid fa-circle-info text-indigo-400 mr-1"></i>
+                        Tepa va pastki qatorlar har xil miqdordagi rasm bo'lsa ham, tezlik avtomatik tenglashtiriladi.
+                    </div>
+                    <button onclick="saveCarouselSpeed()" class="w-full btn-primary py-2.5 text-xs font-bold mt-4">
+                        💾 Tezlikni saqlash
+                    </button>
+                    <div id="carousel-speed-status" class="hidden mt-2 text-center text-[10px] text-emerald-400">✅ Saqlandi</div>
+                </div>
             </div>
 
             <!-- Instruments -->
@@ -1184,11 +1216,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tab === 'sections') loadSections();
             if (tab === 'gallery') loadGallery(1);
             if (tab === 'packages') loadPackages();
-            if (tab === 'settings') { loadSystemInfo(); loadPaymentSettings(); loadMaintenanceStatus(); }
+            if (tab === 'settings') { loadSystemInfo(); loadPaymentSettings(); loadMaintenanceStatus(); loadSiteSettings(); }
             if (tab === 'users') loadUsers();
             if (tab === 'payments') loadPayments();
             if (tab === 'logs') loadLogs();
-            if (tab === 'samples') loadSamples();
+            if (tab === 'samples') { loadSamples(); loadCarouselSpeed(); }
             if (tab === 'instruments') loadInstruments();
         };
     });
@@ -2538,6 +2570,45 @@ document.addEventListener('DOMContentLoaded', () => {
     window.loadSamples = loadSamples;
     window.deleteSample = deleteSample;
 
+    // ========== CAROUSEL SPEED ==========
+    async function loadCarouselSpeed() {
+        try {
+            const data = await apiCall('/api/admin-stats.php', { action: 'get-site-settings' });
+            const speed = parseFloat(data.settings?.carousel_speed || '2');
+            const slider = document.getElementById('settings-carousel-speed');
+            const label  = document.getElementById('carousel-speed-val');
+            if (slider) slider.value = speed;
+            if (label)  label.textContent = speed + 's';
+        } catch(e) { console.error('loadCarouselSpeed:', e); }
+    }
+
+    window.updateCarouselSpeedLabel = (val) => {
+        const label = document.getElementById('carousel-speed-val');
+        if (label) label.textContent = parseFloat(val) + 's';
+    };
+
+    window.saveCarouselSpeed = async () => {
+        const btn    = document.querySelector('[onclick="saveCarouselSpeed()"]');
+        const status = document.getElementById('carousel-speed-status');
+        const speed  = document.getElementById('settings-carousel-speed')?.value || '2';
+        if (btn) { btn.disabled = true; btn.textContent = '⏳ Saqlanmoqda...'; }
+        if (status) status.classList.add('hidden');
+        try {
+            await apiCall('/api/admin-stats.php', {
+                action: 'save-site-settings',
+                carousel_speed: speed,
+            });
+            if (status) { status.textContent = '✅ Saqlandi!'; status.classList.remove('hidden'); }
+            showToast('✅ Carousel tezligi saqlandi!');
+            setTimeout(() => { if(status) status.classList.add('hidden'); }, 3000);
+        } catch(e) {
+            showToast('❌ ' + e.message, 'error');
+        }
+        if (btn) { btn.disabled = false; btn.textContent = '💾 Tezlikni saqlash'; }
+    };
+    window.loadCarouselSpeed = loadCarouselSpeed;
+
+
     // ========== INSTRUMENTS MANAGEMENT ==========
     let currentInstruments = [];
     async function loadInstruments() {
@@ -2636,28 +2707,36 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadSiteSettings() {
         try {
             const data = await apiCall('/api/admin-stats.php', { action: 'get-site-settings' });
-            const link = data.settings?.youtube_link || '';
-            const refSignup = data.settings?.ref_signup_reward || '1';
-            const refPercent = data.settings?.ref_payment_percent || '10';
-            
-            const input = document.getElementById('settings-youtube-link');
-            const refSignupInput = document.getElementById('settings-ref-signup');
-            const refPercentInput = document.getElementById('settings-ref-percent');
-            
-            if (input) input.value = link;
+            const link          = data.settings?.youtube_link || '';
+            const refSignup     = data.settings?.ref_signup_reward || '1';
+            const refPercent    = data.settings?.ref_payment_percent || '10';
+            const carouselSpeed = data.settings?.carousel_speed || '18';
+
+            const input         = document.getElementById('settings-youtube-link');
+            const refSignupInput= document.getElementById('settings-ref-signup');
+            const refPercentInput=document.getElementById('settings-ref-percent');
+            const speedInput    = document.getElementById('settings-carousel-speed');
+            const speedVal      = document.getElementById('carousel-speed-val');
+
+            if (input)          input.value         = link;
             if (refSignupInput) refSignupInput.value = refSignup;
-            if (refPercentInput) refPercentInput.value = refPercent;
+            if (refPercentInput)refPercentInput.value= refPercent;
+            if (speedInput) {
+                speedInput.value = carouselSpeed;
+                if (speedVal) speedVal.textContent = carouselSpeed + ' soniya';
+            }
         } catch (err) {
             console.error('loadSiteSettings error:', err);
         }
     }
 
     window.saveSiteSettings = async () => {
-        const btn = document.getElementById('save-site-settings-btn');
+        const btn      = document.getElementById('save-site-settings-btn');
         const statusEl = document.getElementById('site-settings-status');
-        const link = document.getElementById('settings-youtube-link')?.value?.trim() || '';
-        const refSignup = document.getElementById('settings-ref-signup')?.value?.trim() || '1';
-        const refPercent = document.getElementById('settings-ref-percent')?.value?.trim() || '10';
+        const link         = document.getElementById('settings-youtube-link')?.value?.trim() || '';
+        const refSignup    = document.getElementById('settings-ref-signup')?.value?.trim() || '1';
+        const refPercent   = document.getElementById('settings-ref-percent')?.value?.trim() || '10';
+        const carouselSpeed= document.getElementById('settings-carousel-speed')?.value || '18';
 
         if (btn) {
             btn.disabled = true;
@@ -2670,7 +2749,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 action: 'save-site-settings', 
                 youtube_link: link,
                 ref_signup_reward: refSignup,
-                ref_payment_percent: refPercent
+                ref_payment_percent: refPercent,
+                carousel_speed: carouselSpeed,
             });
             if (statusEl) {
                 statusEl.textContent = '✅ Muvaffaqiyatli saqlandi!';

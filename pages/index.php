@@ -128,7 +128,14 @@ document.addEventListener('DOMContentLoaded', () => {
         $sDb = getDB();
         $row1 = $sDb->query("SELECT id, title, image_path FROM showcase_samples WHERE is_active = 1 AND type IN ('carousel-top','carousel') AND image_path IS NOT NULL ORDER BY sort_order ASC, id DESC LIMIT 20")->fetchAll();
         $row2 = $sDb->query("SELECT id, title, image_path FROM showcase_samples WHERE is_active = 1 AND type = 'carousel-bottom' AND image_path IS NOT NULL ORDER BY sort_order ASC, id DESC LIMIT 20")->fetchAll();
-    } catch (Exception $e) { $row1 = []; $row2 = []; }
+        $carouselSpeed = max(0.5, min(15.0, (float)getSetting('carousel_speed', '2')));
+        // Har bir rasm uchun bir xil tezlik: duration = speedPerImage × imageCount
+        // Bu tepa va pastki qatorlar rasm soni teng bo'lmasa ham barobar tezlikni ta'minlaydi
+        $count1 = max(1, count($row1));
+        $count2 = max(1, count($row2));
+        $row1Duration = round($carouselSpeed * $count1, 1);
+        $row2Duration = round($carouselSpeed * $count2, 1);
+    } catch (Exception $e) { $row1 = []; $row2 = []; $row1Duration = 36; $row2Duration = 36; }
     if (empty($row2) && !empty($row1)) $row2 = $row1;
     if (empty($row1) && !empty($row2)) $row1 = $row2;
     $hasCarousel = !empty($row1) || !empty($row2);
@@ -140,8 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .marquee-row::before { left:0; background:linear-gradient(to right, var(--bg-primary), transparent); }
     .marquee-row::after { right:0; background:linear-gradient(to left, var(--bg-primary), transparent); }
     .marquee-track { display:flex; gap:16px; width:max-content; }
-    .marquee-track.right { animation: marquee-right 18s linear infinite; }
-    .marquee-track.left { animation: marquee-left 18s linear infinite; }
+    .marquee-track.right { animation: marquee-right <?= $row1Duration ?>s linear infinite; }
+    .marquee-track.left  { animation: marquee-left  <?= $row2Duration ?>s linear infinite; }
     .marquee-row:hover .marquee-track { animation-play-state: paused; }
     @keyframes marquee-right { 0%{transform:translateX(0)} 100%{transform:translateX(calc(-100% / 3))} }
     @keyframes marquee-left { 0%{transform:translateX(calc(-100% / 3))} 100%{transform:translateX(0)} }

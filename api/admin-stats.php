@@ -611,17 +611,19 @@ function handleGetSiteSettings() {
     jsonResponse([
         'success' => true,
         'settings' => [
-            'youtube_link' => getSetting('youtube_link', ''),
-            'ref_signup_reward' => getSetting('ref_signup_reward', '1'),
+            'youtube_link'        => getSetting('youtube_link', ''),
+            'ref_signup_reward'   => getSetting('ref_signup_reward', '1'),
             'ref_payment_percent' => getSetting('ref_payment_percent', '10'),
+            'carousel_speed'      => getSetting('carousel_speed', '2'),
         ]
     ]);
 }
 
 function handleSaveSiteSettings($input) {
-    $youtubeLink = trim($input['youtube_link'] ?? '');
-    $refSignup = trim($input['ref_signup_reward'] ?? '1');
-    $refPercent = trim($input['ref_payment_percent'] ?? '10');
+    $youtubeLink    = trim($input['youtube_link'] ?? '');
+    $refSignup      = trim($input['ref_signup_reward'] ?? '1');
+    $refPercent     = trim($input['ref_payment_percent'] ?? '10');
+    $carouselSpeed  = (int)($input['carousel_speed'] ?? 18);
 
     // YouTube URL validatsiya (bo'sh yoki to'g'ri YouTube link)
     if (!empty($youtubeLink)) {
@@ -631,9 +633,13 @@ function handleSaveSiteSettings($input) {
         }
     }
 
+    // Carousel tezligi 0.5–15 soniya/rasm oralig'ida bo'lishi kerak
+    $carouselSpeed = max(0.5, min(15.0, (float)($input['carousel_speed'] ?? 2.0)));
+
     setSetting('youtube_link', $youtubeLink);
     setSetting('ref_signup_reward', $refSignup);
     setSetting('ref_payment_percent', $refPercent);
+    setSetting('carousel_speed', (string)$carouselSpeed);
     jsonResponse(['success' => true, 'message' => 'Sozlamalar saqlandi']);
 }
 
