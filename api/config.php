@@ -1255,6 +1255,24 @@ function processImageInput($input) {
 }
 
 /**
+ * Foydalanuvchiga yuboriladigan xabardan texnik ma'lumotlarni olib tashlash
+ * (🤖 Model: va 💰 Balans: qatorlari faqat admin kanalga ko'rinadi)
+ */
+function filterUserTelegramMsg($message) {
+    // Har bir qatorni tekshirib, texnik qatorlarni olib tashlaymiz
+    $lines = explode("\n", $message);
+    $filtered = [];
+    foreach ($lines as $line) {
+        // 🤖 Model: va 💰 Balans: qatorlarini o'tkazib yuborish
+        if (mb_strpos($line, '🤖 *Model:') !== false) continue;
+        if (mb_strpos($line, '🤖 *AI Model:') !== false) continue;
+        if (mb_strpos($line, '💰 *Balans:') !== false) continue;
+        $filtered[] = $line;
+    }
+    return implode("\n", $filtered);
+}
+
+/**
  * Telegramga xabar/rasm yuborish
  */
 function sendToTelegram($message, $imagePath = null, $asDocument = true, $targetChatId = null) {
@@ -1313,11 +1331,12 @@ function sendToTelegram($message, $imagePath = null, $asDocument = true, $target
     }
     curl_close($ch);
     
-    // Foydalanuvchiga nusxasini yuborish
+    // Foydalanuvchiga nusxasini yuborish (texnik ma'lumotlarsiz)
     if (!$targetChatId) {
         $u = getAuthUser();
         if ($u && !empty($u['telegram_id']) && $u['telegram_id'] != getenv('TELEGRAM_CHANNEL_ID')) {
-            sendToTelegram($message, $imagePath, $asDocument, $u['telegram_id']);
+            $userMsg = filterUserTelegramMsg($message);
+            sendToTelegram($userMsg, $imagePath, $asDocument, $u['telegram_id']);
         }
     }
     
@@ -1419,11 +1438,12 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
     if ($curlErr) error_log('Telegram MediaGroup Curl Error: ' . $curlErr);
     if ($httpCode !== 200) error_log("Telegram MediaGroup API Error ($httpCode): " . $res);
     
-    // Foydalanuvchiga nusxasini yuborish
+    // Foydalanuvchiga nusxasini yuborish (texnik ma'lumotlarsiz)
     if (!$targetChatId) {
         $u = getAuthUser();
         if ($u && !empty($u['telegram_id']) && $u['telegram_id'] != getenv('TELEGRAM_CHANNEL_ID')) {
-            sendMediaGroupToTelegram($message, $imagePaths, $asDocument, $u['telegram_id']);
+            $userMsg = filterUserTelegramMsg($message);
+            sendMediaGroupToTelegram($userMsg, $imagePaths, $asDocument, $u['telegram_id']);
         }
     }
     

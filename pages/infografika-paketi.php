@@ -9,9 +9,26 @@
                 <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
                 Orqaga
             </a>
-            <div class="flex items-center gap-2 text-xs text-gray-500">
-                <i class="fa-solid fa-coins"></i>
-                <span>1 ta paket = 20 tanga</span>
+            <div class="flex items-center gap-3">
+                <!-- Telegram holat badge -->
+                <div id="tg-status-badge" class="hidden">
+                    <!-- Ulangan holat -->
+                    <div id="tg-connected-badge" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+                        <i class="fa-brands fa-telegram text-sm"></i>
+                        <span>Telegram ulangan</span>
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-[10px]"></i>
+                    </div>
+                    <!-- Ulanmagan holat -->
+                    <button id="tg-connect-badge" onclick="openTgBindModal()" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-gray-500 hover:text-white hover:border-indigo-500/40 hover:bg-indigo-500/5 text-xs font-semibold transition-all group">
+                        <i class="fa-brands fa-telegram text-sm group-hover:text-indigo-400 transition-colors"></i>
+                        <span>Telegram ulash</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-60"></i>
+                    </button>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-500">
+                    <i class="fa-solid fa-coins"></i>
+                    <span>1 ta paket = 20 tanga</span>
+                </div>
             </div>
         </div>
 

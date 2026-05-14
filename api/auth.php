@@ -423,7 +423,13 @@ function handleCheck() {
     if (!$user) { jsonResponse(['authenticated' => false]); }
     jsonResponse([
         'authenticated' => true,
-        'user' => ['id' => (int)$user['id'], 'name' => $user['name'], 'email' => $user['email'], 'balance' => (int)($user['balance'] ?? 0)],
+        'user' => [
+            'id'          => (int)$user['id'],
+            'name'        => $user['name'],
+            'email'       => $user['email'],
+            'balance'     => (int)($user['balance'] ?? 0),
+            'telegram_id' => $user['telegram_id'] ?? null,
+        ],
     ]);
 }
 
@@ -580,42 +586,66 @@ function handleNewUserReferral($db, $newUserId) {
 function handleLinkTelegramOtp($input) {
     $token = $_SERVER['HTTP_X_USER_TOKEN'] ?? '';
     if (!$token) jsonResponse(['error' => 'Sessiya topilmadi'], 401);
-    
+
     $db = getDB();
+    ensureUserTables($db);
+
     $stmt = $db->prepare("SELECT user_id FROM user_sessions WHERE token = ? AND expires_at > ?");
     $stmt->execute([$token, date('Y-m-d H:i:s')]);
     $session = $stmt->fetch();
     if (!$session) jsonResponse(['error' => 'Sessiya yaroqsiz'], 401);
-    
+
     $userId = $session['user_id'];
-    $otp = trim($input['otp_code'] ?? '');
-    $phone = trim($input['phone'] ?? ''); // Optional phone
-    
+    $otp   = trim($input['otp_code'] ?? '');
+    $phone = trim($input['phone']    ?? '');
+
     if (strlen($otp) !== 6 || !is_numeric($otp)) {
-        jsonResponse(['error' => 'OTP kod 6 xonali raqam bo\'lishi kerak'], 400);
+        jsonResponse(['error' => "OTP kod 6 xonali raqam bo'lishi kerak"], 400);
     }
-    
-    // Find OTP
-    $stmt = $db->prepare("SELECT telegram_id FROM telegram_otps WHERE otp_code = ? AND created_at > datetime('now', '-30 minutes')");
+
+    // OTP qidirish - 2 soat (timezone farqini qoplaydi)
+    $stmt = $db->prepare("SELECT telegram_id FROM telegram_otps WHERE otp_code = ? AND created_at > datetime('now', '-120 minutes')");
     $stmt->execute([$otp]);
     $row = $stmt->fetch();
     if (!$row) {
-        jsonResponse(['error' => 'OTP kod xato yoki muddati o\'tgan'], 400);
+        jsonResponse(['error' => "OTP kod xato yoki muddati o'tgan"], 400);
     }
-    
+
     $tgId = $row['telegram_id'];
-    
-    // Update user
+
     try {
         $db->prepare("UPDATE users SET telegram_id = ?, phone = ? WHERE id = ?")->execute([$tgId, $phone, $userId]);
-        // Delete OTP
         $db->prepare("DELETE FROM telegram_otps WHERE telegram_id = ?")->execute([$tgId]);
-        
+
+        // Adminga bildirishnoma
+        try {
+            $adminChatId = getenv('TELEGRAM_CHANNEL_ID');
+            $botToken    = getenv('TELEGRAM_BOT_TOKEN');
+            if ($adminChatId && $botToken) {
+                $stmtU = $db->prepare("SELECT name, email FROM users WHERE id = ?");
+                $stmtU->execute([$userId]);
+                $u = $stmtU->fetch();
+                $msg = "\xF0\x9F\x94\x97 *Yangi Telegram Ulanish!*\n\n";
+                $msg .= "\xF0\x9F\x91\xA4 *Ism:* " . ($u['name'] ?? '-') . "\n";
+                $msg .= "\xF0\x9F\x93\xA7 *Email:* " . ($u['email'] ?? '-') . "\n";
+                $msg .= "\xF0\x9F\x93\xB1 *Telefon:* " . ($phone ?: "Ko'rsatilmagan") . "\n";
+                $msg .= "\xF0\x9F\x86\x94 *TG ID:* {$tgId}\n";
+                $msg .= "\xF0\x9F\x95\x90 *Vaqt:* " . date('d.m.Y H:i') . "\n\n\xF0\x9F\xA4\x96 _Tiba AI_";
+                $ch = curl_init("https://api.telegram.org/bot{$botToken}/sendMessage");
+                curl_setopt_array($ch, [
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => http_build_query(['chat_id'=>$adminChatId,'text'=>$msg,'parse_mode'=>'Markdown']),
+                    CURLOPT_RETURNTRANSFER => true, CURLOPT_SSL_VERIFYPEER => false, CURLOPT_TIMEOUT => 10,
+                ]);
+                curl_exec($ch); curl_close($ch);
+            }
+        } catch (Exception $e) { error_log('Admin TG notify: '.$e->getMessage()); }
+
         jsonResponse(['success' => true, 'message' => 'Telegram muvaffaqiyatli ulandi!']);
     } catch (PDOException $e) {
         if ($e->getCode() == 23000) {
             jsonResponse(['error' => 'Ushbu Telegram akkaunt allaqachon boshqa profilga ulangan.'], 400);
         }
-        jsonResponse(['error' => 'Xatolik yuz berdi'], 500);
+        jsonResponse(['error' => 'Xatolik: ' . $e->getMessage()], 500);
     }
 }

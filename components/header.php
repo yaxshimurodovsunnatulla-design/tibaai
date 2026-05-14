@@ -111,9 +111,44 @@ try {
 <body class="min-h-screen flex flex-col">
 
 <!-- ========== TELEGRAM BIND NOTIFICATION ========== -->
-<div id="tg-bind-banner" class="hidden bg-indigo-600 text-white px-4 py-2.5 text-center text-sm shadow-md relative z-[60]">
-    <span class="mr-2">🚀</span> Tiba AI Telegram botini ulang va o'z infografikalaringizni to'g'ridan to'g'ri Telegramda qabul qilib oling!
-    <button onclick="openTgBindModal()" class="ml-2 px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg font-bold transition-colors">Ulash</button>
+<style>
+@keyframes tg-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+@keyframes tg-pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes tg-modal-in{0%{opacity:0;transform:translateY(20px) scale(.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes tg-otp-shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.tg-modal-card{animation:tg-modal-in .35s cubic-bezier(.34,1.56,.64,1) forwards}
+.tg-otp-shake{animation:tg-otp-shake .4s ease}
+.tg-banner-shimmer{position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);animation:tg-shimmer 3s infinite;pointer-events:none}
+</style>
+<div id="tg-bind-banner" class="hidden relative z-[60] overflow-hidden" style="background:linear-gradient(90deg,#0e0b2e 0%,#0a1628 60%,#061523 100%);border-bottom:1px solid rgba(41,167,225,0.1);">
+    <div class="tg-banner-shimmer"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between gap-3 py-2">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="relative flex-shrink-0">
+                    <div class="w-1.5 h-1.5 rounded-full" style="background:#29A7E1;animation:tg-pulse-dot 2s ease-in-out infinite;"></div>
+                </div>
+                <i class="fa-brands fa-telegram flex-shrink-0 text-[13px]" style="color:#29A7E1;"></i>
+                <span class="text-white/80 text-xs font-medium truncate">Infografikalarni bevosita <strong class="text-white font-semibold">Telegramda</strong> qabul qiling</span>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <button onclick="openTgBindModal()"
+                    class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200"
+                    style="background:rgba(41,167,225,0.15);border:1px solid rgba(41,167,225,0.4);color:#29A7E1;"
+                    onmouseover="this.style.background='rgba(41,167,225,0.28)';this.style.borderColor='rgba(41,167,225,0.7)'"
+                    onmouseout="this.style.background='rgba(41,167,225,0.15)';this.style.borderColor='rgba(41,167,225,0.4)'">
+                    Ulash <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i>
+                </button>
+                <button onclick="document.getElementById('tg-bind-banner').classList.add('hidden')"
+                    class="w-6 h-6 flex items-center justify-center rounded-md transition-all"
+                    style="color:rgba(255,255,255,0.3);"
+                    onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='rgba(255,255,255,0.7)'"
+                    onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.3)'">
+                    <i class="fa-solid fa-xmark" style="font-size:11px;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- ========== GLOBAL TOAST ========== -->
@@ -796,7 +831,11 @@ const TibaAuth = (() => {
             ['nav-user-balance', 'mobile-user-balance'].forEach(id => { const el = $(id); if (el) el.textContent = currentUser.balance ?? 0; });
             mobileUser && mobileUser.classList.remove('hidden');
             mobileGuest && mobileGuest.classList.add('hidden');
+            // Telegram holat badge'ini yangilash
+            updateTgBadge(currentUser.telegram_id);
         } else {
+            // Foydalanuvchi chiqsa badge'ni yashirish
+            updateTgBadge(null, true);
             loginBtn && (loginBtn.style.display = 'flex');
             profile && (profile.classList.add('hidden'));
             // Boshlash tugmasini ko'rsatish
@@ -807,7 +846,38 @@ const TibaAuth = (() => {
         }
     }
 
+    // === TELEGRAM HOLAT BADGE ===
+    function updateTgBadge(telegramId, forceHide) {
+        const statusBadge = document.getElementById('tg-status-badge');
+        const connectedBadge = document.getElementById('tg-connected-badge');
+        const connectBadge = document.getElementById('tg-connect-badge');
+        const tgBanner = document.getElementById('tg-bind-banner');
+
+        if (forceHide || !statusBadge) {
+            if (statusBadge) statusBadge.classList.add('hidden');
+            if (tgBanner) tgBanner.classList.add('hidden');
+            return;
+        }
+
+        statusBadge.classList.remove('hidden');
+
+        if (telegramId) {
+            // Ulangan: yashil badge ko'rsatish
+            if (connectedBadge) { connectedBadge.classList.remove('hidden'); connectedBadge.style.display = 'flex'; }
+            if (connectBadge) { connectBadge.classList.add('hidden'); connectBadge.style.display = 'none'; }
+            // Yuqori bannerni yashirish (ulanganlarga kerak emas)
+            if (tgBanner) tgBanner.classList.add('hidden');
+        } else {
+            // Ulanmagan: "Ulash" tugmasi ko'rsatish
+            if (connectedBadge) { connectedBadge.classList.add('hidden'); connectedBadge.style.display = 'none'; }
+            if (connectBadge) { connectBadge.classList.remove('hidden'); connectBadge.style.display = 'flex'; }
+            // Yuqori bannerni ko'rsatish
+            if (tgBanner) tgBanner.classList.remove('hidden');
+        }
+    }
+
     // === GOOGLE ===
+
     function initGoogle() {
         if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID_HERE' || typeof google === 'undefined') return;
         try {
@@ -969,7 +1039,7 @@ const TibaAuth = (() => {
         });
     });
 
-    return { showModal, hideModal, toggleMode, togglePassword, handleSubmit, verifyOtp, resendOtp, backToStep1, logout, requireAuth, isLoggedIn: () => !!currentUser, getUser: () => currentUser, getToken, checkSession, updateBalance, initGoogle };
+    return { showModal, hideModal, toggleMode, togglePassword, handleSubmit, verifyOtp, resendOtp, backToStep1, logout, requireAuth, isLoggedIn: () => !!currentUser, getUser: () => currentUser, getToken, checkSession, updateBalance, initGoogle, updateTgBadge };
 })();
 </script>
 
@@ -1042,81 +1112,257 @@ function showToast(msg, type = 'success') {
 </script>
 
 <!-- ========== TG BIND MODAL ========== -->
-<div id="tg-bind-modal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/90 backdrop-blur-md" onclick="closeTgBindModal()"></div>
-    <div class="relative w-full max-w-md animate-fade-in-up bg-[#0d0d15] border border-white/10 shadow-2xl rounded-2xl p-6 sm:p-8 text-center">
-        <button onclick="closeTgBindModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-        
-        <div class="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-400 text-2xl shadow-lg shadow-blue-500/20">
-            <i class="fa-brands fa-telegram"></i>
+<div id="tg-bind-modal" class="hidden fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-xl" style="z-index:0;" onclick="closeTgBindModal()"></div>
+
+    <div class="tg-modal-card relative w-full sm:max-w-[400px] overflow-hidden"
+        style="background:linear-gradient(160deg,#0f1117 0%,#080b13 100%);border:1px solid rgba(255,255,255,0.07);border-radius:28px;box-shadow:0 40px 100px rgba(0,0,0,0.8),0 0 0 1px rgba(41,167,225,0.08),inset 0 1px 0 rgba(255,255,255,0.05);z-index:1;position:relative;">
+
+        <!-- Ambient glow -->
+        <div style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:280px;height:140px;background:radial-gradient(ellipse,rgba(41,167,225,0.15) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
+        <div style="position:absolute;bottom:-40px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(99,102,241,0.07) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
+
+        <!-- Close btn -->
+        <button onclick="closeTgBindModal()" class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.color='rgba(255,255,255,0.4)'">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+
+        <!-- Top section: icon + title -->
+        <div class="relative z-10 px-7 pt-7 pb-0 text-center">
+            <!-- Big TG icon with glow ring -->
+            <div class="relative inline-flex mb-4">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,rgba(41,167,225,0.2),rgba(29,139,196,0.1));border:1px solid rgba(41,167,225,0.3);box-shadow:0 0 32px rgba(41,167,225,0.15),inset 0 1px 0 rgba(255,255,255,0.1);">
+                    <i class="fa-brands fa-telegram text-3xl" style="color:#29A7E1;filter:drop-shadow(0 0 8px rgba(41,167,225,0.5));"></i>
+                </div>
+                <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style="background:linear-gradient(135deg,#10b981,#059669);border:2px solid #0f1117;box-shadow:0 0 12px rgba(16,185,129,0.5);">
+                    <i class="fa-solid fa-link text-[8px] text-white"></i>
+                </div>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-1">Telegram ulash</h3>
+            <p class="text-xs text-gray-500 mb-5">Infografikalaringizni to'g'ridan to'g'ri<br>Telegramda qabul qiling</p>
         </div>
-        <h3 class="text-xl font-bold text-white mb-2">Telegramni ulash</h3>
-        <p class="text-xs text-gray-400 mb-6">Botga kiring, /start tugmasini bosing va olingan maxfiy kodni shu yerga kiriting.</p>
-        
-        <div class="space-y-4 text-left">
-            <div>
-                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Telefon raqamingiz (Ixtiyoriy)</label>
-                <input type="tel" id="tg-bind-phone" placeholder="+998 90 123 45 67" class="input-field text-sm font-mono">
-                <p class="text-[9px] text-gray-600 mt-1">Aloqa uchun kerak bo'ladi.</p>
+
+        <!-- Progress bar steps -->
+        <div class="relative z-10 px-7 mb-5">
+            <div class="flex items-center gap-0">
+                <div class="flex items-center gap-2">
+                    <div id="tg-step-dot-1" class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all duration-300" style="background:linear-gradient(135deg,rgba(41,167,225,0.3),rgba(41,167,225,0.15));border:1.5px solid #29A7E1;color:#29A7E1;box-shadow:0 0 12px rgba(41,167,225,0.3);">1</div>
+                    <span id="tg-step-lbl-1" class="text-[10px] font-semibold transition-colors duration-300" style="color:#29A7E1;">Botga o'tish</span>
+                </div>
+                <div class="flex-1 mx-3 h-px" style="background:linear-gradient(90deg,rgba(41,167,225,0.4),rgba(255,255,255,0.06));"></div>
+                <div class="flex items-center gap-2">
+                    <span id="tg-step-lbl-2" class="text-[10px] font-semibold transition-colors duration-300" style="color:rgba(255,255,255,0.25);">Kodni kiriting</span>
+                    <div id="tg-step-dot-2" class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all duration-300" style="background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.25);">2</div>
+                </div>
             </div>
-            
-            <a href="https://t.me/<?= htmlspecialchars($botUsername) ?>" target="_blank" class="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-xl py-3 text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 transition-all">
-                <i class="fa-brands fa-telegram text-xl"></i> Botga o'tish va kodni olish
+        </div>
+
+        <!-- STEP 1 -->
+        <div id="tg-modal-step1" class="relative z-10 px-7 pb-7">
+            <!-- Phone input -->
+            <div class="mb-4">
+                <label class="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest mb-2" style="color:rgba(255,255,255,0.35);">
+                    Telefon <span style="color:rgba(255,255,255,0.18);font-weight:400;text-transform:none;letter-spacing:0;">— ixtiyoriy</span>
+                </label>
+                <div class="flex items-stretch rounded-2xl overflow-hidden transition-all duration-200" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);" id="tg-phone-wrap">
+                    <div class="flex items-center px-3.5 gap-1.5 flex-shrink-0" style="border-right:1px solid rgba(255,255,255,0.07);">
+                        <span class="text-sm font-bold font-mono" style="color:#29A7E1;">+998</span>
+                    </div>
+                    <input type="tel" id="tg-bind-phone" maxlength="12" placeholder="90 123 45 67" inputmode="numeric"
+                        class="flex-1 bg-transparent px-3 py-3 text-sm text-white placeholder-gray-600 outline-none font-mono"
+                        oninput="formatTgPhone(this)"
+                        onfocus="document.getElementById('tg-phone-wrap').style.borderColor='rgba(41,167,225,0.45)'"
+                        onblur="document.getElementById('tg-phone-wrap').style.borderColor='rgba(255,255,255,0.08)'">
+                </div>
+            </div>
+
+            <!-- Instruction steps -->
+            <div class="rounded-2xl p-4 mb-5 space-y-2.5" style="background:rgba(41,167,225,0.05);border:1px solid rgba(41,167,225,0.1);">
+                <div class="flex items-start gap-3">
+                    <span class="w-5 h-5 rounded-lg flex-shrink-0 flex items-center justify-center text-[9px] font-black" style="background:rgba(41,167,225,0.2);color:#29A7E1;margin-top:1px;">1</span>
+                    <p class="text-[11px] leading-relaxed" style="color:rgba(255,255,255,0.5);">Quyidagi tugmani bosib <span class="font-semibold text-white">@<?= htmlspecialchars($botUsername) ?></span> botga o'ting</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-5 h-5 rounded-lg flex-shrink-0 flex items-center justify-center text-[9px] font-black" style="background:rgba(41,167,225,0.2);color:#29A7E1;margin-top:1px;">2</span>
+                    <p class="text-[11px] leading-relaxed" style="color:rgba(255,255,255,0.5);"><span class="font-bold text-white">/start</span> tugmasini bosing — bot sizga 6 xonali kod yuboradi</p>
+                </div>
+            </div>
+
+            <!-- CTA button -->
+            <a href="https://t.me/<?= htmlspecialchars($botUsername) ?>" target="_blank"
+                onclick="setTimeout(()=>tgGoToStep2(),1000)"
+                class="group relative w-full flex items-center justify-center gap-2.5 py-3.5 rounded-2xl text-sm font-bold overflow-hidden transition-all duration-300 mb-3"
+                style="background:linear-gradient(135deg,#1a7db8,#29A7E1);color:#fff;box-shadow:0 4px 24px rgba(41,167,225,0.3),inset 0 1px 0 rgba(255,255,255,0.2);"
+                onmouseover="this.style.boxShadow='0 8px 32px rgba(41,167,225,0.45),inset 0 1px 0 rgba(255,255,255,0.2)';this.style.transform='translateY(-1px)'"
+                onmouseout="this.style.boxShadow='0 4px 24px rgba(41,167,225,0.3),inset 0 1px 0 rgba(255,255,255,0.2)';this.style.transform=''">
+                <div class="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
+                <i class="fa-brands fa-telegram text-lg relative z-10"></i>
+                <span class="relative z-10">Botga o'tish</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-70 relative z-10"></i>
             </a>
-            
-            <div class="pt-2">
-                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1 block">Maxfiy OTP kod (6 xona)</label>
-                <input type="text" id="tg-bind-otp" maxlength="6" placeholder="000000" class="input-field text-center text-2xl tracking-[0.5em] font-mono h-14">
+            <button onclick="tgGoToStep2()" class="w-full py-2.5 rounded-xl text-xs transition-all duration-200" style="color:rgba(255,255,255,0.3);" onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.3)'">
+                Kod oldim <i class="fa-solid fa-arrow-right text-[10px] ml-1"></i>
+            </button>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="tg-modal-step2" class="hidden relative z-10 px-7 pb-7">
+            <p class="text-xs text-center mb-4" style="color:rgba(255,255,255,0.4);">Bot yuborgan <span class="text-white font-semibold">6 xonali</span> kodni kiriting</p>
+
+            <!-- 6 separate OTP boxes -->
+            <div class="flex items-center justify-center gap-2 mb-2" id="tg-otp-boxes">
+                <?php for($i=0;$i<6;$i++): ?>
+                <input type="text" maxlength="1" inputmode="numeric"
+                    class="tg-otp-box w-10 h-12 text-center text-lg font-black font-mono rounded-xl outline-none transition-all duration-200"
+                    style="background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);color:#fff;"
+                    oninput="tgOtpInput(this,<?= $i ?>)"
+                    onkeydown="tgOtpKey(event,<?= $i ?>)"
+                    onfocus="this.style.borderColor='rgba(41,167,225,0.6)';this.style.background='rgba(41,167,225,0.08)';this.style.boxShadow='0 0 0 3px rgba(41,167,225,0.12)'"
+                    onblur="this.style.borderColor=this.value?'rgba(41,167,225,0.4)':'rgba(255,255,255,0.1)';this.style.background='rgba(255,255,255,0.05)';this.style.boxShadow=''">
+                <?php endfor; ?>
             </div>
-            
-            <button onclick="submitTgBind()" id="tg-bind-submit-btn" class="w-full btn-primary py-3 text-sm font-bold mt-2">Tasdiqlash va Ulash</button>
+            <!-- Hidden real OTP value -->
+            <input type="hidden" id="tg-bind-otp">
+            <p class="text-[10px] text-center mb-5" style="color:rgba(255,255,255,0.2);">Kod 30 daqiqa amal qiladi</p>
+
+            <button onclick="submitTgBind()" id="tg-bind-submit-btn"
+                class="group relative w-full py-3.5 rounded-2xl text-sm font-bold overflow-hidden transition-all duration-300 mb-3"
+                style="background:linear-gradient(135deg,#1a7db8,#29A7E1);color:#fff;box-shadow:0 4px 24px rgba(41,167,225,0.3),inset 0 1px 0 rgba(255,255,255,0.2);"
+                onmouseover="this.style.boxShadow='0 8px 32px rgba(41,167,225,0.45),inset 0 1px 0 rgba(255,255,255,0.2)';this.style.transform='translateY(-1px)'"
+                onmouseout="this.style.boxShadow='0 4px 24px rgba(41,167,225,0.3),inset 0 1px 0 rgba(255,255,255,0.2)';this.style.transform=''">
+                <div class="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
+                <i class="fa-solid fa-check-circle mr-2 relative z-10"></i>
+                <span class="relative z-10">Tasdiqlash va Ulash</span>
+            </button>
+            <button onclick="tgGoToStep1()" class="w-full py-2.5 rounded-xl text-xs transition-all duration-200" style="color:rgba(255,255,255,0.3);" onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.3)'">
+                <i class="fa-solid fa-arrow-left text-[10px] mr-1"></i> Orqaga
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-function openTgBindModal() { document.getElementById('tg-bind-modal').classList.remove('hidden'); }
-function closeTgBindModal() { document.getElementById('tg-bind-modal').classList.add('hidden'); }
+// ===== OTP BOX LOGIC =====
+function tgOtpInput(el, idx) {
+    el.value = el.value.replace(/\D/g, '').slice(0,1);
+    // Update hidden input
+    const boxes = document.querySelectorAll('.tg-otp-box');
+    let val = '';
+    boxes.forEach(b => val += b.value);
+    document.getElementById('tg-bind-otp').value = val;
+    // Auto-advance
+    if (el.value && idx < 5) boxes[idx + 1].focus();
+}
+function tgOtpKey(e, idx) {
+    const boxes = document.querySelectorAll('.tg-otp-box');
+    if (e.key === 'Backspace' && !boxes[idx].value && idx > 0) boxes[idx - 1].focus();
+    if (e.key === 'ArrowLeft' && idx > 0) boxes[idx - 1].focus();
+    if (e.key === 'ArrowRight' && idx < 5) boxes[idx + 1].focus();
+}
+
+function openTgBindModal() {
+    document.getElementById('tg-bind-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    tgGoToStep1();
+    setTimeout(() => { const ph = document.getElementById('tg-bind-phone'); if(ph) ph.focus(); }, 300);
+}
+function closeTgBindModal() {
+    document.getElementById('tg-bind-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+function tgGoToStep1() {
+    document.getElementById('tg-modal-step1').classList.remove('hidden');
+    document.getElementById('tg-modal-step2').classList.add('hidden');
+    const d1=document.getElementById('tg-step-dot-1'), d2=document.getElementById('tg-step-dot-2');
+    const l1=document.getElementById('tg-step-lbl-1'), l2=document.getElementById('tg-step-lbl-2');
+    d1.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all .3s;background:linear-gradient(135deg,rgba(41,167,225,0.3),rgba(41,167,225,0.15));border:1.5px solid #29A7E1;color:#29A7E1;box-shadow:0 0 12px rgba(41,167,225,0.3);';
+    d2.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all .3s;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.25);';
+    if(l1) l1.style.color='#29A7E1';
+    if(l2) l2.style.color='rgba(255,255,255,0.25)';
+}
+function tgGoToStep2() {
+    document.getElementById('tg-modal-step1').classList.add('hidden');
+    document.getElementById('tg-modal-step2').classList.remove('hidden');
+    const d1=document.getElementById('tg-step-dot-1'), d2=document.getElementById('tg-step-dot-2');
+    const l1=document.getElementById('tg-step-lbl-1'), l2=document.getElementById('tg-step-lbl-2');
+    d1.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all .3s;background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.5);color:#10b981;';
+    d2.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all .3s;background:linear-gradient(135deg,rgba(41,167,225,0.3),rgba(41,167,225,0.15));border:1.5px solid #29A7E1;color:#29A7E1;box-shadow:0 0 12px rgba(41,167,225,0.3);';
+    if(l1) l1.style.color='rgba(255,255,255,0.3)';
+    if(l2) l2.style.color='#29A7E1';
+    // clear & focus first box
+    setTimeout(() => {
+        const boxes = document.querySelectorAll('.tg-otp-box');
+        boxes.forEach(b => { b.value=''; b.style.borderColor='rgba(255,255,255,0.1)'; b.style.background='rgba(255,255,255,0.05)'; b.style.boxShadow=''; });
+        document.getElementById('tg-bind-otp').value = '';
+        if(boxes[0]) boxes[0].focus();
+    }, 100);
+}
+
+function formatTgPhone(input) {
+    let v = input.value.replace(/\D/g,'').slice(0,9);
+    let out = '';
+    if(v.length>0) out=v.slice(0,2);
+    if(v.length>2) out+=' '+v.slice(2,5);
+    if(v.length>5) out+=' '+v.slice(5,7);
+    if(v.length>7) out+=' '+v.slice(7,9);
+    input.value=out;
+}
 
 async function submitTgBind() {
     const btn = document.getElementById('tg-bind-submit-btn');
-    const otp = document.getElementById('tg-bind-otp').value.trim();
-    const phone = document.getElementById('tg-bind-phone').value.trim();
-    
-    if (otp.length !== 6 || !/^\d+$/.test(otp)) {
-        return showToast("6 xonali raqamli OTP kod kiriting", "error");
+    const otp = document.getElementById('tg-bind-otp').value.replace(/\D/g,'').trim();
+    const phoneRaw = document.getElementById('tg-bind-phone').value.replace(/\D/g,'').trim();
+    const phone = phoneRaw ? '+998'+phoneRaw : '';
+
+    if (otp.length !== 6) {
+        // Shake OTP boxes
+        const boxes = document.querySelectorAll('.tg-otp-box');
+        boxes.forEach(b => { b.style.borderColor='rgba(239,68,68,0.6)'; b.style.boxShadow='0 0 0 3px rgba(239,68,68,0.15)'; });
+        setTimeout(() => boxes.forEach(b => { b.style.borderColor='rgba(255,255,255,0.1)'; b.style.boxShadow=''; }), 1200);
+        const wrap = document.getElementById('tg-otp-boxes');
+        if(wrap){ wrap.classList.add('tg-otp-shake'); setTimeout(()=>wrap.classList.remove('tg-otp-shake'),400); }
+        return showToast("6 xonali kodni to'liq kiriting", "error");
     }
-    
+
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Tekshirilmoqda...';
-    
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Tekshirilmoqda...';
+
     try {
         const token = TibaAuth.getToken();
         const res = await fetch('/api/auth.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-User-Token': token },
-            body: JSON.stringify({ action: 'link-telegram-otp', otp_code: otp, phone: phone })
+            headers: {'Content-Type':'application/json','X-User-Token':token},
+            body: JSON.stringify({action:'link-telegram-otp', otp_code:otp, phone:phone})
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
-        
-        showToast("Telegram muvaffaqiyatli ulandi!");
+
+        showToast("✅ Telegram muvaffaqiyatli ulandi!", "success");
         document.getElementById('tg-bind-banner').classList.add('hidden');
         closeTgBindModal();
-        
-        // Update user state manually or reload
         const user = TibaAuth.getUser();
-        if (user) {
-            user.telegram_id = "linked";
-            localStorage.setItem('tiba_user', JSON.stringify(user));
-        }
-    } catch (e) {
-        showToast(e.message, "error");
+        if (user) { user.telegram_id='linked'; TibaAuth.updateTgBadge('linked'); }
+    } catch(e) {
+        const boxes = document.querySelectorAll('.tg-otp-box');
+        boxes.forEach(b => { b.style.borderColor='rgba(239,68,68,0.6)'; b.style.background='rgba(239,68,68,0.05)'; });
+        showToast(e.message, 'error');
     } finally {
-        btn.disabled = false;
-        btn.innerHTML = 'Tasdiqlash va Ulash';
+        btn.disabled=false;
+        btn.innerHTML='<i class="fa-solid fa-check-circle mr-2 relative z-10"></i><span class="relative z-10">Tasdiqlash va Ulash</span>';
     }
 }
+
+// Paste support for OTP
+document.addEventListener('paste', function(e) {
+    if (!document.getElementById('tg-modal-step2') || document.getElementById('tg-modal-step2').classList.contains('hidden')) return;
+    const txt = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+    if (!txt) return;
+    const boxes = document.querySelectorAll('.tg-otp-box');
+    txt.split('').forEach((ch,i) => { if(boxes[i]) boxes[i].value=ch; });
+    document.getElementById('tg-bind-otp').value = txt;
+    if(boxes[Math.min(txt.length,5)]) boxes[Math.min(txt.length,5)].focus();
+});
 
 // Show banner if logged in but no telegram linked
 document.addEventListener('DOMContentLoaded', () => {
@@ -1126,9 +1372,129 @@ document.addEventListener('DOMContentLoaded', () => {
             if (user && !user.telegram_id) {
                 document.getElementById('tg-bind-banner').classList.remove('hidden');
             }
-        }
-    }, 1000);
+
+/* ===== TG BIND MODAL FUNCTIONS ===== */
+function openTgBindModal() {
+    document.getElementById('tg-bind-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    tgGoToStep1();
+    setTimeout(function() { var ph = document.getElementById('tg-bind-phone'); if(ph) ph.focus(); }, 300);
+}
+function closeTgBindModal() {
+    document.getElementById('tg-bind-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+function tgGoToStep1() {
+    var s1=document.getElementById('tg-modal-step1'), s2=document.getElementById('tg-modal-step2');
+    if(s1) s1.classList.remove('hidden');
+    if(s2) s2.classList.add('hidden');
+    var d1=document.getElementById('tg-step-dot-1'), d2=document.getElementById('tg-step-dot-2');
+    var l1=document.getElementById('tg-step-lbl-1'), l2=document.getElementById('tg-step-lbl-2');
+    if(d1) d1.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:linear-gradient(135deg,rgba(41,167,225,0.3),rgba(41,167,225,0.15));border:1.5px solid #29A7E1;color:#29A7E1;box-shadow:0 0 12px rgba(41,167,225,0.3);';
+    if(d2) d2.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.25);';
+    if(l1) l1.style.color='#29A7E1';
+    if(l2) l2.style.color='rgba(255,255,255,0.25)';
+}
+
+function tgGoToStep2() {
+    var s1=document.getElementById('tg-modal-step1'), s2=document.getElementById('tg-modal-step2');
+    if(s1) s1.classList.add('hidden');
+    if(s2) s2.classList.remove('hidden');
+    var d1=document.getElementById('tg-step-dot-1'), d2=document.getElementById('tg-step-dot-2');
+    var l1=document.getElementById('tg-step-lbl-1'), l2=document.getElementById('tg-step-lbl-2');
+    if(d1) d1.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.5);color:#10b981;';
+    if(d2) d2.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:linear-gradient(135deg,rgba(41,167,225,0.3),rgba(41,167,225,0.15));border:1.5px solid #29A7E1;color:#29A7E1;box-shadow:0 0 12px rgba(41,167,225,0.3);';
+    if(l1) l1.style.color='rgba(255,255,255,0.3)';
+    if(l2) l2.style.color='#29A7E1';
+    setTimeout(function() {
+        var boxes=document.querySelectorAll('.tg-otp-box');
+        boxes.forEach(function(b){ b.value=''; b.style.borderColor='rgba(255,255,255,0.1)'; b.style.background='rgba(255,255,255,0.05)'; b.style.boxShadow=''; });
+        var hid=document.getElementById('tg-bind-otp'); if(hid) hid.value='';
+        if(boxes[0]) boxes[0].focus();
+    }, 100);
+}
+
+function tgOtpInput(el, idx) {
+    el.value = el.value.replace(/\D/g,'').slice(0,1);
+    var boxes=document.querySelectorAll('.tg-otp-box'), val='';
+    boxes.forEach(function(b){ val+=b.value; });
+    var hid=document.getElementById('tg-bind-otp'); if(hid) hid.value=val;
+    if(el.value && idx<5) boxes[idx+1].focus();
+}
+function tgOtpKey(e, idx) {
+    var boxes=document.querySelectorAll('.tg-otp-box');
+    if(e.key==='Backspace' && !boxes[idx].value && idx>0) boxes[idx-1].focus();
+    if(e.key==='ArrowLeft' && idx>0) boxes[idx-1].focus();
+    if(e.key==='ArrowRight' && idx<5) boxes[idx+1].focus();
+}
+
+function formatTgPhone(input) {
+    var v=input.value.replace(/\D/g,'').slice(0,9), out='';
+    if(v.length>0) out=v.slice(0,2);
+    if(v.length>2) out+=' '+v.slice(2,5);
+    if(v.length>5) out+=' '+v.slice(5,7);
+    if(v.length>7) out+=' '+v.slice(7,9);
+    input.value=out;
+}
+
+async function submitTgBind() {
+    var btn=document.getElementById('tg-bind-submit-btn');
+    var hid=document.getElementById('tg-bind-otp');
+    var otp=hid ? hid.value.replace(/\D/g,'').trim() : '';
+    var phoneRaw=document.getElementById('tg-bind-phone').value.replace(/\D/g,'').trim();
+    var phone=phoneRaw ? '+998'+phoneRaw : '';
+
+    if(otp.length!==6) {
+        var boxes=document.querySelectorAll('.tg-otp-box');
+        boxes.forEach(function(b){ b.style.borderColor='rgba(239,68,68,0.6)'; b.style.boxShadow='0 0 0 3px rgba(239,68,68,0.15)'; });
+        setTimeout(function(){ boxes.forEach(function(b){ b.style.borderColor='rgba(255,255,255,0.1)'; b.style.boxShadow=''; }); }, 1500);
+        var wrap=document.getElementById('tg-otp-boxes');
+        if(wrap){ wrap.classList.add('tg-otp-shake'); setTimeout(function(){ wrap.classList.remove('tg-otp-shake'); },400); }
+        showToast("6 xonali kodni to'liq kiriting","error");
+        return;
+    }
+
+    btn.disabled=true;
+    btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Tekshirilmoqda...';
+
+    try {
+        var token=TibaAuth.getToken();
+        var res=await fetch('/api/auth.php',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','X-User-Token':token},
+            body:JSON.stringify({action:'link-telegram-otp',otp_code:otp,phone:phone})
+        });
+        var data=await res.json();
+        if(data.error) throw new Error(data.error);
+
+        showToast('Telegram muvaffaqiyatli ulandi!','success');
+        document.getElementById('tg-bind-banner').classList.add('hidden');
+        closeTgBindModal();
+        var user=TibaAuth.getUser();
+        if(user){ user.telegram_id='linked'; TibaAuth.updateTgBadge('linked'); }
+    } catch(e) {
+        var boxes=document.querySelectorAll('.tg-otp-box');
+        boxes.forEach(function(b){ b.style.borderColor='rgba(239,68,68,0.6)'; b.style.background='rgba(239,68,68,0.05)'; });
+        showToast(e.message,'error');
+    } finally {
+        btn.disabled=false;
+        btn.innerHTML='<i class="fa-solid fa-check-circle mr-2"></i>Tasdiqlash va Ulash';
+    }
+}
+
+document.addEventListener('paste',function(e){
+    var step2=document.getElementById('tg-modal-step2');
+    if(!step2||step2.classList.contains('hidden')) return;
+    var txt=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+    if(!txt) return;
+    var boxes=document.querySelectorAll('.tg-otp-box');
+    txt.split('').forEach(function(ch,i){ if(boxes[i]) boxes[i].value=ch; });
+    var hid=document.getElementById('tg-bind-otp'); if(hid) hid.value=txt;
+    if(boxes[Math.min(txt.length,5)]) boxes[Math.min(txt.length,5)].focus();
 });
+
 </script>
+
 
 <main class="flex-1">
