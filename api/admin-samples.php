@@ -43,8 +43,19 @@ if ($method === 'POST') {
         if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
             jsonResponse(['error' => 'Faqat JPG, PNG, WEBP'], 400);
         }
-        $filename = 'sample_' . time() . '_' . mt_rand(1000, 9999) . '.' . $ext;
-        move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . '/' . $filename);
+
+        // WebP sifatida compress qilib saqlash
+        $tmpPath  = $uploadDir . '/tmp_' . time() . '_' . mt_rand(1000, 9999);
+        move_uploaded_file($_FILES['image']['tmp_name'], $tmpPath);
+        $filename = 'sample_' . time() . '_' . mt_rand(1000, 9999) . '.webp';
+        $destPath = $uploadDir . '/' . $filename;
+        if (!compressImage($tmpPath, $destPath, 85, 1400)) {
+            // fallback: asl ext bilan saqlash
+            $filename = 'sample_' . time() . '_' . mt_rand(1000, 9999) . '.' . $ext;
+            rename($tmpPath, $uploadDir . '/' . $filename);
+        } else {
+            @unlink($tmpPath);
+        }
         $imagePath = '/assets/samples/' . $filename;
 
         $stmt = $db->prepare("INSERT INTO showcase_samples (title, image_path, type, sort_order) VALUES (?, ?, ?, ?)");
@@ -54,13 +65,31 @@ if ($method === 'POST') {
         if (empty($_FILES['before_image']['tmp_name']) || empty($_FILES['after_image']['tmp_name'])) {
             jsonResponse(['error' => 'Oldingi va keyingi rasmlarni yuklang'], 400);
         }
-        $extB = strtolower(pathinfo($_FILES['before_image']['name'], PATHINFO_EXTENSION));
-        $extA = strtolower(pathinfo($_FILES['after_image']['name'], PATHINFO_EXTENSION));
         $ts = time() . '_' . mt_rand(1000, 9999);
-        $beforeFile = 'before_' . $ts . '.' . $extB;
-        $afterFile = 'after_' . $ts . '.' . $extA;
-        move_uploaded_file($_FILES['before_image']['tmp_name'], $uploadDir . '/' . $beforeFile);
-        move_uploaded_file($_FILES['after_image']['tmp_name'], $uploadDir . '/' . $afterFile);
+
+        // Before rasm
+        $tmpB     = $uploadDir . '/tmp_b_' . $ts;
+        $extB     = strtolower(pathinfo($_FILES['before_image']['name'], PATHINFO_EXTENSION));
+        move_uploaded_file($_FILES['before_image']['tmp_name'], $tmpB);
+        $beforeFile = 'before_' . $ts . '.webp';
+        if (!compressImage($tmpB, $uploadDir . '/' . $beforeFile, 85, 1400)) {
+            $beforeFile = 'before_' . $ts . '.' . $extB;
+            rename($tmpB, $uploadDir . '/' . $beforeFile);
+        } else {
+            @unlink($tmpB);
+        }
+
+        // After rasm
+        $tmpA     = $uploadDir . '/tmp_a_' . $ts;
+        $extA     = strtolower(pathinfo($_FILES['after_image']['name'], PATHINFO_EXTENSION));
+        move_uploaded_file($_FILES['after_image']['tmp_name'], $tmpA);
+        $afterFile = 'after_' . $ts . '.webp';
+        if (!compressImage($tmpA, $uploadDir . '/' . $afterFile, 85, 1400)) {
+            $afterFile = 'after_' . $ts . '.' . $extA;
+            rename($tmpA, $uploadDir . '/' . $afterFile);
+        } else {
+            @unlink($tmpA);
+        }
 
         $stmt = $db->prepare("INSERT INTO showcase_samples (title, before_image_path, after_image_path, type, sort_order) VALUES (?, ?, ?, 'before-after', ?)");
         $stmt->execute([$title, '/assets/samples/' . $beforeFile, '/assets/samples/' . $afterFile, $sortOrder]);

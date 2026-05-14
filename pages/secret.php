@@ -946,6 +946,64 @@
                         <div id="extensions-list" class="flex flex-wrap gap-2"></div>
                     </div>
 
+                    <!-- WebP Batch Compress -->
+                    <div class="bg-white/[0.03] border border-indigo-500/20 rounded-2xl p-6" id="compress-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-compress text-indigo-400"></i> Rasmlarni WebP ga siqish
+                            </h3>
+                            <button onclick="loadCompressStats()" class="text-[10px] text-gray-500 hover:text-white transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-rotate-right"></i> Yangilash
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4">Bazadagi barcha PNG/JPG rasmlarni WebP formatiga aylantiradi. DB yo'llari ham avtomatik yangilanadi.</p>
+
+                        <!-- Stats grid -->
+                        <div class="grid grid-cols-2 gap-3 mb-4" id="compress-stats-grid">
+                            <div class="bg-white/[0.03] rounded-xl p-3 border border-white/5">
+                                <div class="text-[10px] text-gray-500 mb-1 uppercase tracking-widest">Generated rasmlari</div>
+                                <div class="text-sm font-bold text-white"><span id="cst-gen-need">—</span> ta · <span id="cst-gen-mb">—</span> MB</div>
+                                <div class="text-[10px] text-emerald-400 mt-0.5"><span id="cst-gen-done">—</span> ta WebP tayyor</div>
+                            </div>
+                            <div class="bg-white/[0.03] rounded-xl p-3 border border-white/5">
+                                <div class="text-[10px] text-gray-500 mb-1 uppercase tracking-widest">Namuna rasmlari</div>
+                                <div class="text-sm font-bold text-white"><span id="cst-smp-need">—</span> ta · <span id="cst-smp-mb">—</span> MB</div>
+                                <div class="text-[10px] text-emerald-400 mt-0.5"><span id="cst-smp-done">—</span> ta WebP tayyor</div>
+                            </div>
+                        </div>
+
+                        <!-- Progress bar -->
+                        <div id="compress-progress-wrap" class="hidden mb-4">
+                            <div class="flex justify-between text-[10px] text-gray-500 mb-1.5">
+                                <span id="compress-progress-label">Siqilmoqda...</span>
+                                <span id="compress-progress-pct">0%</span>
+                            </div>
+                            <div class="h-2 bg-white/5 rounded-full overflow-hidden">
+                                <div id="compress-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500" style="width:0%"></div>
+                            </div>
+                            <div class="text-[10px] text-gray-500 mt-1.5" id="compress-progress-detail"></div>
+                        </div>
+
+                        <!-- Result -->
+                        <div id="compress-result" class="hidden mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400"></div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-2 flex-wrap">
+                            <button id="compress-all-btn" onclick="startCompress('all')"
+                                class="flex-1 btn-primary py-2.5 text-xs font-bold min-w-[120px]">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Barchasini siqish
+                            </button>
+                            <button id="compress-gen-btn" onclick="startCompress('generated')"
+                                class="px-4 py-2.5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 text-xs font-bold transition-all">
+                                Faqat Generated
+                            </button>
+                            <button id="compress-smp-btn" onclick="startCompress('samples')"
+                                class="px-4 py-2.5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 text-xs font-bold transition-all">
+                                Faqat Namunalar
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Danger Zone -->
                     <div class="bg-red-500/5 border border-red-500/20 rounded-2xl p-6">
                         <h3 class="text-sm font-bold text-red-400 mb-2">⚠️ Xavfli zona</h3>
@@ -1216,7 +1274,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tab === 'sections') loadSections();
             if (tab === 'gallery') loadGallery(1);
             if (tab === 'packages') loadPackages();
-            if (tab === 'settings') { loadSystemInfo(); loadPaymentSettings(); loadMaintenanceStatus(); loadSiteSettings(); }
+            if (tab === 'settings') { loadSystemInfo(); loadPaymentSettings(); loadMaintenanceStatus(); loadSiteSettings(); loadCompressStats(); }
             if (tab === 'users') loadUsers();
             if (tab === 'payments') loadPayments();
             if (tab === 'logs') loadLogs();
@@ -2157,6 +2215,81 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('current-origin-display').textContent = window.location.origin;
         } catch (err) { showToast('❌ ' + err.message, 'error'); }
     }
+
+    // ========== WEBP BATCH COMPRESS ==========
+    async function loadCompressStats() {
+        try {
+            const data = await apiCall('/api/admin-compress.php', { action: 'stats' });
+            const s = data.stats;
+            document.getElementById('cst-gen-need').textContent = s.generated.need;
+            document.getElementById('cst-gen-mb').textContent   = s.generated.need_mb;
+            document.getElementById('cst-gen-done').textContent = s.generated.done;
+            document.getElementById('cst-smp-need').textContent = s.samples.need;
+            document.getElementById('cst-smp-mb').textContent   = s.samples.need_mb;
+            document.getElementById('cst-smp-done').textContent = s.samples.done;
+            const resultEl = document.getElementById('compress-result');
+            if (resultEl && s.total_need === 0) {
+                resultEl.textContent = '✅ Barcha rasmlar allaqachon WebP formatida!';
+                resultEl.classList.remove('hidden');
+            }
+        } catch(e) { showToast('❌ ' + e.message, 'error'); }
+    }
+
+    window.startCompress = async (target) => {
+        const btnIds = ['compress-all-btn', 'compress-gen-btn', 'compress-smp-btn'];
+        btnIds.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = true; });
+
+        const progressWrap = document.getElementById('compress-progress-wrap');
+        const progressBar  = document.getElementById('compress-progress-bar');
+        const progressPct  = document.getElementById('compress-progress-pct');
+        const progressLbl  = document.getElementById('compress-progress-label');
+        const progressDtl  = document.getElementById('compress-progress-detail');
+        const resultEl     = document.getElementById('compress-result');
+
+        if (progressWrap) progressWrap.classList.remove('hidden');
+        if (resultEl) resultEl.classList.add('hidden');
+        if (progressBar) progressBar.style.width = '0%';
+        if (progressPct) progressPct.textContent = '0%';
+        if (progressLbl) progressLbl.textContent = 'Boshlanmoqda...';
+
+        let offset = 0, totalConverted = 0, totalSavedMb = 0, totalFailed = 0, totalAll = null;
+        const batchSize = 20;
+
+        try {
+            while (true) {
+                const res = await apiCall('/api/admin-compress.php', {
+                    action: 'compress', target, batch: batchSize, offset,
+                });
+                totalConverted += res.converted || 0;
+                totalFailed    += res.failed    || 0;
+                totalSavedMb   += res.saved_mb  || 0;
+
+                if (totalAll === null) totalAll = (offset + batchSize) + (res.remaining || 0);
+                const processed = Math.min(offset + batchSize, totalAll);
+                const pct = totalAll > 0 ? Math.min(100, Math.round(processed / totalAll * 100)) : 100;
+                if (progressBar) progressBar.style.width = pct + '%';
+                if (progressPct) progressPct.textContent = pct + '%';
+                if (progressLbl) progressLbl.textContent = `Siqilmoqda... ${processed} / ${totalAll}`;
+                if (progressDtl) progressDtl.textContent = `✅ ${totalConverted} ta | 💾 ${totalSavedMb.toFixed(1)} MB tejaldi | ❌ ${totalFailed} xato`;
+
+                if (res.done) break;
+                offset = res.next_offset;
+            }
+            if (progressBar) progressBar.style.width = '100%';
+            if (progressPct) progressPct.textContent = '100%';
+            if (progressLbl) progressLbl.textContent = 'Tugadi!';
+            if (resultEl) {
+                resultEl.textContent = `✅ ${totalConverted} ta rasm WebP ga aylandi · 💾 ${totalSavedMb.toFixed(1)} MB tejaldi · ❌ ${totalFailed} xato`;
+                resultEl.classList.remove('hidden');
+            }
+            showToast(`✅ ${totalConverted} rasm siqildi, ${totalSavedMb.toFixed(1)} MB tejaldi!`);
+            loadCompressStats();
+        } catch(e) {
+            showToast('❌ ' + e.message, 'error');
+        }
+        btnIds.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = false; });
+    };
+    window.loadCompressStats = loadCompressStats;
 
     document.getElementById('cleanup-btn').onclick = async () => {
         const days = document.getElementById('cleanup-days').value;

@@ -1171,16 +1171,83 @@ function callGeminiTextAPI($parts) {
     return $textResult;
 }
 
+/**
+ * Rasmni siqish — sifat yo'qotmasdan hajmini kamaytirish
+ * PNG/JPEG/WEBP → WebP (85% sifat, 60-80% kichik)
+ * GD kengaytmasi bo'lmasa asl faylni saqlaydi
+ *
+ * @param string $sourcePath  Asl rasm fayl yo'li
+ * @param string $destPath    Siqilgan rasm saqlanadigan yo'l (.webp)
+ * @param int    $quality     WebP sifati: 0-100 (default 85)
+ * @param int    $maxWidth    Maksimal kenglik px (0 = cheklovsiz)
+ * @return bool
+ */
+function compressImage(string $sourcePath, string $destPath, int $quality = 85, int $maxWidth = 1600): bool {
+    if (!extension_loaded('gd') || !function_exists('imagewebp')) {
+        return copy($sourcePath, $destPath);
+    }
+
+    $mime = @mime_content_type($sourcePath);
+    $img  = null;
+
+    switch ($mime) {
+        case 'image/jpeg': $img = @imagecreatefromjpeg($sourcePath); break;
+        case 'image/png':  $img = @imagecreatefrompng($sourcePath);  break;
+        case 'image/webp': $img = @imagecreatefromwebp($sourcePath); break;
+        case 'image/gif':  $img = @imagecreatefromgif($sourcePath);  break;
+        default:           return copy($sourcePath, $destPath);
+    }
+
+    if (!$img) return copy($sourcePath, $destPath);
+
+    // Hajmni kamaytirish (proportional)
+    $origW = imagesx($img);
+    $origH = imagesy($img);
+    if ($maxWidth > 0 && $origW > $maxWidth) {
+        $newW = $maxWidth;
+        $newH = (int)round($origH * $maxWidth / $origW);
+        $resized = imagecreatetruecolor($newW, $newH);
+        // Transparency saqlash
+        imagealphablending($resized, false);
+        imagesavealpha($resized, true);
+        imagecopyresampled($resized, $img, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+        imagedestroy($img);
+        $img = $resized;
+    }
+
+    $result = imagewebp($img, $destPath, $quality);
+    imagedestroy($img);
+
+    // Agar WebP kichikroq bo'lsa uni ishlatamiz, aks holda aslini ko'chiramiz
+    if ($result && file_exists($destPath) && filesize($destPath) > 0) {
+        return true;
+    }
+    return copy($sourcePath, $destPath);
+}
+
 function saveImage($base64, $mimeType, $prefix = 'img') {
     $dir = __DIR__ . '/../generated';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
-    $filename = $prefix . '_' . bin2hex(random_bytes(6)) . '.png';
-    $filepath = $dir . '/' . $filename;
-    file_put_contents($filepath, base64_decode($base64));
+    // Avval asl faylni temp saqlaymiz
+    $tmpFile  = $dir . '/tmp_' . bin2hex(random_bytes(4));
+    file_put_contents($tmpFile, base64_decode($base64));
 
-    return '/generated/' . $filename;
+    // WebP ga compress qilamiz
+    $filename = $prefix . '_' . bin2hex(random_bytes(6)) . '.webp';
+    $filepath = $dir . '/' . $filename;
+
+    if (compressImage($tmpFile, $filepath, 85, 1600)) {
+        @unlink($tmpFile);
+        return '/generated/' . $filename;
+    }
+
+    // Fallback: WebP muvaffaqiyatsiz bo'lsa PNG saqlaymiz
+    $pngFile = $dir . '/' . $prefix . '_' . bin2hex(random_bytes(6)) . '.png';
+    rename($tmpFile, $pngFile);
+    return '/generated/' . basename($pngFile);
 }
+
 
 /**
  * Havola (URL) orqali rasm yuklash
