@@ -1269,7 +1269,13 @@ function filterUserTelegramMsg($message) {
         if (mb_strpos($line, '💰 *Balans:') !== false) continue;
         $filtered[] = $line;
     }
-    return implode("\n", $filtered);
+    $result = implode("\n", $filtered);
+
+    // Foydalanuvchiga AI disclaimer qo'shish
+    $disclaimer = "\n\n⚠️ _AI xato qilishi mumkin. Natijani qayta tekshiruvdan o'tkazing._";
+    $result = rtrim($result) . $disclaimer;
+
+    return $result;
 }
 
 /**
