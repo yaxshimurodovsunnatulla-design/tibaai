@@ -853,26 +853,31 @@ const TibaAuth = (() => {
         const connectBadge = document.getElementById('tg-connect-badge');
         const tgBanner = document.getElementById('tg-bind-banner');
 
-        if (forceHide || !statusBadge) {
+        if (forceHide) {
             if (statusBadge) statusBadge.classList.add('hidden');
             if (tgBanner) tgBanner.classList.add('hidden');
             return;
         }
 
-        statusBadge.classList.remove('hidden');
+        // statusBadge optional — banner har doim ishlaydi
+        if (statusBadge) {
+            statusBadge.classList.remove('hidden');
+            if (telegramId) {
+                if (connectedBadge) { connectedBadge.classList.remove('hidden'); connectedBadge.style.display = 'flex'; }
+                if (connectBadge) { connectBadge.classList.add('hidden'); connectBadge.style.display = 'none'; }
+            } else {
+                if (connectedBadge) { connectedBadge.classList.add('hidden'); connectedBadge.style.display = 'none'; }
+                if (connectBadge) { connectBadge.classList.remove('hidden'); connectBadge.style.display = 'flex'; }
+            }
+        }
 
-        if (telegramId) {
-            // Ulangan: yashil badge ko'rsatish
-            if (connectedBadge) { connectedBadge.classList.remove('hidden'); connectedBadge.style.display = 'flex'; }
-            if (connectBadge) { connectBadge.classList.add('hidden'); connectBadge.style.display = 'none'; }
-            // Yuqori bannerni yashirish (ulanganlarga kerak emas)
-            if (tgBanner) tgBanner.classList.add('hidden');
-        } else {
-            // Ulanmagan: "Ulash" tugmasi ko'rsatish
-            if (connectedBadge) { connectedBadge.classList.add('hidden'); connectedBadge.style.display = 'none'; }
-            if (connectBadge) { connectBadge.classList.remove('hidden'); connectBadge.style.display = 'flex'; }
-            // Yuqori bannerni ko'rsatish
-            if (tgBanner) tgBanner.classList.remove('hidden');
+        // Banner: Telegram ulanmagan bo'lsa ko'rsatish
+        if (tgBanner) {
+            if (telegramId) {
+                tgBanner.classList.add('hidden');
+            } else {
+                tgBanner.classList.remove('hidden');
+            }
         }
     }
 
@@ -1365,135 +1370,17 @@ document.addEventListener('paste', function(e) {
 });
 
 // Show banner if logged in but no telegram linked
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        if (typeof TibaAuth !== 'undefined' && TibaAuth.isLoggedIn()) {
-            const user = TibaAuth.getUser();
-            if (user && !user.telegram_id) {
-                document.getElementById('tg-bind-banner').classList.remove('hidden');
-            }
-
-/* ===== TG BIND MODAL FUNCTIONS ===== */
-function openTgBindModal() {
-    document.getElementById('tg-bind-modal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    tgGoToStep1();
-    setTimeout(function() { var ph = document.getElementById('tg-bind-phone'); if(ph) ph.focus(); }, 300);
-}
-function closeTgBindModal() {
-    document.getElementById('tg-bind-modal').classList.add('hidden');
-    document.body.style.overflow = '';
-}
-
-function tgGoToStep1() {
-    var s1=document.getElementById('tg-modal-step1'), s2=document.getElementById('tg-modal-step2');
-    if(s1) s1.classList.remove('hidden');
-    if(s2) s2.classList.add('hidden');
-    var d1=document.getElementById('tg-step-dot-1'), d2=document.getElementById('tg-step-dot-2');
-    var l1=document.getElementById('tg-step-lbl-1'), l2=document.getElementById('tg-step-lbl-2');
-    if(d1) d1.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:linear-gradient(135deg,rgba(41,167,225,0.3),rgba(41,167,225,0.15));border:1.5px solid #29A7E1;color:#29A7E1;box-shadow:0 0 12px rgba(41,167,225,0.3);';
-    if(d2) d2.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.25);';
-    if(l1) l1.style.color='#29A7E1';
-    if(l2) l2.style.color='rgba(255,255,255,0.25)';
-}
-
-function tgGoToStep2() {
-    var s1=document.getElementById('tg-modal-step1'), s2=document.getElementById('tg-modal-step2');
-    if(s1) s1.classList.add('hidden');
-    if(s2) s2.classList.remove('hidden');
-    var d1=document.getElementById('tg-step-dot-1'), d2=document.getElementById('tg-step-dot-2');
-    var l1=document.getElementById('tg-step-lbl-1'), l2=document.getElementById('tg-step-lbl-2');
-    if(d1) d1.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.5);color:#10b981;';
-    if(d2) d2.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:linear-gradient(135deg,rgba(41,167,225,0.3),rgba(41,167,225,0.15));border:1.5px solid #29A7E1;color:#29A7E1;box-shadow:0 0 12px rgba(41,167,225,0.3);';
-    if(l1) l1.style.color='rgba(255,255,255,0.3)';
-    if(l2) l2.style.color='#29A7E1';
+document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
-        var boxes=document.querySelectorAll('.tg-otp-box');
-        boxes.forEach(function(b){ b.value=''; b.style.borderColor='rgba(255,255,255,0.1)'; b.style.background='rgba(255,255,255,0.05)'; b.style.boxShadow=''; });
-        var hid=document.getElementById('tg-bind-otp'); if(hid) hid.value='';
-        if(boxes[0]) boxes[0].focus();
-    }, 100);
-}
-
-function tgOtpInput(el, idx) {
-    el.value = el.value.replace(/\D/g,'').slice(0,1);
-    var boxes=document.querySelectorAll('.tg-otp-box'), val='';
-    boxes.forEach(function(b){ val+=b.value; });
-    var hid=document.getElementById('tg-bind-otp'); if(hid) hid.value=val;
-    if(el.value && idx<5) boxes[idx+1].focus();
-}
-function tgOtpKey(e, idx) {
-    var boxes=document.querySelectorAll('.tg-otp-box');
-    if(e.key==='Backspace' && !boxes[idx].value && idx>0) boxes[idx-1].focus();
-    if(e.key==='ArrowLeft' && idx>0) boxes[idx-1].focus();
-    if(e.key==='ArrowRight' && idx<5) boxes[idx+1].focus();
-}
-
-function formatTgPhone(input) {
-    var v=input.value.replace(/\D/g,'').slice(0,9), out='';
-    if(v.length>0) out=v.slice(0,2);
-    if(v.length>2) out+=' '+v.slice(2,5);
-    if(v.length>5) out+=' '+v.slice(5,7);
-    if(v.length>7) out+=' '+v.slice(7,9);
-    input.value=out;
-}
-
-async function submitTgBind() {
-    var btn=document.getElementById('tg-bind-submit-btn');
-    var hid=document.getElementById('tg-bind-otp');
-    var otp=hid ? hid.value.replace(/\D/g,'').trim() : '';
-    var phoneRaw=document.getElementById('tg-bind-phone').value.replace(/\D/g,'').trim();
-    var phone=phoneRaw ? '+998'+phoneRaw : '';
-
-    if(otp.length!==6) {
-        var boxes=document.querySelectorAll('.tg-otp-box');
-        boxes.forEach(function(b){ b.style.borderColor='rgba(239,68,68,0.6)'; b.style.boxShadow='0 0 0 3px rgba(239,68,68,0.15)'; });
-        setTimeout(function(){ boxes.forEach(function(b){ b.style.borderColor='rgba(255,255,255,0.1)'; b.style.boxShadow=''; }); }, 1500);
-        var wrap=document.getElementById('tg-otp-boxes');
-        if(wrap){ wrap.classList.add('tg-otp-shake'); setTimeout(function(){ wrap.classList.remove('tg-otp-shake'); },400); }
-        showToast("6 xonali kodni to'liq kiriting","error");
-        return;
-    }
-
-    btn.disabled=true;
-    btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Tekshirilmoqda...';
-
-    try {
-        var token=TibaAuth.getToken();
-        var res=await fetch('/api/auth.php',{
-            method:'POST',
-            headers:{'Content-Type':'application/json','X-User-Token':token},
-            body:JSON.stringify({action:'link-telegram-otp',otp_code:otp,phone:phone})
-        });
-        var data=await res.json();
-        if(data.error) throw new Error(data.error);
-
-        showToast('Telegram muvaffaqiyatli ulandi!','success');
-        document.getElementById('tg-bind-banner').classList.add('hidden');
-        closeTgBindModal();
-        var user=TibaAuth.getUser();
-        if(user){ user.telegram_id='linked'; TibaAuth.updateTgBadge('linked'); }
-    } catch(e) {
-        var boxes=document.querySelectorAll('.tg-otp-box');
-        boxes.forEach(function(b){ b.style.borderColor='rgba(239,68,68,0.6)'; b.style.background='rgba(239,68,68,0.05)'; });
-        showToast(e.message,'error');
-    } finally {
-        btn.disabled=false;
-        btn.innerHTML='<i class="fa-solid fa-check-circle mr-2"></i>Tasdiqlash va Ulash';
-    }
-}
-
-document.addEventListener('paste',function(e){
-    var step2=document.getElementById('tg-modal-step2');
-    if(!step2||step2.classList.contains('hidden')) return;
-    var txt=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
-    if(!txt) return;
-    var boxes=document.querySelectorAll('.tg-otp-box');
-    txt.split('').forEach(function(ch,i){ if(boxes[i]) boxes[i].value=ch; });
-    var hid=document.getElementById('tg-bind-otp'); if(hid) hid.value=txt;
-    if(boxes[Math.min(txt.length,5)]) boxes[Math.min(txt.length,5)].focus();
+        if (typeof TibaAuth !== 'undefined' && TibaAuth.isLoggedIn()) {
+            var user = TibaAuth.getUser();
+            if (user && !user.telegram_id) {
+                var banner = document.getElementById('tg-bind-banner');
+                if (banner) banner.classList.remove('hidden');
+            }
+        }
+    }, 1500);
 });
-
 </script>
 
 
