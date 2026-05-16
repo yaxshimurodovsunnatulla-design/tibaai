@@ -1188,8 +1188,22 @@ function compressImage(string $sourcePath, string $destPath, int $quality = 85, 
     }
 
     $mime = @mime_content_type($sourcePath);
-    $img  = null;
 
+    // mime_content_type() ba'zi serverlarda ishlamaydi — extension bilan fallback
+    if (!$mime || $mime === 'application/octet-stream' || $mime === 'text/plain') {
+        $extMap = [
+            'jpg'  => 'image/jpeg', 'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'webp' => 'image/webp',
+            'gif'  => 'image/gif',
+        ];
+        $ext  = strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION));
+        $mime = $extMap[$ext] ?? null;
+    }
+
+    if (!$mime) return copy($sourcePath, $destPath); // mime aniqlanmasa — aslini ko'chiramiz
+
+    $img = null;
     switch ($mime) {
         case 'image/jpeg': $img = @imagecreatefromjpeg($sourcePath); break;
         case 'image/png':  $img = @imagecreatefrompng($sourcePath);  break;
@@ -1229,11 +1243,34 @@ function saveImage($base64, $mimeType, $prefix = 'img') {
     $dir = __DIR__ . '/../generated';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
-    // Avval asl faylni temp saqlaymiz
-    $tmpFile  = $dir . '/tmp_' . bin2hex(random_bytes(4));
-    file_put_contents($tmpFile, base64_decode($base64));
+    // mimeType dan asl extension aniqlash
+    $mimeMap = [
+        'image/png'  => 'png',
+        'image/jpeg' => 'jpg',
+        'image/jpg'  => 'jpg',
+        'image/webp' => 'webp',
+        'image/gif'  => 'gif',
+    ];
+    $srcExt = $mimeMap[strtolower((string)$mimeType)] ?? 'png';
 
-    // WebP ga compress qilamiz
+    // Temp faylni to'g'ri extension bilan saqlash
+    // (mime_content_type() extension bo'lmasa tana olmaydi)
+    $tmpFile = $dir . '/tmp_' . bin2hex(random_bytes(4)) . '.' . $srcExt;
+    $decoded = base64_decode($base64, true);
+    if ($decoded === false || strlen($decoded) < 50) {
+        error_log("saveImage: invalid base64 for prefix=$prefix");
+        return null;
+    }
+    file_put_contents($tmpFile, $decoded);
+
+    // Agar allaqachon WebP — to'g'ridan saqlash
+    if ($srcExt === 'webp') {
+        $filename = $prefix . '_' . bin2hex(random_bytes(6)) . '.webp';
+        rename($tmpFile, $dir . '/' . $filename);
+        return '/generated/' . $filename;
+    }
+
+    // PNG/JPEG → WebP compress
     $filename = $prefix . '_' . bin2hex(random_bytes(6)) . '.webp';
     $filepath = $dir . '/' . $filename;
 
@@ -1242,10 +1279,10 @@ function saveImage($base64, $mimeType, $prefix = 'img') {
         return '/generated/' . $filename;
     }
 
-    // Fallback: WebP muvaffaqiyatsiz bo'lsa PNG saqlaymiz
-    $pngFile = $dir . '/' . $prefix . '_' . bin2hex(random_bytes(6)) . '.png';
-    rename($tmpFile, $pngFile);
-    return '/generated/' . basename($pngFile);
+    // Fallback: compress muvaffaqiyatsiz → asl format
+    $fallback = $dir . '/' . $prefix . '_' . bin2hex(random_bytes(6)) . '.' . $srcExt;
+    rename($tmpFile, $fallback);
+    return '/generated/' . basename($fallback);
 }
 
 
