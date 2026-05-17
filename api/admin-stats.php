@@ -706,6 +706,23 @@ function handlePayments($db) {
         elseif ($p['status'] === 'approved') { $approved++; $approvedSum += $p['amount']; }
         else { $rejected++; }
     }
+
+    // ============ OYLIK STATISTIKA (so'nggi 12 oy) ============
+    $monthlyStmt = $db->query("
+        SELECT 
+            strftime('%Y-%m', created_at) as month_key,
+            COUNT(*) as total_count,
+            SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved_count,
+            SUM(CASE WHEN status = 'pending'  THEN 1 ELSE 0 END) as pending_count,
+            SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected_count,
+            SUM(CASE WHEN status = 'approved' THEN amount ELSE 0 END) as approved_sum,
+            SUM(CASE WHEN status = 'approved' THEN credits ELSE 0 END) as credits_sum
+        FROM payments
+        WHERE created_at >= date('now', '-12 months')
+        GROUP BY month_key
+        ORDER BY month_key DESC
+    ");
+    $monthly = $monthlyStmt->fetchAll(PDO::FETCH_ASSOC);
     
     jsonResponse([
         'success' => true,
@@ -716,7 +733,8 @@ function handlePayments($db) {
             'rejected' => $rejected,
             'pending_sum' => $pendingSum,
             'approved_sum' => $approvedSum,
-        ]
+        ],
+        'monthly' => $monthly,
     ]);
 }
 

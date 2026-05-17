@@ -309,8 +309,41 @@
                         <div class="text-[9px] text-gray-500 uppercase">Rad etilgan</div>
                     </div>
                 </div>
+
+                <!-- Monthly Statistics Table -->
+                <div class="bg-white/[0.02] border border-white/5 rounded-2xl mb-5 overflow-hidden" id="monthly-stats-block">
+                    <div class="flex items-center justify-between px-5 py-3.5 border-b border-white/5">
+                        <h3 class="text-[11px] font-bold text-gray-300 flex items-center gap-2">
+                            📅 Oylik to'lovlar statistikasi
+                        </h3>
+                        <button onclick="toggleMonthlyTable()" id="monthly-toggle-btn" class="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold transition-colors flex items-center gap-1">
+                            <span id="monthly-toggle-icon">▾</span> Yashirish
+                        </button>
+                    </div>
+                    <div id="monthly-table-wrap">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-[10px]">
+                                <thead>
+                                    <tr class="border-b border-white/5">
+                                        <th class="text-left px-4 py-2.5 text-gray-500 font-bold uppercase tracking-widest">Oy</th>
+                                        <th class="text-center px-3 py-2.5 text-gray-500 font-bold uppercase tracking-widest">Jami</th>
+                                        <th class="text-center px-3 py-2.5 text-emerald-500/70 font-bold uppercase tracking-widest">✅ Tasdiqlangan</th>
+                                        <th class="text-center px-3 py-2.5 text-amber-500/70 font-bold uppercase tracking-widest">⏳ Kutmoqda</th>
+                                        <th class="text-center px-3 py-2.5 text-red-500/70 font-bold uppercase tracking-widest">❌ Rad</th>
+                                        <th class="text-right px-4 py-2.5 text-emerald-500/70 font-bold uppercase tracking-widest">Summa</th>
+                                        <th class="text-right px-4 py-2.5 text-indigo-400/70 font-bold uppercase tracking-widest">Tangalar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="monthly-stats-tbody">
+                                    <tr><td colspan="7" class="text-center py-6 text-gray-600">Yuklanmoqda...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Filter -->
+
                 <div class="flex gap-2 mb-4 flex-wrap">
                     <button onclick="filterPayments('all')" class="pay-filter active px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all" data-filter="all">Barchasi</button>
                     <button onclick="filterPayments('pending')" class="pay-filter px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all" data-filter="pending">⏳ Kutilmoqda</button>
@@ -1714,6 +1747,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 badge.classList.add('hidden');
             }
+
+            // Oylik statistika
+            renderMonthlyStats(d.monthly || []);
             
             paymentsFilter = 'all';
             document.querySelectorAll('.pay-filter').forEach(b => b.classList.toggle('active', b.dataset.filter === 'all'));
@@ -1721,6 +1757,112 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) { showToast('❌ ' + err.message, 'error'); }
         showLoading(false);
     };
+
+    // ===== OYLIK STATISTIKA =====
+    const MONTH_NAMES_UZ = [
+        '', 'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun',
+        'Iyul', 'Avgust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'
+    ];
+
+    function renderMonthlyStats(monthly) {
+        const tbody = document.getElementById('monthly-stats-tbody');
+        if (!monthly.length) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-gray-600">Ma'lumot yo'q</td></tr>`;
+            return;
+        }
+
+        const maxSum = Math.max(...monthly.map(m => parseInt(m.approved_sum) || 0), 1);
+
+        tbody.innerHTML = monthly.map((m, idx) => {
+            const [year, mon] = (m.month_key || '').split('-');
+            const label = `${MONTH_NAMES_UZ[parseInt(mon)] || mon} ${year}`;
+            const total    = parseInt(m.total_count)    || 0;
+            const approved = parseInt(m.approved_count) || 0;
+            const pending  = parseInt(m.pending_count)  || 0;
+            const rejected = parseInt(m.rejected_count) || 0;
+            const sum      = parseInt(m.approved_sum)   || 0;
+            const credits  = parseInt(m.credits_sum)    || 0;
+            const barWidth = Math.round((sum / maxSum) * 100);
+
+            const isCurrentMonth = m.month_key === new Date().toISOString().slice(0,7);
+            const rowBg = isCurrentMonth
+                ? 'bg-indigo-500/[0.04] border-l-2 border-l-indigo-500'
+                : (idx % 2 === 0 ? '' : 'bg-white/[0.01]');
+
+            return `
+            <tr class="${rowBg} hover:bg-white/[0.03] transition-colors group">
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        ${isCurrentMonth ? '<span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse flex-shrink-0"></span>' : '<span class="w-1.5 h-1.5 rounded-full bg-white/10 flex-shrink-0"></span>'}
+                        <span class="font-bold text-gray-200">${label}</span>
+                        ${isCurrentMonth ? '<span class="text-[8px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/20">Joriy</span>' : ''}
+                    </div>
+                    <div class="mt-1.5 h-1 rounded-full bg-white/5 overflow-hidden w-full max-w-[120px]">
+                        <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-indigo-500 transition-all" style="width:${barWidth}%"></div>
+                    </div>
+                </td>
+                <td class="text-center px-3 py-3">
+                    <span class="font-extrabold text-white text-[11px]">${total}</span>
+                </td>
+                <td class="text-center px-3 py-3">
+                    <span class="font-bold text-emerald-400">${approved}</span>
+                </td>
+                <td class="text-center px-3 py-3">
+                    <span class="font-bold text-amber-400">${pending}</span>
+                </td>
+                <td class="text-center px-3 py-3">
+                    <span class="font-bold text-red-400">${rejected}</span>
+                </td>
+                <td class="text-right px-4 py-3">
+                    <span class="font-extrabold text-emerald-400">${sum.toLocaleString('uz-UZ')} so'm</span>
+                </td>
+                <td class="text-right px-4 py-3">
+                    <span class="font-bold text-indigo-400">${credits.toLocaleString('uz-UZ')} 🪙</span>
+                </td>
+            </tr>`;
+        }).join('');
+
+        // Jami qator
+        const totals = monthly.reduce((acc, m) => {
+            acc.total    += parseInt(m.total_count)    || 0;
+            acc.approved += parseInt(m.approved_count) || 0;
+            acc.pending  += parseInt(m.pending_count)  || 0;
+            acc.rejected += parseInt(m.rejected_count) || 0;
+            acc.sum      += parseInt(m.approved_sum)   || 0;
+            acc.credits  += parseInt(m.credits_sum)    || 0;
+            return acc;
+        }, { total:0, approved:0, pending:0, rejected:0, sum:0, credits:0 });
+
+        tbody.innerHTML += `
+        <tr class="border-t border-white/10 bg-white/[0.03]">
+            <td class="px-4 py-3 text-[10px] font-extrabold text-white uppercase tracking-wider">📊 Jami (12 oy)</td>
+            <td class="text-center px-3 py-3 font-extrabold text-white">${totals.total}</td>
+            <td class="text-center px-3 py-3 font-extrabold text-emerald-400">${totals.approved}</td>
+            <td class="text-center px-3 py-3 font-extrabold text-amber-400">${totals.pending}</td>
+            <td class="text-center px-3 py-3 font-extrabold text-red-400">${totals.rejected}</td>
+            <td class="text-right px-4 py-3 font-extrabold text-emerald-400">${totals.sum.toLocaleString('uz-UZ')} so'm</td>
+            <td class="text-right px-4 py-3 font-extrabold text-indigo-400">${totals.credits.toLocaleString('uz-UZ')} 🪙</td>
+        </tr>`;
+    }
+
+    let monthlyTableVisible = true;
+    window.toggleMonthlyTable = () => {
+        const wrap = document.getElementById('monthly-table-wrap');
+        const icon = document.getElementById('monthly-toggle-icon');
+        const btn  = document.getElementById('monthly-toggle-btn');
+        monthlyTableVisible = !monthlyTableVisible;
+        if (monthlyTableVisible) {
+            wrap.classList.remove('hidden');
+            icon.textContent = '▾';
+            btn.innerHTML = '<span id="monthly-toggle-icon">▾</span> Yashirish';
+        } else {
+            wrap.classList.add('hidden');
+            icon.textContent = '▸';
+            btn.innerHTML = '<span id="monthly-toggle-icon">▸</span> Ko\'rsatish';
+        }
+    };
+
+
 
     window.filterPayments = (status) => {
         paymentsFilter = status;
