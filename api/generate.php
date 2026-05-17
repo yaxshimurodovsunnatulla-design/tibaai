@@ -1,8 +1,12 @@
 <?php
 /**
  * Tiba AI — Infografika yaratish (Gemini API)
- * 1:1 Mirror from tibaai.uz
  */
+
+// Stray output uchun early buffer (config.php dan oldin)
+if (!ob_get_level()) ob_start();
+ini_set('memory_limit', '512M');
+
 require_once __DIR__ . '/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

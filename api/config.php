@@ -15,6 +15,20 @@ date_default_timezone_set('Asia/Tashkent');
 // Output buffering boshlash (stray output'larni ushlab qolish uchun)
 if (!ob_get_level()) ob_start();
 
+// Fatal error ham JSON sifatida qaytsin (barcha API fayllar uchun)
+register_shutdown_function(function() {
+    $err = error_get_last();
+    if ($err && in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_RECOVERABLE_ERROR])) {
+        while (ob_get_level()) ob_end_clean();
+        http_response_code(500);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'error' => 'Server xatosi yuz berdi. Qayta urinib ko\'ring.',
+            '_err'  => basename($err['file']) . ':' . $err['line'] . ' ' . substr($err['message'], 0, 120),
+        ]);
+    }
+});
+
 // Security headers
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
