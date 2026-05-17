@@ -1201,18 +1201,29 @@ function compressImage(string $sourcePath, string $destPath, int $quality = 85, 
         return copy($sourcePath, $destPath);
     }
 
-    $mime = @mime_content_type($sourcePath);
+    // MIME aniqlash — extension asosida (mime_content_type() barcha serverlarda yo'q)
+    $extMap = [
+        'jpg'  => 'image/jpeg', 'jpeg' => 'image/jpeg',
+        'png'  => 'image/png',
+        'webp' => 'image/webp',
+        'gif'  => 'image/gif',
+    ];
+    $ext  = strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION));
+    $mime = $extMap[$ext] ?? null;
 
-    // mime_content_type() ba'zi serverlarda ishlamaydi — extension bilan fallback
-    if (!$mime || $mime === 'application/octet-stream' || $mime === 'text/plain') {
-        $extMap = [
-            'jpg'  => 'image/jpeg', 'jpeg' => 'image/jpeg',
-            'png'  => 'image/png',
-            'webp' => 'image/webp',
-            'gif'  => 'image/gif',
-        ];
-        $ext  = strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION));
-        $mime = $extMap[$ext] ?? null;
+    // Extension yo'q bo'lsa — magic bytes orqali aniqlash (fileinfo siz)
+    if (!$mime) {
+        $fh = @fopen($sourcePath, 'rb');
+        if ($fh) {
+            $bytes = fread($fh, 12);
+            fclose($fh);
+            if (substr($bytes, 0, 8) === "\x89PNG\r\n\x1a\n")         $mime = 'image/png';
+            elseif (substr($bytes, 0, 2) === "\xff\xd8")               $mime = 'image/jpeg';
+            elseif (substr($bytes, 0, 4) === 'RIFF' &&
+                    substr($bytes, 8, 4) === 'WEBP')                   $mime = 'image/webp';
+            elseif (substr($bytes, 0, 6) === 'GIF87a' ||
+                    substr($bytes, 0, 6) === 'GIF89a')                 $mime = 'image/gif';
+        }
     }
 
     if (!$mime) return copy($sourcePath, $destPath); // mime aniqlanmasa — aslini ko'chiramiz
