@@ -170,59 +170,77 @@ if (empty($result['imageBase64'])) {
     jsonResponse(['error' => 'Rasm yaratilmadi. Qayta urinib ko\'ring.'], 500);
 }
 
-// Rasmni aniq o'lchamga resize qilish (GD)
+// Memory limitni oshiramiz (katta rasm operatsiyalari uchun)
+ini_set('memory_limit', '512M');
+
+// Rasmni aniq o'lchamga resize qilish (GD) + to'g'ridan WebP saqlash
 $targetW = (int) explode('x', $imageSize)[0]; // 1080
 $targetH = (int) explode('x', $imageSize)[1]; // 1440
 $rawImage = base64_decode($result['imageBase64']);
-$srcImg = @imagecreatefromstring($rawImage);
+$srcImg   = @imagecreatefromstring($rawImage);
+unset($rawImage); // xotiradan bo'shatish
+
+$imageUrl = null;
+$genDir   = __DIR__ . '/../generated';
+if (!is_dir($genDir)) mkdir($genDir, 0755, true);
 
 if ($srcImg) {
     $srcW = imagesx($srcImg);
     $srcH = imagesy($srcImg);
-    
+
     // Agar o'lcham mos kelmasa — resize qilish
     if ($srcW !== $targetW || $srcH !== $targetH) {
         $dstImg = imagecreatetruecolor($targetW, $targetH);
-        
-        // Shaffoflikni saqlash (PNG uchun)
         imagealphablending($dstImg, false);
         imagesavealpha($dstImg, true);
-        
-        // Sifatli resize (aspect ratio saqlangan holda crop)
+
         $srcRatio = $srcW / $srcH;
         $dstRatio = $targetW / $targetH;
-        
         if ($srcRatio > $dstRatio) {
-            // Kengroq — chapdan-o'ngdan qirqish
             $cropW = (int)($srcH * $dstRatio);
             $cropH = $srcH;
             $cropX = (int)(($srcW - $cropW) / 2);
             $cropY = 0;
         } else {
-            // Balandroq — tepadan-pastdan qirqish
             $cropW = $srcW;
             $cropH = (int)($srcW / $dstRatio);
             $cropX = 0;
             $cropY = (int)(($srcH - $cropH) / 2);
         }
-        
         imagecopyresampled($dstImg, $srcImg, 0, 0, $cropX, $cropY, $targetW, $targetH, $cropW, $cropH);
-        
-        // Yangi rasmni base64 ga aylantirish
-        ob_start();
-        imagepng($dstImg, null, 6); // sifat 6 (0-9, 9 eng kichik)
-        $resizedData = ob_get_clean();
-        
-        $result['imageBase64'] = base64_encode($resizedData);
-        $result['mimeType'] = 'image/png';
-        
-        imagedestroy($dstImg);
+        imagedestroy($srcImg);
+        $srcImg = $dstImg;
     }
+
+    // GD resource to'g'ridan WebP ga saqlash (eng samarali — double decode yo'q)
+    if (function_exists('imagewebp')) {
+        $webpFile = $genDir . '/infographic_' . bin2hex(random_bytes(6)) . '.webp';
+        if (@imagewebp($srcImg, $webpFile, 85) && file_exists($webpFile) && filesize($webpFile) > 0) {
+            $imageUrl = '/generated/' . basename($webpFile);
+        }
+    }
+
+    // WebP muvaffaqiyatsiz → PNG fallback
+    if (!$imageUrl) {
+        $pngFile = $genDir . '/infographic_' . bin2hex(random_bytes(6)) . '.png';
+        if (@imagepng($srcImg, $pngFile, 6)) {
+            $imageUrl = '/generated/' . basename($pngFile);
+        }
+    }
+
     imagedestroy($srcImg);
+    $result['mimeType'] = 'image/png'; // Telegram uchun
+} else {
+    // GD ishlamadi — eski usul
+    $imageUrl = saveImage($result['imageBase64'], $result['mimeType'], 'infographic');
 }
 
-// Rasmni saqlash
-$imageUrl = saveImage($result['imageBase64'], $result['mimeType'], 'infographic');
+// Rasm saqlash muvaffaqiyatsiz bo'lsa
+if (empty($imageUrl)) {
+    refundBalance($balanceInfo['user']['id'], $balanceInfo['cost']);
+    error_log("generate.php: imageUrl null — rasm saqlanmadi. mimeType={$result['mimeType']} prefix=infographic");
+    jsonResponse(['error' => 'Rasm saqlanmadi. Qayta urinib ko\'ring.'], 500);
+}
 
 // Originalni saqlash (Telegram uchun)
 $originalPath = null;
