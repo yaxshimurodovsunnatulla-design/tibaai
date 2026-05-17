@@ -174,75 +174,52 @@ if (empty($result['imageBase64'])) {
     jsonResponse(['error' => 'Rasm yaratilmadi. Qayta urinib ko\'ring.'], 500);
 }
 
-// Memory limitni oshiramiz (katta rasm operatsiyalari uchun)
-ini_set('memory_limit', '512M');
+// Rasm saqlash — xavfsiz, to'g'ridan yozish usuli
+$genDir = __DIR__ . '/../generated';
+if (!is_dir($genDir)) @mkdir($genDir, 0755, true);
 
-// Rasmni aniq o'lchamga resize qilish (GD) + to'g'ridan WebP saqlash
-$targetW = (int) explode('x', $imageSize)[0]; // 1080
-$targetH = (int) explode('x', $imageSize)[1]; // 1440
-$rawImage = base64_decode($result['imageBase64']);
-$srcImg   = @imagecreatefromstring($rawImage);
-unset($rawImage); // xotiradan bo'shatish
+$imgBase64  = $result['imageBase64'];
+$imgMime    = $result['mimeType'] ?? 'image/png';
+$imgDecoded = base64_decode($imgBase64);
+unset($imgBase64); // xotiradan bo'shatish
 
-$imageUrl = null;
-$genDir   = __DIR__ . '/../generated';
-if (!is_dir($genDir)) mkdir($genDir, 0755, true);
+// mimeType → extension
+$mimeToExt = ['image/png'=>'png','image/jpeg'=>'jpg','image/webp'=>'webp','image/gif'=>'gif'];
+$srcExt    = $mimeToExt[strtolower($imgMime)] ?? 'png';
 
-if ($srcImg) {
-    $srcW = imagesx($srcImg);
-    $srcH = imagesy($srcImg);
+$uniqueId  = bin2hex(random_bytes(6));
+$imageUrl  = null;
 
-    // Agar o'lcham mos kelmasa — resize qilish
-    if ($srcW !== $targetW || $srcH !== $targetH) {
-        $dstImg = imagecreatetruecolor($targetW, $targetH);
-        imagealphablending($dstImg, false);
-        imagesavealpha($dstImg, true);
+if (!empty($imgDecoded)) {
+    // Avval to'g'ridan disk ga yozamiz (har doim ishlaydi)
+    $rawFile = $genDir . '/infographic_' . $uniqueId . '.' . $srcExt;
+    file_put_contents($rawFile, $imgDecoded);
+    unset($imgDecoded);
 
-        $srcRatio = $srcW / $srcH;
-        $dstRatio = $targetW / $targetH;
-        if ($srcRatio > $dstRatio) {
-            $cropW = (int)($srcH * $dstRatio);
-            $cropH = $srcH;
-            $cropX = (int)(($srcW - $cropW) / 2);
-            $cropY = 0;
-        } else {
-            $cropW = $srcW;
-            $cropH = (int)($srcW / $dstRatio);
-            $cropX = 0;
-            $cropY = (int)(($srcH - $cropH) / 2);
-        }
-        imagecopyresampled($dstImg, $srcImg, 0, 0, $cropX, $cropY, $targetW, $targetH, $cropW, $cropH);
-        imagedestroy($srcImg);
-        $srcImg = $dstImg;
-    }
-
-    // GD resource to'g'ridan WebP ga saqlash (eng samarali — double decode yo'q)
-    if (function_exists('imagewebp')) {
-        $webpFile = $genDir . '/infographic_' . bin2hex(random_bytes(6)) . '.webp';
-        if (@imagewebp($srcImg, $webpFile, 85) && file_exists($webpFile) && filesize($webpFile) > 0) {
-            $imageUrl = '/generated/' . basename($webpFile);
+    // WebP ga convert qilishga urinish (ixtiyoriy)
+    $webpFile = $genDir . '/infographic_' . $uniqueId . '.webp';
+    if ($srcExt !== 'webp' && function_exists('imagewebp') && function_exists('imagecreatefromstring')) {
+        $rawBytes = file_get_contents($rawFile);
+        $gdImg    = @imagecreatefromstring($rawBytes);
+        unset($rawBytes);
+        if ($gdImg) {
+            if (@imagewebp($gdImg, $webpFile, 85) && filesize($webpFile) > 0) {
+                @unlink($rawFile); // asl faylni o'chirish
+                $rawFile = $webpFile;
+            }
+            imagedestroy($gdImg);
         }
     }
 
-    // WebP muvaffaqiyatsiz → PNG fallback
-    if (!$imageUrl) {
-        $pngFile = $genDir . '/infographic_' . bin2hex(random_bytes(6)) . '.png';
-        if (@imagepng($srcImg, $pngFile, 6)) {
-            $imageUrl = '/generated/' . basename($pngFile);
-        }
+    if (file_exists($rawFile)) {
+        $imageUrl = '/generated/' . basename($rawFile);
     }
-
-    imagedestroy($srcImg);
-    $result['mimeType'] = 'image/png'; // Telegram uchun
-} else {
-    // GD ishlamadi — eski usul
-    $imageUrl = saveImage($result['imageBase64'], $result['mimeType'], 'infographic');
 }
 
-// Rasm saqlash muvaffaqiyatsiz bo'lsa
+// Rasm saqlash muvaffaqiyatsiz
 if (empty($imageUrl)) {
     refundBalance($balanceInfo['user']['id'], $balanceInfo['cost']);
-    error_log("generate.php: imageUrl null — rasm saqlanmadi. mimeType={$result['mimeType']} prefix=infographic");
+    error_log("generate.php: imageUrl null — mime={$imgMime} genDir={$genDir} writable=" . (is_writable($genDir)?'yes':'no'));
     jsonResponse(['error' => 'Rasm saqlanmadi. Qayta urinib ko\'ring.'], 500);
 }
 
