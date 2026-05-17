@@ -1501,18 +1501,25 @@ function getTelegramCurlOpts() {
 }
 
 function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true, $targetChatId = null) {
-    $token = getenv('TELEGRAM_BOT_TOKEN');
+    $token  = getenv('TELEGRAM_BOT_TOKEN');
     $chatId = $targetChatId ?: getenv('TELEGRAM_CHANNEL_ID');
-    $debugLog = __DIR__ . '/../tmp/telegram_debug.log';
 
-    $logEntry = date('[Y-m-d H:i:s] ') . "sendMediaGroupToTelegram called\n";
-    $logEntry .= "  Token: " . ($token ? 'SET (' . strlen($token) . ' chars)' : 'MISSING') . "\n";
-    $logEntry .= "  ChatID: " . ($chatId ?: 'MISSING') . "\n";
-    $logEntry .= "  ImagePaths: " . json_encode($imagePaths) . "\n";
+    // tmp/ papkasini avtomatik yaratish
+    $tmpDir   = __DIR__ . '/../tmp';
+    if (!is_dir($tmpDir)) @mkdir($tmpDir, 0755, true);
+    $debugLog = $tmpDir . '/telegram_debug.log';
+
+    $logEntry  = date('[Y-m-d H:i:s] ') . "sendMediaGroupToTelegram called\n";
+    $logEntry .= "  Token: "   . ($token  ? 'SET (' . strlen($token) . ' chars)' : 'MISSING') . "\n";
+    $logEntry .= "  ChatID: "  . ($chatId ?: 'MISSING') . "\n";
+    $logEntry .= "  Paths: "   . json_encode($imagePaths) . "\n";
+    $logEntry .= "  __DIR__: " . __DIR__ . "\n";
 
     if (!$token || !$chatId || empty($imagePaths)) {
-        $logEntry .= "  SKIPPED: Data missing\n\n";
-        file_put_contents($debugLog, $logEntry, FILE_APPEND);
+        $reason = !$token ? 'No token' : (!$chatId ? 'No chatId' : 'No imagePaths');
+        $logEntry .= "  SKIPPED: $reason\n\n";
+        @file_put_contents($debugLog, $logEntry, FILE_APPEND);
+        error_log("sendMediaGroupToTelegram SKIPPED: $reason");
         return false;
     }
 
