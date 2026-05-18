@@ -191,29 +191,12 @@ $uniqueId  = bin2hex(random_bytes(6));
 $imageUrl  = null;
 
 if (!empty($imgDecoded)) {
-    // Avval to'g'ridan disk ga yozamiz (har doim ishlaydi)
+    // To'g'ridan-to'g'ri diskka yozamiz (hech qanday WebP konvertatsiyasiz)
     $rawFile = $genDir . '/infographic_' . $uniqueId . '.' . $srcExt;
-    file_put_contents($rawFile, $imgDecoded);
-    unset($imgDecoded);
-
-    // WebP ga convert qilishga urinish (ixtiyoriy)
-    $webpFile = $genDir . '/infographic_' . $uniqueId . '.webp';
-    if ($srcExt !== 'webp' && function_exists('imagewebp') && function_exists('imagecreatefromstring')) {
-        $rawBytes = file_get_contents($rawFile);
-        $gdImg    = @imagecreatefromstring($rawBytes);
-        unset($rawBytes);
-        if ($gdImg) {
-            if (@imagewebp($gdImg, $webpFile, 85) && filesize($webpFile) > 0) {
-                @unlink($rawFile); // asl faylni o'chirish
-                $rawFile = $webpFile;
-            }
-            imagedestroy($gdImg);
-        }
-    }
-
-    if (file_exists($rawFile)) {
+    if (file_put_contents($rawFile, $imgDecoded) !== false) {
         $imageUrl = '/generated/' . basename($rawFile);
     }
+    unset($imgDecoded);
 }
 
 // Rasm saqlash muvaffaqiyatsiz

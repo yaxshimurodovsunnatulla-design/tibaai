@@ -1426,7 +1426,7 @@ function sendToTelegram($message, $imagePath = null, $asDocument = true, $target
 
     $mimeMap = [
         'jpg'  => 'image/jpeg', 'jpeg' => 'image/jpeg',
-        'png'  => 'image/png',
+        'png'  => 'image/png',  'webp' => 'image/webp',
         'gif'  => 'image/gif',
     ];
 
@@ -1563,7 +1563,7 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
     if (count($validFiles) === 1) {
         $realPath  = $validFiles[0];
         $ext       = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
-        $mimeMap   = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'gif' => 'image/gif'];
+        $mimeMap   = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp', 'gif' => 'image/gif'];
         $mime      = $mimeMap[$ext] ?? 'image/png';
         $endpoint  = $asDocument ? 'sendDocument' : 'sendPhoto';
         $fieldName = $asDocument ? 'document' : 'photo';
@@ -1601,7 +1601,7 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
         // === Ko'p fayl → sendMediaGroup ===
         $postData = ['chat_id' => $chatId];
         $media    = [];
-        $mimeMap  = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'gif' => 'image/gif'];
+        $mimeMap  = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp', 'gif' => 'image/gif'];
 
         foreach ($validFiles as $idx => $realPath) {
             $ext  = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
