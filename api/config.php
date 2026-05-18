@@ -1421,27 +1421,38 @@ function sendToTelegram($message, $imagePath = null, $asDocument = true, $target
 
     $message = (string)$message;
     
-    // Resolve file path
+    // Resolve file path + MIME type aniqlash (WebP, PNG, JPEG)
     $realPath = null;
     if ($imagePath) {
         $realPath = realpath(__DIR__ . '/../' . ltrim($imagePath, '/'));
-        if (!$realPath || !is_file($realPath)) {
-            error_log("Telegram Send: File not found: " . $imagePath);
+        if (!$realPath || !is_file($realPath) || filesize($realPath) === 0) {
+            error_log("Telegram Send: File not found or empty: " . $imagePath);
             $imagePath = null;
+            $realPath  = null;
         }
     }
 
+    $mimeMap = [
+        'jpg'  => 'image/jpeg', 'jpeg' => 'image/jpeg',
+        'png'  => 'image/png',  'webp' => 'image/webp',
+        'gif'  => 'image/gif',
+    ];
+
     $url = "https://api.telegram.org/bot$token/";
     $data = ['chat_id' => $chatId, 'parse_mode' => 'Markdown'];
-    
+
     if ($imagePath && $realPath) {
+        $ext  = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
+        $mime = $mimeMap[$ext] ?? 'application/octet-stream';
+        $curlFile = new CURLFile($realPath, $mime, basename($realPath));
+
         $data['caption'] = substr($message, 0, 1000); // Max 1024
         if ($asDocument) {
             $url .= "sendDocument";
-            $data['document'] = new CURLFile($realPath);
+            $data['document'] = $curlFile;
         } else {
             $url .= "sendPhoto";
-            $data['photo'] = new CURLFile($realPath);
+            $data['photo'] = $curlFile;
         }
     } else {
         $url .= "sendMessage";
@@ -1453,7 +1464,8 @@ function sendToTelegram($message, $imagePath = null, $asDocument = true, $target
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    // Proxy va SSL sozlamalari (getTelegramCurlOpts ichida SSL_VERIFYPEER=false)
+    foreach (getTelegramCurlOpts() as $opt => $val) curl_setopt($ch, $opt, $val);
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
     
     $res = curl_exec($ch);
@@ -1524,62 +1536,131 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
     }
 
     $message = (string)$message;
-    $media = [];
-    $fileIndex = 0;
-    $postData = ['chat_id' => $chatId];
 
-    foreach ($imagePaths as $path) {
-
+    // Mavjud fayllarni aniqlash
+    $validFiles = [];
+    foreach ($imagePaths as $i => $path) {
         $realPath = realpath(__DIR__ . '/../' . ltrim($path, '/'));
-        $logEntry .= "  File[$fileIndex]: path='$path' → realpath='" . ($realPath ?: 'FAILED') . "'";
-        if ($realPath && is_file($realPath)) {
+        $logEntry .= "  File[$i]: path='$path' → realpath='" . ($realPath ?: 'FAILED') . "'";
+        if ($realPath && is_file($realPath) && filesize($realPath) > 0) {
             $logEntry .= " (" . filesize($realPath) . " bytes) ✅\n";
-            $key = "file_" . $fileIndex;
-            $postData[$key] = new CURLFile($realPath);
-            $media[] = [
-                'type' => $asDocument ? 'document' : 'photo',
-                'media' => "attach://$key",
-                'caption' => ($fileIndex === 0) ? substr($message, 0, 1000) : '',
-                'parse_mode' => 'Markdown'
-            ];
-            $fileIndex++;
+            $validFiles[] = $realPath;
         } else {
             $logEntry .= " ❌ NOT FOUND\n";
         }
     }
 
-    if (empty($media)) {
+    if (empty($validFiles)) {
         $logEntry .= "  SKIPPED: No valid files\n\n";
-        file_put_contents($debugLog, $logEntry, FILE_APPEND);
+        @file_put_contents($debugLog, $logEntry, FILE_APPEND);
         return false;
     }
 
-    $postData['media'] = json_encode($media);
-    $url = "https://api.telegram.org/bot$token/sendMediaGroup";
+    $curlOpts = getTelegramCurlOpts();
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    // Proxy va SSL sozlamalari
-    foreach (getTelegramCurlOpts() as $opt => $val) {
-        curl_setopt($ch, $opt, $val);
+    // === 1 ta fayl → sendDocument / sendPhoto (ishonchliroq) ===
+    if (count($validFiles) === 1) {
+        $realPath = $validFiles[0];
+        // MIME type aniqlash
+        $ext = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
+        $mimeMap = [
+            'jpg'  => 'image/jpeg', 'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',  'webp' => 'image/webp',
+            'gif'  => 'image/gif',
+        ];
+        $mime = $mimeMap[$ext] ?? 'application/octet-stream';
+
+        $endpoint  = $asDocument ? 'sendDocument' : 'sendPhoto';
+        $fieldName = $asDocument ? 'document' : 'photo';
+        $url = "https://api.telegram.org/bot$token/$endpoint";
+
+        $curlFile = new CURLFile($realPath, $mime, basename($realPath));
+        $postData = [
+            'chat_id'    => $chatId,
+            'caption'    => substr($message, 0, 1000),
+            'parse_mode' => 'Markdown',
+            $fieldName   => $curlFile,
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        foreach ($curlOpts as $opt => $val) curl_setopt($ch, $opt, $val);
+
+        $res     = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlErr  = curl_error($ch);
+        curl_close($ch);
+
+        $logEntry .= "  [Single file] $endpoint API Response ($httpCode): " . substr($res, 0, 500) . "\n";
+        if ($curlErr) $logEntry .= "  CURL Error: $curlErr\n";
+        $logEntry .= "\n";
+        @file_put_contents($debugLog, $logEntry, FILE_APPEND);
+
+        if ($curlErr)   error_log("Telegram Single Send Curl Error: $curlErr");
+        if ($httpCode !== 200) error_log("Telegram Single Send API Error ($httpCode): $res");
+
+    } else {
+        // === Ko'p fayl → sendMediaGroup ===
+        // multipart/form-data to'g'ri qurilishi:
+        // har bir fayl alohida field, media JSON faqat metadata
+        $postData = ['chat_id' => $chatId];
+        $media = [];
+
+        foreach ($validFiles as $idx => $realPath) {
+            $ext = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
+            $mimeMap = [
+                'jpg'  => 'image/jpeg', 'jpeg' => 'image/jpeg',
+                'png'  => 'image/png',  'webp' => 'image/webp',
+                'gif'  => 'image/gif',
+            ];
+            $mime = $mimeMap[$ext] ?? 'application/octet-stream';
+            $key  = 'file_' . $idx;
+            $postData[$key] = new CURLFile($realPath, $mime, basename($realPath));
+            $media[] = [
+                'type'       => $asDocument ? 'document' : 'photo',
+                'media'      => "attach://$key",
+                'caption'    => ($idx === 0) ? substr($message, 0, 1000) : '',
+                'parse_mode' => 'Markdown',
+            ];
+        }
+
+        // MUHIM: media JSON string sifatida, lekin fayllar alohida field
+        $postData['media'] = json_encode($media, JSON_UNESCAPED_UNICODE);
+        $url = "https://api.telegram.org/bot$token/sendMediaGroup";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // MUHIM: Content-Type ni curl o'zi belgilaydi (multipart/form-data)
+        // Qo'lda belgilash XATO — o'chirish kerak
+        foreach ($curlOpts as $opt => $val) curl_setopt($ch, $opt, $val);
+
+        $res     = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlErr  = curl_error($ch);
+        curl_close($ch);
+
+        $logEntry .= "  [MediaGroup] API Response ($httpCode): " . substr($res, 0, 500) . "\n";
+        if ($curlErr) $logEntry .= "  CURL Error: $curlErr\n";
+
+        // Agar MediaGroup ham muvaffaqiyatsiz bo'lsa — birinchi faylni alohida yuborish
+        if ($httpCode !== 200) {
+            $logEntry .= "  MediaGroup failed, falling back to single send...\n";
+            @file_put_contents($debugLog, $logEntry, FILE_APPEND);
+            return sendToTelegram($message, $imagePaths[0], $asDocument, $targetChatId);
+        }
+        $logEntry .= "\n";
+        @file_put_contents($debugLog, $logEntry, FILE_APPEND);
+
+        if ($curlErr)   error_log("Telegram MediaGroup Curl Error: $curlErr");
+        if ($httpCode !== 200) error_log("Telegram MediaGroup API Error ($httpCode): $res");
     }
-    
-    $res = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlErr = curl_error($ch);
-    curl_close($ch);
 
-    $logEntry .= "  API Response ($httpCode): " . substr($res, 0, 500) . "\n";
-    if ($curlErr) $logEntry .= "  CURL Error: $curlErr\n";
-    $logEntry .= "\n";
-    file_put_contents($debugLog, $logEntry, FILE_APPEND);
-    
-    if ($curlErr) error_log('Telegram MediaGroup Curl Error: ' . $curlErr);
-    if ($httpCode !== 200) error_log("Telegram MediaGroup API Error ($httpCode): " . $res);
-    
     // Foydalanuvchiga nusxasini yuborish (texnik ma'lumotlarsiz)
     if (!$targetChatId) {
         $u = getAuthUser();
@@ -1588,7 +1669,7 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
             sendMediaGroupToTelegram($userMsg, $imagePaths, $asDocument, $u['telegram_id']);
         }
     }
-    
+
     return $res;
 }
 

@@ -20,5 +20,8 @@ deployment:
     - /bin/cp -f ~/repositories/tibaai/maintenance_check.php ~/public_html/maintenance_check.php
     - /bin/cp -f ~/repositories/tibaai/robots.txt ~/public_html/robots.txt
     - /bin/cp -f ~/repositories/tibaai/sitemap.xml ~/public_html/sitemap.xml
+    # .env faylni serverga nusxalash (gitignore da bo'lsa ham, server uchun zarur)
+    - /bin/cp -f ~/repositories/tibaai/.env ~/public_html/.env 2>/dev/null || true
     # Ruxsatlar
     - chmod -R 755 ~/public_html/data ~/public_html/generated ~/public_html/tmp
+    - chmod 600 ~/public_html/.env
