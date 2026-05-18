@@ -191,10 +191,29 @@ $uniqueId  = bin2hex(random_bytes(6));
 $imageUrl  = null;
 
 if (!empty($imgDecoded)) {
-    // To'g'ridan-to'g'ri diskka yozamiz (hech qanday WebP konvertatsiyasiz)
-    $rawFile = $genDir . '/infographic_' . $uniqueId . '.' . $srcExt;
-    if (file_put_contents($rawFile, $imgDecoded) !== false) {
-        $imageUrl = '/generated/' . basename($rawFile);
+    $pngSaved = false;
+
+    // Har doim PNG formatiga o'tkazib saqlaymiz (Yuqori sifat va transparentlik uchun)
+    if (extension_loaded('gd') && function_exists('imagecreatefromstring') && function_exists('imagepng')) {
+        $gdImg = @imagecreatefromstring($imgDecoded);
+        if ($gdImg) {
+            $pngFile = $genDir . '/infographic_' . $uniqueId . '.png';
+            imagealphablending($gdImg, false);
+            imagesavealpha($gdImg, true);
+            if (@imagepng($gdImg, $pngFile, 6)) {
+                $imageUrl = '/generated/' . basename($pngFile);
+                $pngSaved = true;
+            }
+            imagedestroy($gdImg);
+        }
+    }
+
+    // GD bo'lmasa yoki xato yuz bersa, asl formatida yozamiz (fallback)
+    if (!$pngSaved) {
+        $rawFile = $genDir . '/infographic_' . $uniqueId . '.' . $srcExt;
+        if (file_put_contents($rawFile, $imgDecoded) !== false) {
+            $imageUrl = '/generated/' . basename($rawFile);
+        }
     }
     unset($imgDecoded);
 }

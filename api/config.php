@@ -1268,29 +1268,63 @@ function saveImage($base64, $mimeType, $prefix = 'img') {
     $dir = __DIR__ . '/../generated';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
-    // mimeType dan extension aniqlash
-    $mimeMap = [
-        'image/png'  => 'png',
-        'image/jpeg' => 'jpg',
-        'image/jpg'  => 'jpg',
-        'image/webp' => 'png', // WebP kelsa ham PNG sifatida saqlaymiz
-        'image/gif'  => 'gif',
-    ];
-    $ext = $mimeMap[strtolower((string)$mimeType)] ?? 'png';
-
     $decoded = base64_decode($base64, true);
     if ($decoded === false || strlen($decoded) < 50) {
         error_log("saveImage: invalid base64 for prefix=$prefix");
         return null;
     }
 
-    // To'g'ridan faylga yozish — hech qanday konvertatsiya yo'q
-    $filename = $prefix . '_' . bin2hex(random_bytes(6)) . '.' . $ext;
-    $filepath = $dir . '/' . $filename;
-    if (file_put_contents($filepath, $decoded) === false) {
-        error_log("saveImage: failed to write file $filepath");
-        return null;
+    $uniqueId = bin2hex(random_bytes(6));
+
+    // Agar bu original (user yuklagan rasm) bo'lsa, asl formatida saqlaymiz
+    if ($prefix === 'original') {
+        $mimeMap = [
+            'image/png'  => 'png',
+            'image/jpeg' => 'jpg',
+            'image/jpg'  => 'jpg',
+            'image/webp' => 'webp',
+            'image/gif'  => 'gif',
+        ];
+        $ext = $mimeMap[strtolower((string)$mimeType)] ?? 'png';
+        $filename = $prefix . '_' . $uniqueId . '.' . $ext;
+        $filepath = $dir . '/' . $filename;
+        if (file_put_contents($filepath, $decoded) === false) {
+            return null;
+        }
+        return '/generated/' . $filename;
     }
+
+    // Natija rasmlari uchun — Har doim PNG formatiga o'tkazib saqlaymiz (Yuqori sifat)
+    $pngSaved = false;
+    $filename = $prefix . '_' . $uniqueId . '.png';
+    $filepath = $dir . '/' . $filename;
+
+    if (extension_loaded('gd') && function_exists('imagecreatefromstring') && function_exists('imagepng')) {
+        $gdImg = @imagecreatefromstring($decoded);
+        if ($gdImg) {
+            imagealphablending($gdImg, false);
+            imagesavealpha($gdImg, true);
+            if (@imagepng($gdImg, $filepath, 6)) {
+                $pngSaved = true;
+            }
+            imagedestroy($gdImg);
+        }
+    }
+
+    // GD bo'lmasa yoki xato yuz bersa, asl formatida saqlaymiz (fallback)
+    if (!$pngSaved) {
+        $mimeMap = [
+            'image/png'  => 'png',
+            'image/jpeg' => 'jpg',
+            'image/jpg'  => 'jpg',
+            'image/gif'  => 'gif',
+        ];
+        $ext = $mimeMap[strtolower((string)$mimeType)] ?? 'png';
+        $filename = $prefix . '_' . $uniqueId . '.' . $ext;
+        $filepath = $dir . '/' . $filename;
+        file_put_contents($filepath, $decoded);
+    }
+
     return '/generated/' . $filename;
 }
 
