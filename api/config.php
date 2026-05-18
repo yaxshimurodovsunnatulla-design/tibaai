@@ -1408,9 +1408,17 @@ function sendToTelegram($message, $imagePath = null, $asDocument = true, $target
     // Fayl yo'lini aniqlash
     $realPath = null;
     if ($imagePath) {
-        $realPath = realpath(__DIR__ . '/../' . ltrim($imagePath, '/'));
-        if (!$realPath || !is_file($realPath) || filesize($realPath) === 0) {
-            error_log("Telegram Send: File not found or empty: " . $imagePath);
+        // Yangi yaratilgan fayllar uchun stat keshini tozalash
+        clearstatcache(true);
+        // Birinchi to'g'ridan yo'l quramiz (realpath() yangi faylni topa olmashi mumkin)
+        $directPath = __DIR__ . '/../' . ltrim($imagePath, '/');
+        if (file_exists($directPath) && filesize($directPath) > 0) {
+            $realPath = $directPath;
+        } else {
+            $realPath = realpath($directPath) ?: null;
+        }
+        if (!$realPath || !file_exists($realPath) || filesize($realPath) === 0) {
+            error_log("Telegram Send: File not found or empty: $imagePath | direct=$directPath");
             $imagePath = null;
             $realPath  = null;
         }
@@ -1524,14 +1532,20 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
 
     $message = (string)$message;
 
-    // Mavjud fayllarni aniqlash
+    // Mavjud fayllarni aniqlash (yangi fayllar uchun stat keshini tozalash)
+    clearstatcache(true);
     $validFiles = [];
     foreach ($imagePaths as $i => $path) {
-        $realPath = realpath(__DIR__ . '/../' . ltrim($path, '/'));
-        $logEntry .= "  File[$i]: path='$path' → realpath='" . ($realPath ?: 'FAILED') . "'";
-        if ($realPath && is_file($realPath) && filesize($realPath) > 0) {
-            $logEntry .= " (" . filesize($realPath) . " bytes) ✅\n";
-            $validFiles[] = $realPath;
+        $directPath = __DIR__ . '/../' . ltrim($path, '/');
+        // to'g'ridan yo'l (realpath() yangi faylni topa olmashi mumkin)
+        $resolved = (file_exists($directPath) && filesize($directPath) > 0)
+            ? $directPath
+            : (realpath($directPath) ?: null);
+
+        $logEntry .= "  File[$i]: path='$path' → resolved='" . ($resolved ?: 'FAILED') . "'";
+        if ($resolved && file_exists($resolved) && filesize($resolved) > 0) {
+            $logEntry .= " (" . filesize($resolved) . " bytes) ✅\n";
+            $validFiles[] = $resolved;
         } else {
             $logEntry .= " ❌ NOT FOUND\n";
         }

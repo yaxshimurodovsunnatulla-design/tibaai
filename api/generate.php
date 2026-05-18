@@ -244,14 +244,37 @@ $msg .= "\n🤖 _Tiba AI_";
 
 $telegramMsgId = null;
 try {
-    $imagePaths = [];
-    if ($originalPath) $imagePaths[] = $originalPath;
-    $imagePaths[] = $imageUrl;
+    // Fayl stat keshini tozalash — yangi yaratilgan faylni PHP ko'rmasligi mumkin
+    clearstatcache(true);
 
-    $tgResponseRaw = sendMediaGroupToTelegram($msg, $imagePaths, true);
-    $tgResponse = json_decode($tgResponseRaw, true);
-    if (isset($tgResponse['ok']) && $tgResponse['ok'] && isset($tgResponse['result'][0]['message_id'])) {
-        $telegramMsgId = $tgResponse['result'][0]['message_id'];
+    $imagePaths = [];
+    if ($originalPath) {
+        $origReal = realpath(__DIR__ . '/../' . ltrim($originalPath, '/'));
+        if ($origReal && is_file($origReal) && filesize($origReal) > 0) {
+            $imagePaths[] = $originalPath;
+        } else {
+            error_log("generate.php: originalPath NOT FOUND on disk: $originalPath");
+        }
+    }
+
+    // Natija rasmini tekshirish
+    $resultReal = realpath(__DIR__ . '/../' . ltrim($imageUrl, '/'));
+    if ($resultReal && is_file($resultReal) && filesize($resultReal) > 0) {
+        $imagePaths[] = $imageUrl;
+    } else {
+        error_log("generate.php: imageUrl NOT FOUND on disk: $imageUrl | realpath=" . ($resultReal ?: 'false'));
+    }
+
+    if (!empty($imagePaths)) {
+        $tgResponseRaw = sendMediaGroupToTelegram($msg, $imagePaths, true);
+        $tgResponse = json_decode($tgResponseRaw, true);
+        if (isset($tgResponse['ok']) && $tgResponse['ok'] && isset($tgResponse['result'][0]['message_id'])) {
+            $telegramMsgId = $tgResponse['result'][0]['message_id'];
+        } elseif (isset($tgResponse['result']['message_id'])) {
+            $telegramMsgId = $tgResponse['result']['message_id'];
+        }
+    } else {
+        error_log("generate.php: No valid image files found to send to Telegram!");
     }
 } catch (Exception $e) {
     error_log("Telegram Error: " . $e->getMessage());
