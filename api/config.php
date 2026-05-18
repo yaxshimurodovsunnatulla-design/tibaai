@@ -1268,46 +1268,30 @@ function saveImage($base64, $mimeType, $prefix = 'img') {
     $dir = __DIR__ . '/../generated';
     if (!is_dir($dir)) mkdir($dir, 0755, true);
 
-    // mimeType dan asl extension aniqlash
+    // mimeType dan extension aniqlash
     $mimeMap = [
         'image/png'  => 'png',
         'image/jpeg' => 'jpg',
         'image/jpg'  => 'jpg',
-        'image/webp' => 'webp',
+        'image/webp' => 'png', // WebP kelsa ham PNG sifatida saqlaymiz
         'image/gif'  => 'gif',
     ];
-    $srcExt = $mimeMap[strtolower((string)$mimeType)] ?? 'png';
+    $ext = $mimeMap[strtolower((string)$mimeType)] ?? 'png';
 
-    // Temp faylni to'g'ri extension bilan saqlash
-    // (mime_content_type() extension bo'lmasa tana olmaydi)
-    $tmpFile = $dir . '/tmp_' . bin2hex(random_bytes(4)) . '.' . $srcExt;
     $decoded = base64_decode($base64, true);
     if ($decoded === false || strlen($decoded) < 50) {
         error_log("saveImage: invalid base64 for prefix=$prefix");
         return null;
     }
-    file_put_contents($tmpFile, $decoded);
 
-    // Agar allaqachon WebP — to'g'ridan saqlash
-    if ($srcExt === 'webp') {
-        $filename = $prefix . '_' . bin2hex(random_bytes(6)) . '.webp';
-        rename($tmpFile, $dir . '/' . $filename);
-        return '/generated/' . $filename;
-    }
-
-    // PNG/JPEG → WebP compress
-    $filename = $prefix . '_' . bin2hex(random_bytes(6)) . '.webp';
+    // To'g'ridan faylga yozish — hech qanday konvertatsiya yo'q
+    $filename = $prefix . '_' . bin2hex(random_bytes(6)) . '.' . $ext;
     $filepath = $dir . '/' . $filename;
-
-    if (compressImage($tmpFile, $filepath, 85, 1600)) {
-        @unlink($tmpFile);
-        return '/generated/' . $filename;
+    if (file_put_contents($filepath, $decoded) === false) {
+        error_log("saveImage: failed to write file $filepath");
+        return null;
     }
-
-    // Fallback: compress muvaffaqiyatsiz → asl format
-    $fallback = $dir . '/' . $prefix . '_' . bin2hex(random_bytes(6)) . '.' . $srcExt;
-    rename($tmpFile, $fallback);
-    return '/generated/' . basename($fallback);
+    return '/generated/' . $filename;
 }
 
 
@@ -1408,27 +1392,6 @@ function filterUserTelegramMsg($message) {
 }
 
 /**
- * WebP faylni PNG ga o'tkazish (Telegram uchun)
- * GD bo'lmasa yoki xato bo'lsa null qaytaradi (original yuboriladi)
- * @return string|null  Vaqtinchalik PNG yo'li yoki null
- */
-function webpToPngForTelegram(string $realPath): ?string {
-    if (strtolower(pathinfo($realPath, PATHINFO_EXTENSION)) !== 'webp') return null;
-    if (!extension_loaded('gd') || !function_exists('imagecreatefromwebp')) return null;
-
-    $img = @imagecreatefromwebp($realPath);
-    if (!$img) return null;
-
-    $tmpPng = sys_get_temp_dir() . '/tg_' . bin2hex(random_bytes(6)) . '.png';
-    // Transparency saqlash
-    imagealphablending($img, false);
-    imagesavealpha($img, true);
-    $ok = @imagepng($img, $tmpPng, 6); // 6 = yaxshi siqish, sifat yo'qotmasdan
-    imagedestroy($img);
-    return ($ok && file_exists($tmpPng) && filesize($tmpPng) > 0) ? $tmpPng : null;
-}
-
-/**
  * Telegramga xabar/rasm yuborish
  */
 function sendToTelegram($message, $imagePath = null, $asDocument = true, $targetChatId = null) {
@@ -1441,8 +1404,8 @@ function sendToTelegram($message, $imagePath = null, $asDocument = true, $target
     }
 
     $message = (string)$message;
-    
-    // Resolve file path + MIME type aniqlash (WebP, PNG, JPEG)
+
+    // Fayl yo'lini aniqlash
     $realPath = null;
     if ($imagePath) {
         $realPath = realpath(__DIR__ . '/../' . ltrim($imagePath, '/'));
@@ -1455,24 +1418,19 @@ function sendToTelegram($message, $imagePath = null, $asDocument = true, $target
 
     $mimeMap = [
         'jpg'  => 'image/jpeg', 'jpeg' => 'image/jpeg',
-        'png'  => 'image/png',  'webp' => 'image/webp',
+        'png'  => 'image/png',
         'gif'  => 'image/gif',
     ];
 
-    $url = "https://api.telegram.org/bot$token/";
+    $url  = "https://api.telegram.org/bot$token/";
     $data = ['chat_id' => $chatId, 'parse_mode' => 'Markdown'];
 
     if ($imagePath && $realPath) {
-        // WebP → PNG konvertatsiya (Telegram PNG sifatida yuborsin)
-        $tmpPng   = webpToPngForTelegram($realPath);
-        $sendPath = $tmpPng ?? $realPath;
-        $ext      = strtolower(pathinfo($sendPath, PATHINFO_EXTENSION));
+        $ext      = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
         $mime     = $mimeMap[$ext] ?? 'image/png';
-        // Fayl nomini .png qilamiz (sendDocument da ko'rinadigan nom)
-        $fileName = pathinfo($realPath, PATHINFO_FILENAME) . '.png';
-        $curlFile = new CURLFile($sendPath, 'image/png', $fileName);
+        $curlFile = new CURLFile($realPath, $mime, basename($realPath));
 
-        $data['caption'] = substr($message, 0, 1000); // Max 1024
+        $data['caption'] = substr($message, 0, 1000);
         if ($asDocument) {
             $url .= "sendDocument";
             $data['document'] = $curlFile;
@@ -1482,7 +1440,7 @@ function sendToTelegram($message, $imagePath = null, $asDocument = true, $target
         }
     } else {
         $url .= "sendMessage";
-        $data['text'] = substr($message, 0, 4000); // Max 4096
+        $data['text'] = substr($message, 0, 4000);
     }
 
     $ch = curl_init();
@@ -1589,18 +1547,15 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
 
     // === 1 ta fayl → sendDocument / sendPhoto (ishonchliroq) ===
     if (count($validFiles) === 1) {
-        $realPath = $validFiles[0];
-
-        // WebP → PNG konvertatsiya (Telegram PNG sifatida yuborsin)
-        $tmpPng   = webpToPngForTelegram($realPath);
-        $sendPath = $tmpPng ?? $realPath;
-        $fileName = pathinfo($realPath, PATHINFO_FILENAME) . '.png';
-
+        $realPath  = $validFiles[0];
+        $ext       = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
+        $mimeMap   = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'gif' => 'image/gif'];
+        $mime      = $mimeMap[$ext] ?? 'image/png';
         $endpoint  = $asDocument ? 'sendDocument' : 'sendPhoto';
         $fieldName = $asDocument ? 'document' : 'photo';
-        $url = "https://api.telegram.org/bot$token/$endpoint";
+        $url       = "https://api.telegram.org/bot$token/$endpoint";
 
-        $curlFile = new CURLFile($sendPath, 'image/png', $fileName);
+        $curlFile = new CURLFile($realPath, $mime, basename($realPath));
         $postData = [
             'chat_id'    => $chatId,
             'caption'    => substr($message, 0, 1000),
@@ -1615,13 +1570,10 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         foreach ($curlOpts as $opt => $val) curl_setopt($ch, $opt, $val);
 
-        $res     = curl_exec($ch);
+        $res      = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlErr  = curl_error($ch);
         curl_close($ch);
-
-        // Vaqtinchalik PNG ni o'chirish
-        if ($tmpPng && file_exists($tmpPng)) @unlink($tmpPng);
 
         $logEntry .= "  [Single file] $endpoint API Response ($httpCode): " . substr($res, 0, 500) . "\n";
         if ($curlErr) $logEntry .= "  CURL Error: $curlErr\n";
@@ -1633,19 +1585,15 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
 
     } else {
         // === Ko'p fayl → sendMediaGroup ===
-        $postData  = ['chat_id' => $chatId];
-        $media     = [];
-        $tmpPngs   = []; // Vaqtinchalik PNG fayllar ro'yxati
+        $postData = ['chat_id' => $chatId];
+        $media    = [];
+        $mimeMap  = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'gif' => 'image/gif'];
 
         foreach ($validFiles as $idx => $realPath) {
-            // WebP → PNG konvertatsiya
-            $tmpPng   = webpToPngForTelegram($realPath);
-            $sendPath = $tmpPng ?? $realPath;
-            if ($tmpPng) $tmpPngs[] = $tmpPng;
-
-            $fileName = pathinfo($realPath, PATHINFO_FILENAME) . '.png';
-            $key      = 'file_' . $idx;
-            $postData[$key] = new CURLFile($sendPath, 'image/png', $fileName);
+            $ext  = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
+            $mime = $mimeMap[$ext] ?? 'image/png';
+            $key  = 'file_' . $idx;
+            $postData[$key] = new CURLFile($realPath, $mime, basename($realPath));
             $media[] = [
                 'type'       => $asDocument ? 'document' : 'photo',
                 'media'      => "attach://$key",
@@ -1654,7 +1602,6 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
             ];
         }
 
-        // MUHIM: media JSON string sifatida, lekin fayllar alohida field
         $postData['media'] = json_encode($media, JSON_UNESCAPED_UNICODE);
         $url = "https://api.telegram.org/bot$token/sendMediaGroup";
 
@@ -1663,17 +1610,12 @@ function sendMediaGroupToTelegram($message, $imagePaths = [], $asDocument = true
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        // MUHIM: Content-Type ni curl o'zi belgilaydi (multipart/form-data)
-        // Qo'lda belgilash XATO — o'chirish kerak
         foreach ($curlOpts as $opt => $val) curl_setopt($ch, $opt, $val);
 
-        $res     = curl_exec($ch);
+        $res      = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlErr  = curl_error($ch);
         curl_close($ch);
-
-        // Vaqtinchalik PNG fayllarni o'chirish
-        foreach ($tmpPngs as $tmpF) if (file_exists($tmpF)) @unlink($tmpF);
 
         $logEntry .= "  [MediaGroup] API Response ($httpCode): " . substr($res, 0, 500) . "\n";
         if ($curlErr) $logEntry .= "  CURL Error: $curlErr\n";
