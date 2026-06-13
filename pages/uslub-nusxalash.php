@@ -1,4 +1,6 @@
-<?php $pageTitle = 'Uslub Nusxalash – Tiba AI'; ?>
+<?php
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.uslub') . ' – Tiba AI'; ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
 
 <div class="py-12 sm:py-20 relative overflow-hidden">
@@ -18,10 +20,10 @@
         <div class="text-center mb-12">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 mb-4 animate-fade-in">
                 <i class="fa-solid fa-masks-theater text-cyan-400 text-sm"></i>
-                <span class="text-xs font-bold text-cyan-300 uppercase tracking-widest">Still Nusxalash</span>
+                <span class="text-xs font-bold text-cyan-300 uppercase tracking-widest"><?= t('svc.style_transfer') ?></span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
-                Uslub <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">Nusxalash</span>
+                Uslub <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400"><?= t('common.copy') ?></span>
             </h1>
             <p class="text-gray-400 max-w-xl mx-auto">
                 Namuna rasmning uslubini mahsulot rasmingizga o'tkazing. AI 2 ta rasmni birlashtirib, professional natija beradi.
@@ -32,7 +34,7 @@
         <div class="glass-card p-4 sm:p-5 mb-8 max-w-3xl mx-auto border border-cyan-500/10">
             <div class="flex items-center gap-2 mb-3">
                 <i class="fa-solid fa-lightbulb text-amber-400 text-sm"></i>
-                <span class="text-xs font-bold text-cyan-300 uppercase tracking-wider">Qanday ishlaydi?</span>
+                <span class="text-xs font-bold text-cyan-300 uppercase tracking-wider"><?= t('svc.how_it_works') ?></span>
             </div>
             <div class="grid grid-cols-3 gap-4 text-center">
                 <div>
@@ -67,8 +69,8 @@
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex justify-between items-center">
                                 <span class="flex items-center gap-2"><i class="fa-solid fa-palette text-blue-400"></i> Namuna <span class="text-red-400">*</span></span>
                                 <div class="flex p-0.5 bg-white/5 rounded-lg border border-white/5 text-[9px]">
-                                    <button type="button" onclick="switchImageMethod('style', 'file')" id="style-method-file-btn" class="px-2 py-1 rounded-md transition-all bg-blue-500/20 text-blue-400">FAYL</button>
-                                    <button type="button" onclick="switchImageMethod('style', 'url')" id="style-method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300">HAVOLA</button>
+                                    <button type="button" onclick="switchImageMethod('style', 'file')" id="style-method-file-btn" class="px-2 py-1 rounded-md transition-all bg-blue-500/20 text-blue-400"><?= t('svc.file') ?></button>
+                                    <button type="button" onclick="switchImageMethod('style', 'url')" id="style-method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300"><?= t('svc.link') ?></button>
                                 </div>
                             </label>
 
@@ -80,8 +82,8 @@
                                         <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-blue-500/10 transition-all duration-500 border border-white/5 group-hover:border-blue-500/20">
                                             <i class="fa-solid fa-palette text-2xl text-gray-500 group-hover:text-blue-400"></i>
                                         </div>
-                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors text-center px-2">Uslub yuklash</span>
-                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">ART / DIZAYN</span>
+                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors text-center px-2"><?= t('svc.upload_style_label') ?></span>
+                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter"><?= t('svc.art_design') ?></span>
                                     </div>
                                     <input id="style-file-input" type="file" accept="image/*" class="hidden" />
                                 </label>
@@ -105,8 +107,8 @@
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex justify-between items-center">
                                 <span class="flex items-center gap-2"><i class="fa-solid fa-camera text-cyan-400"></i> Mahsulot rasmi <span class="text-red-400">*</span></span>
                                 <div class="flex p-0.5 bg-white/5 rounded-lg border border-white/5 text-[9px]">
-                                    <button type="button" onclick="switchImageMethod('product', 'file')" id="product-method-file-btn" class="px-2 py-1 rounded-md transition-all bg-cyan-500/20 text-cyan-400">FAYL</button>
-                                    <button type="button" onclick="switchImageMethod('product', 'url')" id="product-method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300">HAVOLA</button>
+                                    <button type="button" onclick="switchImageMethod('product', 'file')" id="product-method-file-btn" class="px-2 py-1 rounded-md transition-all bg-cyan-500/20 text-cyan-400"><?= t('svc.file') ?></button>
+                                    <button type="button" onclick="switchImageMethod('product', 'url')" id="product-method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300"><?= t('svc.link') ?></button>
                                 </div>
                             </label>
                             
@@ -118,8 +120,8 @@
                                         <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-cyan-500/10 transition-all duration-500 border border-white/5 group-hover:border-cyan-500/20">
                                             <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-500 group-hover:text-cyan-400"></i>
                                         </div>
-                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors text-center px-2">Rasm yuklash</span>
-                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">JPG, PNG • 10 MB</span>
+                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors text-center px-2"><?= t('service.upload_image') ?></span>
+                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter"><?= t('svc.jpg_png_10mb') ?></span>
                                     </div>
                                     <input id="product-file-input" type="file" accept="image/*" class="hidden" />
                                 </label>
@@ -146,23 +148,23 @@
                         </label>
                         <div class="grid grid-cols-3 sm:grid-cols-5 gap-2" id="template-selector">
                             <button data-ratio="3:4" data-id="uzum" class="template-btn active p-2.5 rounded-xl border text-center transition-all duration-200 border-cyan-500 bg-cyan-500/15 text-white shadow-lg shadow-cyan-500/10">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Uzum</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.uzum') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">3:4</div>
                             </button>
                             <button data-ratio="1:1" data-id="square" class="template-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Kvadrat</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.square') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">1:1</div>
                             </button>
                             <button data-ratio="4:3" data-id="landscape" class="template-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Landscape</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.landscape') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">4:3</div>
                             </button>
                             <button data-ratio="9:16" data-id="story" class="template-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Story</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.story') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">9:16</div>
                             </button>
                             <button data-ratio="16:9" data-id="wide" class="template-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Keng</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.wide') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">16:9</div>
                             </button>
                         </div>
@@ -175,12 +177,12 @@
                         </label>
                         <div class="flex items-center gap-4">
                             <input type="range" id="strength-slider" min="1" max="3" value="2" step="1" class="flex-1 h-2 bg-white/10 rounded-full appearance-none cursor-pointer accent-cyan-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-cyan-500/30 [&::-webkit-slider-thumb]:cursor-pointer">
-                            <div id="strength-label" class="text-sm font-bold text-cyan-300 w-20 text-right">O'rtacha</div>
+                            <div id="strength-label" class="text-sm font-bold text-cyan-300 w-20 text-right"><?= t('svc.medium') ?></div>
                         </div>
                         <div class="flex justify-between text-[10px] text-gray-500 mt-1.5 px-0.5">
-                            <span>Yengil</span>
-                            <span>O'rtacha</span>
-                            <span>Kuchli</span>
+                            <span><?= t('svc.light') ?></span>
+                            <span><?= t('svc.medium') ?></span>
+                            <span><?= t('svc.strong') ?></span>
                         </div>
                     </div>
 
@@ -189,7 +191,7 @@
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                             <i class="fa-solid fa-pen-nib text-cyan-400"></i> Qo'shimcha istaklar (ixtiyoriy)
                         </label>
-                        <textarea id="custom-prompt" placeholder="Masalan: Ranglarni yorqinroq qib ber, mahsulotni kattaroq ko'rsat..." rows="2" class="input-field resize-none text-sm"></textarea>
+                        <textarea id="custom-prompt" placeholder="<?= t('ph.style_example') ?>" rows="2" class="input-field resize-none text-sm"></textarea>
                     </div>
 
                     <!-- Generate Button -->
@@ -233,9 +235,9 @@
                         <div class="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-4">
                             <i class="fa-solid fa-circle-xmark text-3xl text-red-500"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-red-400 mb-2">Xatolik</h3>
+                        <h3 class="text-lg font-semibold text-red-400 mb-2"><?= t('svc.error') ?></h3>
                         <p id="error-text" class="text-sm text-gray-400 mb-4"></p>
-                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2">Qayta urinish</button>
+                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2"><?= t('common.retry') ?></button>
                     </div>
 
                     <!-- Result state -->
@@ -244,7 +246,7 @@
                         <div class="grid grid-cols-3 gap-3">
                             <div class="relative">
                                 <img id="source-product-img" src="" alt="Mahsulot" class="w-full rounded-xl object-contain bg-black/30 border border-white/10 aspect-square" />
-                                <span class="absolute top-1.5 left-1.5 bg-cyan-500/80 backdrop-blur px-2 py-0.5 rounded-md text-[9px] font-bold text-white uppercase tracking-wider">Mahsulot</span>
+                                <span class="absolute top-1.5 left-1.5 bg-cyan-500/80 backdrop-blur px-2 py-0.5 rounded-md text-[9px] font-bold text-white uppercase tracking-wider"><?= t('svc.product') ?></span>
                             </div>
                             <div class="flex items-center justify-center">
                                 <div class="w-12 h-12 rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center">
@@ -253,7 +255,7 @@
                             </div>
                             <div class="relative">
                                 <img id="source-style-img" src="" alt="Uslub" class="w-full rounded-xl object-contain bg-black/30 border border-white/10 aspect-square" />
-                                <span class="absolute top-1.5 left-1.5 bg-blue-500/80 backdrop-blur px-2 py-0.5 rounded-md text-[9px] font-bold text-white uppercase tracking-wider">Uslub</span>
+                                <span class="absolute top-1.5 left-1.5 bg-blue-500/80 backdrop-blur px-2 py-0.5 rounded-md text-[9px] font-bold text-white uppercase tracking-wider"><?= t('service.uslub') ?></span>
                             </div>
                         </div>
 
@@ -281,7 +283,7 @@
                                 <i class="fa-solid fa-download mr-2"></i>
                                 Rasmni yuklab olish
                             </button>
-                            <button id="reset-result-btn" class="btn-secondary px-6" title="Qaytadan boshlash">
+                            <button id="reset-result-btn" class="btn-secondary px-6" title="<?= t('tt.restart') ?>">
                                 <i class="fa-solid fa-rotate-right"></i>
                             </button>
                         </div>
@@ -292,7 +294,7 @@
                         <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-cyan-600/20 to-blue-600/20 border border-cyan-500/20 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-cyan-500/10">
                             <i class="fa-solid fa-masks-theater text-4xl text-cyan-400"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-white mb-2">Natija shu yerda ko'rinadi</h3>
+                        <h3 class="text-lg font-bold text-white mb-2"><?= t('common.result_here') ?></h3>
                         <p class="text-sm text-gray-500 max-w-sm mx-auto">
                             Mahsulot rasmini va xohlagan uslubingizning namuna rasmini yuklang. AI ikkisini birlashtirib, ajoyib natija yaratadi.
                         </p>
@@ -573,7 +575,7 @@
             if (!response.ok) {
                 if (data.auth_required) { TibaAuth.showModal(); throw new Error('Avval tizimga kiring'); }
                 if (data.insufficient_balance) { showNoBalance(data.cost, data.balance); throw new Error('__nobalance__'); }
-                throw new Error(data.error || 'Xatolik yuz berdi');
+                throw new Error(data.error || _t('error'));
             }
 
             if (data.balance !== undefined) TibaAuth.updateBalance(data.balance);

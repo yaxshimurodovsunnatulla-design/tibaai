@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ . '/../api/config.php';
+require_once __DIR__ . '/../lang/i18n.php';
 $pageTitle = 'Kurslar – Marketpleyslarda Savdo | Tiba AI';
-$pageDescription = 'Marketpleyslarda savdo qilishni o\'rganing. Tekin konsultatsiya oling va professional savdo strategiyalarini kashf eting.';
+$pageDescription = t('kurslar.subtitle') . " o'rganing. Tekin konsultatsiya oling va professional savdo strategiyalarini kashf eting.";
 ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
 
@@ -552,10 +553,10 @@ $pageDescription = 'Marketpleyslarda savdo qilishni o\'rganing. Tekin konsultats
             <!-- Left: Text Content -->
             <div>
                 <div class="kurs-badge">
-                    <i class="fa-solid fa-graduation-cap"></i> Ta'lim platformasi
+                    <i class="fa-solid fa-graduation-cap"></i> <?= t('kurslar.education') ?>
                 </div>
                 <h1 class="kurs-title">
-                    Professional <span class="accent">Kurslar</span>
+                    Professional <span class="accent"><?= t('kurslar.title') ?></span>
                 </h1>
                 <p class="kurs-desc">
                     Marketplace savdosi bo'yicha bilim va tajribangizni oshiring. Mutaxassis mentorlar bilan tekin konsultatsiya oling va biznesingizni keyingi bosqichga olib chiqing.
@@ -564,15 +565,15 @@ $pageDescription = 'Marketpleyslarda savdo qilishni o\'rganing. Tekin konsultats
                 <div class="kurs-stats">
                     <div class="kurs-stat">
                         <div class="kurs-stat-value"><span class="accent">500+</span></div>
-                        <div class="kurs-stat-label">O'quvchilar</div>
+                        <div class="kurs-stat-label"><?= t('kurslar.students') ?></div>
                     </div>
                     <div class="kurs-stat">
                         <div class="kurs-stat-value"><span class="accent">98%</span></div>
-                        <div class="kurs-stat-label">Mamnuniyat</div>
+                        <div class="kurs-stat-label"><?= t('kurslar.satisfaction') ?></div>
                     </div>
                     <div class="kurs-stat">
                         <div class="kurs-stat-value"><span class="accent">24/7</span></div>
-                        <div class="kurs-stat-label">Qo'llab-quvvatlash</div>
+                        <div class="kurs-stat-label"><?= t('kurslar.support') ?></div>
                     </div>
                 </div>
             </div>
@@ -580,7 +581,7 @@ $pageDescription = 'Marketpleyslarda savdo qilishni o\'rganing. Tekin konsultats
             <!-- Right: Marketplace Logos -->
             <div class="mp-logos-section">
                 <div class="mp-logos-section-title">
-                    <i class="fa-solid fa-handshake" style="margin-right: 4px;"></i> Qo'llab-quvvatlanadigan platformalar
+                    <i class="fa-solid fa-handshake" style="margin-right: 4px;"></i> <?= t('kurslar.platforms') ?>
                 </div>
                 <div class="mp-logos-grid">
                     <div class="mp-logo-card">
@@ -623,15 +624,15 @@ $pageDescription = 'Marketpleyslarda savdo qilishni o\'rganing. Tekin konsultats
                         <div class="kurs-card-banner-icon">
                             <i class="fa-solid fa-store"></i>
                         </div>
-                        <div class="kurs-card-banner-label">Marketpleyslarda Savdo</div>
+                        <div class="kurs-card-banner-label"><?= t('kurslar.trading') ?></div>
                     </div>
                 </div>
                 <div class="kurs-card-body">
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <span class="kurs-card-tag popular"><i class="fa-solid fa-fire"></i> Eng Mashhur</span>
-                        <span class="kurs-card-tag free"><i class="fa-solid fa-gift"></i> Tekin Konsultatsiya</span>
+                        <span class="kurs-card-tag popular"><i class="fa-solid fa-fire"></i> <?= t('kurslar.popular') ?></span>
+                        <span class="kurs-card-tag free"><i class="fa-solid fa-gift"></i> <?= t('kurslar.free_consult') ?></span>
                     </div>
-                    <h3>Marketpleyslarda Savdo Qilish Kursi</h3>
+                    <h3><?= t('kurslar.course_title') ?></h3>
                     <p class="kurs-card-desc">
                         Uzum Market, Wildberries va boshqa marketplace platformalarida muvaffaqiyatli savdo boshlash va rivojlantirishni o'rganing. 
                         Real tajribalar va amaliy strategiyalar asosida tuzilgan to'liq kurs.
@@ -659,21 +660,21 @@ $pageDescription = 'Marketpleyslarda savdo qilishni o\'rganing. Tekin konsultats
                         <div class="advantage-card-icon" style="background: rgba(99, 102, 241, 0.1); color: #818cf8;">
                             <i class="fa-solid fa-chalkboard-user"></i>
                         </div>
-                        <h4>Amaliy ta'lim</h4>
+                        <h4><?= t('kurslar.practical') ?></h4>
                         <p>Nazariy bilimlar emas, real platformalarda amaliy tajriba orqali o'rgatamiz.</p>
                     </div>
                     <div class="advantage-card">
                         <div class="advantage-card-icon" style="background: rgba(34, 197, 94, 0.1); color: #4ade80;">
                             <i class="fa-solid fa-headset"></i>
                         </div>
-                        <h4>24/7 Qo'llab-quvvatlash</h4>
+                        <h4><?= t('kurslar.support_title') ?></h4>
                         <p>Savollaringizga tez va professional javoblar. Mentor har doim aloqada.</p>
                     </div>
                     <div class="advantage-card">
                         <div class="advantage-card-icon" style="background: rgba(245, 158, 11, 0.1); color: #fbbf24;">
                             <i class="fa-solid fa-chart-line"></i>
                         </div>
-                        <h4>Natijaga yo'naltirilgan</h4>
+                        <h4><?= t('kurslar.result') ?></h4>
                         <p>O'quvchilarimizning 90% birinchi oyda daromad olishni boshlaydi.</p>
                     </div>
                 </div>
@@ -688,13 +689,13 @@ $pageDescription = 'Marketpleyslarda savdo qilishni o\'rganing. Tekin konsultats
                         <div class="consult-card-icon">
                             <i class="fa-solid fa-phone-volume"></i>
                         </div>
-                        <h2>Tekin Konsultatsiya Olish</h2>
-                        <p class="consult-card-subtitle">Mutaxassis bilan bog'lanish uchun ma'lumotlaringizni qoldiring</p>
+                        <h2><?= t('kurslar.get_consult') ?></h2>
+                        <p class="consult-card-subtitle"><?= t('kurslar.consult_desc') ?></p>
                     </div>
 
                     <div style="text-align: center;">
                         <span class="consult-free-tag">
-                            <i class="fa-solid fa-gift"></i> 100% Bepul
+                            <i class="fa-solid fa-gift"></i> <?= t('kurslar.free100') ?>
                         </span>
                     </div>
 
@@ -702,29 +703,29 @@ $pageDescription = 'Marketpleyslarda savdo qilishni o\'rganing. Tekin konsultats
 
                     <form id="consult-form" onsubmit="submitConsultation(event)">
                         <div class="consult-form-group">
-                            <label class="consult-form-label">Ismingiz</label>
+                            <label class="consult-form-label"><?= t('kurslar.your_name') ?></label>
                             <div class="consult-input-wrapper">
                                 <i class="fa-solid fa-user consult-input-icon"></i>
-                                <input type="text" id="consult-name" class="consult-input" placeholder="To'liq ismingiz" required minlength="2" autocomplete="name">
+                                <input type="text" id="consult-name" class="consult-input" placeholder="<?= t('ph.full_name') ?>" required minlength="2" autocomplete="name">
                             </div>
                         </div>
 
                         <div class="consult-form-group">
-                            <label class="consult-form-label">Telefon raqamingiz</label>
+                            <label class="consult-form-label"><?= t('kurslar.your_phone') ?></label>
                             <div class="consult-input-wrapper">
                                 <i class="fa-solid fa-phone consult-input-icon"></i>
-                                <input type="tel" id="consult-phone" class="consult-input" placeholder="+998 90 123 45 67" required autocomplete="tel">
+                                <input type="tel" id="consult-phone" class="consult-input" placeholder="<?= t('ph.phone') ?>" required autocomplete="tel">
                             </div>
                         </div>
 
                         <button type="submit" class="consult-submit-btn" id="consult-submit-btn">
                             <i class="fa-solid fa-paper-plane"></i>
-                            <span id="consult-submit-text">Konsultatsiya olish</span>
+                            <span id="consult-submit-text"><?= t('kurslar.consultation') ?></span>
                         </button>
                     </form>
 
                     <p class="consult-privacy">
-                        <i class="fa-solid fa-shield-halved"></i> Ma'lumotlaringiz himoyalangan. Biz ularni uchinchi shaxslarga bermayimiz.
+                        <i class="fa-solid fa-shield-halved"></i> <?= t('kurslar.privacy') ?>
                     </p>
                 </div>
 
@@ -734,10 +735,10 @@ $pageDescription = 'Marketpleyslarda savdo qilishni o\'rganing. Tekin konsultats
                         <div class="consult-success-icon">
                             <i class="fa-solid fa-circle-check"></i>
                         </div>
-                        <h3>So'rovingiz yuborildi!</h3>
-                        <p>Mutaxassisimiz tez orada siz bilan bog'lanadi. Qo'ng'iroqni kuting!</p>
+                        <h3><?= t('kurslar.sent') ?></h3>
+                        <p><?= t('kurslar.sent_desc') ?></p>
                         <button onclick="resetConsultForm()" style="margin-top: 1.5rem; padding: 0.7rem 1.5rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #9ca3af; font-size: 0.85rem; cursor: pointer; transition: all 0.3s;">
-                            <i class="fa-solid fa-arrow-left" style="margin-right: 6px;"></i> Yangi so'rov yuborish
+                            <i class="fa-solid fa-arrow-left" style="margin-right: 6px;"></i> <?= t('kurslar.new_request') ?>
                         </button>
                     </div>
                 </div>
@@ -760,19 +761,19 @@ async function submitConsultation(e) {
     errorEl.style.display = 'none';
 
     if (!name || name.length < 2) {
-        errorEl.textContent = 'Ismingizni to\'g\'ri kiriting (kamida 2 belgi)';
+        errorEl.textContent = _t('kurslar_err_name');
         errorEl.style.display = 'block';
         return;
     }
     if (!phone || phone.replace(/[^0-9+]/g, '').length < 9) {
-        errorEl.textContent = 'Telefon raqamni to\'g\'ri kiriting';
+        errorEl.textContent = _t('kurslar_err_phone');
         errorEl.style.display = 'block';
         return;
     }
 
     // Loading
     btn.disabled = true;
-    btnText.textContent = 'Yuborilmoqda...';
+    btnText.textContent = _t('kurslar_sending');
 
     try {
         const resp = await fetch('/api/consultation.php', {
@@ -787,15 +788,15 @@ async function submitConsultation(e) {
             document.getElementById('consult-form-section').style.display = 'none';
             document.getElementById('consult-success-section').style.display = 'block';
         } else {
-            errorEl.textContent = data.error || 'Xatolik yuz berdi';
+            errorEl.textContent = data.error || _t('error');
             errorEl.style.display = 'block';
         }
     } catch (err) {
-        errorEl.textContent = 'Tarmoq xatoligi. Qaytadan urinib ko\'ring.';
+        errorEl.textContent = _t('kurslar_network_err');
         errorEl.style.display = 'block';
     } finally {
         btn.disabled = false;
-        btnText.textContent = 'Konsultatsiya olish';
+        btnText.textContent = _t('kurslar.consultation');
     }
 }
 

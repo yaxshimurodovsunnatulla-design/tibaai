@@ -1,4 +1,6 @@
-<?php $pageTitle = 'Video AI – Tiba AI'; ?>
+<?php
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.video_ai') . ' – Tiba AI'; ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
 
 <div class="py-12 sm:py-20 relative overflow-hidden">
@@ -18,10 +20,10 @@
         <div class="text-center mb-12">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 mb-4 animate-fade-in">
                 <i class="fa-solid fa-video text-violet-400 text-sm"></i>
-                <span class="text-xs font-bold text-violet-300 uppercase tracking-widest">Video Generatsiya</span>
+                <span class="text-xs font-bold text-violet-300 uppercase tracking-widest"><?= t('svc.video_gen') ?></span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
-                AI bilan <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400">Video Yaratish</span>
+                AI bilan <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400"><?= t('svc.video_create') ?></span>
             </h1>
             <p class="text-gray-400 max-w-xl mx-auto">
                 Matnli buyruq yozing yoki rasm yuklang — AI sizga professional video yaratsin. Tiba AI kuchi bilan.
@@ -56,8 +58,8 @@
                             <div class="absolute inset-0 bg-gradient-to-br from-violet-500/0 to-fuchsia-500/0 group-hover:from-violet-500/5 group-hover:to-fuchsia-500/5 transition-all duration-500"></div>
                             <div class="relative z-10 flex flex-col items-center" id="upload-content">
                                 <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-500 group-hover:text-violet-400 transition-all mb-2"></i>
-                                <span class="text-xs font-bold text-gray-500 uppercase group-hover:text-violet-400">Rasm tanlang</span>
-                                <span class="text-[10px] text-gray-600 mt-1">JPG, PNG, WebP — maks. 10MB</span>
+                                <span class="text-xs font-bold text-gray-500 uppercase group-hover:text-violet-400"><?= t('svc.select_file') ?></span>
+                                <span class="text-[10px] text-gray-600 mt-1"><?= t('svc.jpg_png_webp') ?></span>
                             </div>
                             <img id="image-preview" src="" class="hidden absolute inset-0 w-full h-full object-cover rounded-2xl" />
                             <input type="file" class="hidden" accept="image/*" id="vid-image-input" />
@@ -76,47 +78,47 @@
                         <div class="flex flex-wrap gap-2">
                             <button type="button" class="vid-example-btn px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-violet-500/15 hover:border-violet-500/40 transition-all duration-200 flex items-center gap-2 text-xs group" data-prompt="Product slowly rotating 360 degrees on a white turntable, soft studio lighting, clean white background, professional commercial footage, smooth cinematic camera movement, high-end advertising quality">
                                 <i class="fa-solid fa-rotate text-violet-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium">360° Aylantirish</span>
+                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium"><?= t('svc.360_rotate') ?></span>
                             </button>
                             <button type="button" class="vid-example-btn px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-amber-500/15 hover:border-amber-500/40 transition-all duration-200 flex items-center gap-2 text-xs group" data-prompt="Cinematic product reveal with dramatic lighting, volumetric fog effects, slow motion, premium luxury feel, dark background with golden highlights, epic music atmosphere">
                                 <i class="fa-solid fa-film text-amber-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium">Kinematik</span>
+                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium"><?= t('svc.cinematic') ?></span>
                             </button>
                             <button type="button" class="vid-example-btn px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-emerald-500/15 hover:border-emerald-500/40 transition-all duration-200 flex items-center gap-2 text-xs group" data-prompt="Smooth zoom into product details, macro photography style, showing texture and quality, soft bokeh background, warm lighting, extreme close-up revealing material quality">
                                 <i class="fa-solid fa-magnifying-glass text-emerald-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium">Makro detal</span>
+                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium"><?= t('svc.macro_detail') ?></span>
                             </button>
                             <button type="button" class="vid-example-btn px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-orange-500/15 hover:border-orange-500/40 transition-all duration-200 flex items-center gap-2 text-xs group" data-prompt="Unboxing video, hands carefully opening a premium product box, revealing the product inside with excitement, soft overhead lighting, ASMR style, satisfying unwrapping">
                                 <i class="fa-solid fa-box-open text-orange-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium">Unboxing</span>
+                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium"><?= t('svc.unboxing') ?></span>
                             </button>
                             <button type="button" class="vid-example-btn px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-cyan-500/15 hover:border-cyan-500/40 transition-all duration-200 flex items-center gap-2 text-xs group" data-prompt="Product in lifestyle setting, person using the product in a modern stylish home, natural sunlight through large windows, cozy atmosphere, warm tones, cinematic depth of field">
                                 <i class="fa-solid fa-house text-cyan-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium">Lifestyle</span>
+                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium"><?= t('svc.lifestyle') ?></span>
                             </button>
                             <button type="button" class="vid-example-btn px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-red-500/15 hover:border-red-500/40 transition-all duration-200 flex items-center gap-2 text-xs group" data-prompt="Delicious food product showcase, steaming hot, appetizing close-up, ingredients falling in slow motion, professional food photography lighting, vibrant colors, making the viewer hungry">
                                 <i class="fa-solid fa-utensils text-red-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium">Oziq-ovqat</span>
+                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium"><?= t('svc.food') ?></span>
                             </button>
                             <button type="button" class="vid-example-btn px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-pink-500/15 hover:border-pink-500/40 transition-all duration-200 flex items-center gap-2 text-xs group" data-prompt="Fashion model walking on a runway wearing the product, confident walk, high-end fashion show atmosphere, dramatic spotlights, slow motion capture, professional fashion video">
                                 <i class="fa-solid fa-shirt text-pink-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium">Fashion</span>
+                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium"><?= t('svc.fashion') ?></span>
                             </button>
                             <button type="button" class="vid-example-btn px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-blue-500/15 hover:border-blue-500/40 transition-all duration-200 flex items-center gap-2 text-xs group" data-prompt="Futuristic tech product floating in zero gravity, holographic interface elements around it, neon blue and purple glowing lights, sci-fi atmosphere, particle effects, high-tech commercial">
                                 <i class="fa-solid fa-microchip text-blue-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium">Texnologik</span>
+                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium"><?= t('svc.tech') ?></span>
                             </button>
                             <button type="button" class="vid-example-btn px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-green-500/15 hover:border-green-500/40 transition-all duration-200 flex items-center gap-2 text-xs group" data-prompt="Product placed in beautiful nature setting, morning dew drops, sunlight rays through forest trees, birds flying, fresh green leaves moving in gentle wind, peaceful and organic atmosphere">
                                 <i class="fa-solid fa-leaf text-green-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium">Tabiat</span>
+                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium"><?= t('svc.nature') ?></span>
                             </button>
                             <button type="button" class="vid-example-btn px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-fuchsia-500/15 hover:border-fuchsia-500/40 transition-all duration-200 flex items-center gap-2 text-xs group" data-prompt="Dynamic social media ad, fast-paced cuts, trendy transitions, bold text overlays appearing with motion, energetic music vibe, vertical format optimized for Instagram Reels and TikTok, eye-catching colors">
                                 <i class="fa-brands fa-instagram text-fuchsia-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium">Reels / TikTok</span>
+                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium"><?= t('svc.reels_tiktok') ?></span>
                             </button>
                             <button type="button" class="vid-example-btn px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-rose-500/15 hover:border-rose-500/40 transition-all duration-200 flex items-center gap-2 text-xs group" data-prompt="Luxury perfume bottle with golden liquid inside, elegant slow motion pour, mist and sparkle particles floating around, dark moody background, glass reflections, premium fragrance commercial, cinematic close-up of the bottle design">
                                 <i class="fa-solid fa-spray-can-sparkles text-rose-400 group-hover:scale-110 transition-transform"></i>
-                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium">Parfumeriya</span>
+                                <span class="text-gray-400 group-hover:text-white transition-colors font-medium"><?= t('svc.perfume') ?></span>
                             </button>
                         </div>
                     </div>
@@ -126,10 +128,10 @@
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                             <i class="fa-solid fa-pen-nib text-violet-400"></i> Video tavsifi (prompt)
                         </label>
-                        <textarea id="vid-prompt" placeholder="Tugmalardan birini tanlang yoki o'zingiz yozing..." rows="4" class="input-field resize-none text-sm" required></textarea>
+                        <textarea id="vid-prompt" placeholder="<?= t('ph.video_prompt') ?>" rows="4" class="input-field resize-none text-sm" required></textarea>
                         <div class="flex justify-between items-center mt-1.5">
                             <span class="text-[11px] text-gray-500">Batafsil yozsangiz, natija shunchalik yaxshi bo'ladi</span>
-                            <span id="vid-char-count" class="text-[11px] text-gray-500">0 ta belgi</span>
+                            <span id="vid-char-count" class="text-[11px] text-gray-500"><?= t('svc.0_chars') ?></span>
                         </div>
                     </div>
 
@@ -141,15 +143,15 @@
                         <div class="grid grid-cols-3 gap-2">
                             <button type="button" data-dur="5" class="vid-dur-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-violet-500 bg-violet-500/15 text-white shadow-lg shadow-violet-500/10">
                                 <div class="text-sm font-bold">5s</div>
-                                <div class="text-[9px] opacity-60">Qisqa</div>
+                                <div class="text-[9px] opacity-60"><?= t('svc.short') ?></div>
                             </button>
                             <button type="button" data-dur="10" class="vid-dur-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
                                 <div class="text-sm font-bold">10s</div>
-                                <div class="text-[9px] opacity-60">O'rta</div>
+                                <div class="text-[9px] opacity-60"><?= t('svc.medium') ?></div>
                             </button>
                             <button type="button" data-dur="15" class="vid-dur-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
                                 <div class="text-sm font-bold">15s</div>
-                                <div class="text-[9px] opacity-60">Uzun</div>
+                                <div class="text-[9px] opacity-60"><?= t('svc.long') ?></div>
                             </button>
                         </div>
                     </div>
@@ -157,28 +159,28 @@
                     <!-- Aspect Ratio -->
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex justify-between items-center">
-                            <span>📐 Format</span>
-                            <span class="text-[10px] text-violet-400">Tavsiya: Auto</span>
+                            <span><?= t('svc.format_label') ?></span>
+                            <span class="text-[10px] text-violet-400"><?= t('svc.format_tip') ?></span>
                         </label>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             <button type="button" data-ratio="auto" class="vid-ratio-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-violet-500 bg-violet-500/15 text-white shadow-lg shadow-violet-500/10">
-                                <div class="text-[10px] font-bold">Auto</div>
-                                <div class="text-[8px] opacity-60">Rasmga mos</div>
+                                <div class="text-[10px] font-bold"><?= t('svc.auto') ?></div>
+                                <div class="text-[8px] opacity-60"><?= t('svc.fit_image') ?></div>
                             </button>
                             <button type="button" data-ratio="9:16" class="vid-ratio-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold">Story / Reels</div>
+                                <div class="text-[10px] font-bold"><?= t('svc.reels') ?></div>
                                 <div class="text-[8px] opacity-60">9:16</div>
                             </button>
                             <button type="button" data-ratio="16:9" class="vid-ratio-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold">Keng</div>
+                                <div class="text-[10px] font-bold"><?= t('svc.wide') ?></div>
                                 <div class="text-[8px] opacity-60">16:9</div>
                             </button>
                             <button type="button" data-ratio="3:4" class="vid-ratio-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold">Portret</div>
+                                <div class="text-[10px] font-bold"><?= t('svc.portrait') ?></div>
                                 <div class="text-[8px] opacity-60">3:4</div>
                             </button>
                             <button type="button" data-ratio="1:1" class="vid-ratio-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold">Kvadrat</div>
+                                <div class="text-[10px] font-bold"><?= t('svc.square') ?></div>
                                 <div class="text-[8px] opacity-60">1:1</div>
                             </button>
                         </div>
@@ -191,12 +193,12 @@
                         </label>
                         <div class="grid grid-cols-2 gap-2">
                             <button type="button" data-res="720p" class="vid-res-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-violet-500 bg-violet-500/15 text-white shadow-lg shadow-violet-500/10">
-                                <div class="text-sm font-bold">720p HD</div>
-                                <div class="text-[9px] opacity-60">Tavsiya etiladi</div>
+                                <div class="text-sm font-bold"><?= t('svc.720p') ?></div>
+                                <div class="text-[9px] opacity-60"><?= t('svc.recommended') ?></div>
                             </button>
                             <button type="button" data-res="480p" class="vid-res-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
                                 <div class="text-sm font-bold">480p</div>
-                                <div class="text-[9px] opacity-60">Tez yaratish</div>
+                                <div class="text-[9px] opacity-60"><?= t('svc.fast_create') ?></div>
                             </button>
                         </div>
                     </div>
@@ -252,7 +254,7 @@
                         <div class="glass-card p-3 border border-white/5">
                             <div class="flex items-center gap-2 mb-1.5">
                                 <i class="fa-solid fa-comment-dots text-violet-400 text-xs"></i>
-                                <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Ishlatilgan prompt</span>
+                                <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider"><?= t('svc.used_prompt') ?></span>
                             </div>
                             <p id="vid-used-prompt" class="text-xs text-gray-500 line-clamp-3"></p>
                         </div>
@@ -262,7 +264,7 @@
                                 <i class="fa-solid fa-download"></i>
                                 Videoni yuklash
                             </a>
-                            <button id="vid-regenerate-btn" class="btn-secondary px-6" title="Qayta yaratish">
+                            <button id="vid-regenerate-btn" class="btn-secondary px-6" title="<?= t('tt.recreate') ?>">
                                 <i class="fa-solid fa-rotate-right"></i>
                             </button>
                         </div>
@@ -459,7 +461,7 @@
             if (!response.ok) {
                 if (data.auth_required) { TibaAuth.showModal(); throw new Error('Avval tizimga kiring'); }
                 if (data.insufficient_balance) { showNoBalance(data.cost, data.balance); throw new Error('__nobalance__'); }
-                throw new Error(data.error || 'Xatolik yuz berdi');
+                throw new Error(data.error || _t('error'));
             }
 
             if (data.balance !== undefined) TibaAuth.updateBalance(data.balance);
@@ -559,7 +561,7 @@
             }
 
             if (data.status === 'expired' || data.error) {
-                showError(data.error || 'Xatolik yuz berdi');
+                showError(data.error || _t('error'));
                 showState('empty');
                 resetUI();
                 currentRequestId = null; // To'xtatish

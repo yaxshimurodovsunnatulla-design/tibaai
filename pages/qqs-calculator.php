@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../api/config.php';
-$pageTitle = 'QQS Kalkulyatori – Tiba AI';
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.qqs_calc') . ' – Tiba AI';
 $pageDescription = 'Qachon majburiy ravishda QQSga o\'tishingizni O\'zR Soliq Kodeksi 462-moddasiga binoan bilib oling.';
 ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
@@ -376,7 +377,7 @@ $pageDescription = 'Qachon majburiy ravishda QQSga o\'tishingizni O\'zR Soliq Ko
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <!-- Breadcrumb -->
         <div class="qqs-breadcrumb">
-            <a href="/">Bosh sahifa</a>
+            <a href="/"><?= t('qqs.home') ?></a>
             <span class="separator">›</span>
             <span class="current">QQS Limit Kalkulyatori</span>
         </div>
@@ -386,7 +387,7 @@ $pageDescription = 'Qachon majburiy ravishda QQSga o\'tishingizni O\'zR Soliq Ko
             <div class="qqs-header-icon">
                 <i class="fa-solid fa-receipt"></i>
             </div>
-            <h1>QQS Kalkulyatori</h1>
+            <h1><?= t('qqs.title2') ?></h1>
         </div>
         <p class="qqs-subtitle">
             Qachon majburiy ravishda Aylanma soliqdan QQSga o'tishingizni O'zR Soliq Kodeksi 462-moddasiga binoan bilib oling.
@@ -426,7 +427,7 @@ $pageDescription = 'Qachon majburiy ravishda QQSga o\'tishingizni O\'zR Soliq Ko
                 <div class="qqs-card">
                     <div class="qqs-status-header">
                         <h2 class="qqs-status-title">Huquqiy Status va Xavfsizlik Indikatori</h2>
-                        <span class="qqs-status-arrow" title="Batafsil"><i class="fa-solid fa-arrow-right"></i></span>
+                        <span class="qqs-status-arrow" title="<?= t('tt.detail') ?>"><i class="fa-solid fa-arrow-right"></i></span>
                     </div>
 
                     <!-- Progress -->

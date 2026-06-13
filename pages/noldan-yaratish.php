@@ -1,4 +1,6 @@
-<?php $pageTitle = 'Noldan Yaratish – Tiba AI'; ?>
+<?php
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.noldan') . ' – Tiba AI'; ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
 
 <div class="py-12 sm:py-20 relative overflow-hidden">
@@ -18,10 +20,10 @@
         <div class="text-center mb-12">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4 animate-fade-in">
                 <i class="fa-solid fa-rocket text-emerald-400 text-sm"></i>
-                <span class="text-xs font-bold text-emerald-300 uppercase tracking-widest">So'z bilan rasm yaratish</span>
+                <span class="text-xs font-bold text-emerald-300 uppercase tracking-widest"><?= t('ny.text_to_image') ?></span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
-                Noldan <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-400">Yaratish</span>
+                Noldan <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-400"><?= t('ny.create') ?></span>
             </h1>
             <p class="text-gray-400 max-w-xl mx-auto">
                 Matnli buyruq yozing va AI sizga professional rasm yaratsin. Hech qanday rasm kerak emas — faqat tasavvuringiz!
@@ -40,7 +42,7 @@
                         <textarea id="prompt-input" placeholder="Masalan: Oq rangli zarif smart soat, qora zanglamasdan yasalgan, metall qo'l bog'ichi, zamonaviy dizayn, professional studio yoritish..." rows="5" class="input-field resize-none text-sm" required></textarea>
                         <div class="flex justify-between items-center mt-1.5">
                             <span class="text-[11px] text-gray-500">Batafsil yozsangiz, natija shunchalik yaxshi bo'ladi</span>
-                            <span id="char-count" class="text-[11px] text-gray-500">0 ta belgi</span>
+                            <span id="char-count" class="text-[11px] text-gray-500"><?= t('ny.chars_0') ?></span>
                         </div>
                     </div>
 
@@ -96,7 +98,7 @@
                         </label>
                         <div class="grid grid-cols-5 gap-2" id="ratio-selector">
                             <button type="button" data-ratio="1:1" class="ratio-btn active p-2.5 rounded-xl border text-center transition-all duration-200 border-emerald-500 bg-emerald-500/15 text-white shadow-lg shadow-emerald-500/10">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Kvadrat</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.square') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">1:1</div>
                             </button>
                             <button type="button" data-ratio="3:4" class="ratio-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
@@ -104,15 +106,15 @@
                                 <div class="text-[8px] opacity-60 font-bold">3:4</div>
                             </button>
                             <button type="button" data-ratio="4:3" class="ratio-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Landscape</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.landscape') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">4:3</div>
                             </button>
                             <button type="button" data-ratio="16:9" class="ratio-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Keng</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.wide') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">16:9</div>
                             </button>
                             <button type="button" data-ratio="9:16" class="ratio-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Story</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.story') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">9:16</div>
                             </button>
                         </div>
@@ -137,7 +139,7 @@
                             <button type="button" data-style="3d-render" class="nstyle-btn relative overflow-hidden rounded-lg border p-1.5 h-14 flex flex-col items-center justify-center gap-0.5 transition-all border-white/10 hover:border-white/20">
                                 <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-cyan-600 opacity-80"></div>
                                 <i class="fa-solid fa-cube relative z-10 text-white text-sm"></i>
-                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-white">3D Render</div>
+                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-white"><?= t('ny.3d_render') ?></div>
                             </button>
                             <button type="button" data-style="flat-design" class="nstyle-btn relative overflow-hidden rounded-lg border p-1.5 h-14 flex flex-col items-center justify-center gap-0.5 transition-all border-white/10 hover:border-white/20">
                                 <div class="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-500 opacity-80"></div>
@@ -232,9 +234,9 @@
                         <div class="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-4 border border-red-500/20">
                             <i class="fa-solid fa-circle-xmark text-3xl text-red-500"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-red-400 mb-2">Xatolik</h3>
+                        <h3 class="text-lg font-semibold text-red-400 mb-2"><?= t('svc.error') ?></h3>
                         <p id="error-text" class="text-sm text-gray-400 mb-4"></p>
-                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2">Qayta urinish</button>
+                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2"><?= t('common.retry') ?></button>
                     </div>
 
                     <!-- Result state -->
@@ -267,7 +269,7 @@
                                 </svg>
                                 Rasmni yuklab olish
                             </button>
-                            <button id="regenerate-btn" class="btn-secondary px-6" title="Qayta yaratish">
+                            <button id="regenerate-btn" class="btn-secondary px-6" title="<?= t('tt.recreate') ?>">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
                                 </svg>
@@ -280,7 +282,7 @@
                         <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-600/20 to-teal-600/20 border border-emerald-500/20 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/10">
                             <i class="fa-solid fa-wand-magic-sparkles text-4xl text-emerald-400"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-white mb-2">Natija shu yerda ko'rinadi</h3>
+                        <h3 class="text-lg font-bold text-white mb-2"><?= t('common.result_here') ?></h3>
                         <p class="text-sm text-gray-500 max-w-xs mx-auto">
                             Rasm tavsifini yozing va "Rasm yaratish" tugmasini bosing. AI sizning xayolingizdagi rasmni yaratadi.
                         </p>
@@ -451,7 +453,7 @@
             if (!response.ok) {
                 if (data.auth_required) { TibaAuth.showModal(); throw new Error('Avval tizimga kiring'); }
                 if (data.insufficient_balance) { showNoBalance(data.cost, data.balance); throw new Error('__nobalance__'); }
-                throw new Error(data.error || 'Xatolik yuz berdi');
+                throw new Error(data.error || _t('error'));
             }
 
             if (data.balance !== undefined) TibaAuth.updateBalance(data.balance);

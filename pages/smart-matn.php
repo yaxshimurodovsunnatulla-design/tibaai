@@ -1,4 +1,6 @@
-<?php $pageTitle = 'Smart Matn – Tiba AI'; ?>
+<?php
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.smart_matn') . ' – Tiba AI'; ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
 
 <div class="py-12 sm:py-20 relative overflow-hidden">
@@ -11,7 +13,7 @@
         <div class="text-center mb-12">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 mb-4">
                 <i class="fa-solid fa-pen-nib text-violet-400"></i>
-                <span class="text-xs font-medium text-violet-300 uppercase tracking-wider">AI Text Overlay</span>
+                <span class="text-xs font-medium text-violet-300 uppercase tracking-wider"><?= t('sm.title2') ?></span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
                 Smart <span class="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-400">Matn</span>
@@ -31,8 +33,8 @@
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex justify-between items-center">
                             <span class="flex items-center gap-2 text-violet-400/80"><i class="fa-solid fa-camera"></i> Mahsulot rasmi <span class="text-red-400">*</span></span>
                             <div class="flex p-0.5 bg-white/5 rounded-lg border border-white/5 text-[9px]">
-                                <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2 py-1 rounded-md transition-all bg-violet-500/20 text-violet-400">FAYL</button>
-                                <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300">HAVOLA</button>
+                                <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2 py-1 rounded-md transition-all bg-violet-500/20 text-violet-400"><?= t('svc.file') ?></button>
+                                <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300"><?= t('svc.link') ?></button>
                             </div>
                         </label>
 
@@ -45,8 +47,8 @@
                                         <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-violet-500/10 transition-all duration-500 border border-white/5 group-hover:border-violet-500/20">
                                             <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-500 group-hover:text-violet-400"></i>
                                         </div>
-                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors">Mahsulot rasmini yuklash</span>
-                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">JPG, PNG • 10 MB</span>
+                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors"><?= t('sm.upload_product') ?></span>
+                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter"><?= t('svc.jpg_png_10mb') ?></span>
                                     </div>
                                     <input id="file-input" type="file" accept="image/*" class="hidden" />
                                 </label>
@@ -74,7 +76,7 @@
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                             <i class="fa-solid fa-box text-violet-400/80"></i> Mahsulot nomi <span class="text-red-400">*</span>
                         </label>
-                        <input type="text" id="product-name" placeholder="Masalan: Smart Soat X200 Pro" class="input-field" required />
+                        <input type="text" id="product-name" placeholder="<?= t('ph.smart_name') ?>" class="input-field" required />
                     </div>
 
                     <!-- Features -->
@@ -98,13 +100,13 @@ AMOLED ekran" rows="5" class="input-field resize-none text-sm" required></textar
                         <div class="grid grid-cols-3 gap-2" id="layout-selector">
                             <button data-layout="overlay" class="layout-btn active relative overflow-hidden rounded-xl border p-3 h-20 flex flex-col items-center justify-center gap-1 transition-all border-violet-500 bg-violet-500/15 text-white ring-2 ring-violet-500/30">
                                 <i class="fa-solid fa-file-lines text-lg mb-0.5"></i>
-                                <div class="font-bold text-[9px] uppercase tracking-tighter text-center">Ustiga</div>
-                                <div class="text-[8px] opacity-60 text-center">Rasm ustida matn</div>
+                                <div class="font-bold text-[9px] uppercase tracking-tighter text-center"><?= t('sm.overlay') ?></div>
+                                <div class="text-[8px] opacity-60 text-center"><?= t('sm.overlay_desc') ?></div>
                             </button>
                             <button data-layout="side" class="layout-btn relative overflow-hidden rounded-xl border p-3 h-20 flex flex-col items-center justify-center gap-1 transition-all border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
                                 <i class="fa-solid fa-ruler-combined text-lg mb-0.5 text-gray-500 group-hover:text-violet-400"></i>
-                                <div class="font-bold text-[9px] uppercase tracking-tighter text-center">Yoniga</div>
-                                <div class="text-[8px] opacity-60 text-center">Chapda rasm, o'ngda matn</div>
+                                <div class="font-bold text-[9px] uppercase tracking-tighter text-center"><?= t('sm.beside') ?></div>
+                                <div class="text-[8px] opacity-60 text-center"><?= t('sm.beside_desc') ?></div>
                             </button>
                             <button data-layout="banner" class="layout-btn relative overflow-hidden rounded-xl border p-3 h-20 flex flex-col items-center justify-center gap-1 transition-all border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
                                 <i class="fa-solid fa-tag text-lg mb-0.5 text-gray-500 group-hover:text-violet-400"></i>
@@ -170,23 +172,23 @@ AMOLED ekran" rows="5" class="input-field resize-none text-sm" required></textar
                         </label>
                         <div class="grid grid-cols-3 sm:grid-cols-5 gap-2" id="ratio-selector">
                             <button data-ratio="3:4" class="ratio-btn active p-2 rounded-xl border text-center transition-all duration-200 border-violet-500 bg-violet-500/15 text-white shadow-lg shadow-violet-500/10">
-                                <div class="text-[10px] font-bold uppercase">Uzum</div>
+                                <div class="text-[10px] font-bold uppercase"><?= t('svc.uzum') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">3:4</div>
                             </button>
                             <button data-ratio="1:1" class="ratio-btn p-2 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase">Kvadrat</div>
+                                <div class="text-[10px] font-bold uppercase"><?= t('svc.square') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">1:1</div>
                             </button>
                             <button data-ratio="4:3" class="ratio-btn p-2 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase">Landscape</div>
+                                <div class="text-[10px] font-bold uppercase"><?= t('svc.landscape') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">4:3</div>
                             </button>
                             <button data-ratio="9:16" class="ratio-btn p-2 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase">Story</div>
+                                <div class="text-[10px] font-bold uppercase"><?= t('svc.story') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">9:16</div>
                             </button>
                             <button data-ratio="16:9" class="ratio-btn p-2 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase">Keng</div>
+                                <div class="text-[10px] font-bold uppercase"><?= t('svc.wide') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">16:9</div>
                             </button>
                         </div>
@@ -197,7 +199,7 @@ AMOLED ekran" rows="5" class="input-field resize-none text-sm" required></textar
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                             <i class="fa-solid fa-pen text-violet-400/80"></i> Qo'shimcha ko'rsatmalar (ixtiyoriy)
                         </label>
-                        <textarea id="custom-prompt" placeholder="Masalan: Chegirma -30% yozuvini qo'sh, narxni ko'rsat..." rows="2" class="input-field resize-none text-sm"></textarea>
+                        <textarea id="custom-prompt" placeholder="<?= t('ph.smart_extra') ?>" rows="2" class="input-field resize-none text-sm"></textarea>
                     </div>
 
                     <!-- Generate Button -->
@@ -239,9 +241,9 @@ AMOLED ekran" rows="5" class="input-field resize-none text-sm" required></textar
                         <div class="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-4">
                             <i class="fa-solid fa-circle-xmark text-3xl text-red-500"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-red-400 mb-2">Xatolik</h3>
+                        <h3 class="text-lg font-semibold text-red-400 mb-2"><?= t('svc.error') ?></h3>
                         <p id="error-text" class="text-sm text-gray-400 mb-4"></p>
-                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2">Qayta urinish</button>
+                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2"><?= t('common.retry') ?></button>
                     </div>
 
                     <!-- Result state -->
@@ -274,7 +276,7 @@ AMOLED ekran" rows="5" class="input-field resize-none text-sm" required></textar
                                 <i class="fa-solid fa-download"></i>
                                 Rasmni yuklab olish
                             </button>
-                            <button id="reset-result-btn" class="btn-secondary px-6" title="Qaytadan boshlash">
+                            <button id="reset-result-btn" class="btn-secondary px-6" title="<?= t('tt.restart') ?>">
                                 <i class="fa-solid fa-rotate-left"></i>
                             </button>
                         </div>
@@ -285,7 +287,7 @@ AMOLED ekran" rows="5" class="input-field resize-none text-sm" required></textar
                         <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-violet-600/20 to-purple-600/20 border border-violet-500/20 flex items-center justify-center mx-auto mb-6">
                             <i class="fa-solid fa-pen-nib text-4xl text-violet-400"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-white mb-2">Natija shu yerda ko'rinadi</h3>
+                        <h3 class="text-lg font-bold text-white mb-2"><?= t('common.result_here') ?></h3>
                         <p class="text-sm text-gray-500 max-w-sm mx-auto">
                             Rasmni yuklang, mahsulot ma'lumotlarini kiriting va AI professional matnlarni qo'shadi.
                         </p>
@@ -315,7 +317,7 @@ AMOLED ekran" rows="5" class="input-field resize-none text-sm" required></textar
                                     <div class="w-6 h-6 rounded-lg bg-indigo-500/20 flex items-center justify-center">
                                         <i class="fa-solid fa-check text-[10px] text-indigo-400"></i>
                                     </div>
-                                    <span class="text-[11px] text-gray-400">Kafolat / sifat tamg'asi</span>
+                                    <span class="text-[11px] text-gray-400"><?= t('svc.guarantee') ?></span>
                                 </div>
                             </div>
                         </div>
@@ -538,7 +540,7 @@ AMOLED ekran" rows="5" class="input-field resize-none text-sm" required></textar
             const text = await response.text();
             let data;
             try { data = JSON.parse(text); } catch { throw new Error("Serverdan noto'g'ri javob keldi."); }
-            if (!response.ok) throw new Error(data.error || 'Xatolik yuz berdi');
+            if (!response.ok) throw new Error(data.error || _t('error'));
 
             resultUrl = data.imageUrl;
             progress = 100;

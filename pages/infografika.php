@@ -1,5 +1,6 @@
 <?php 
-$pageTitle = 'Professional Infografika – Tiba AI';
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.infografika') . ' – Tiba AI';
 $pageDescription = 'AI yordamida marketplace mahsulotlari uchun yuqori sifatli infografika yaratish bo\'limi.';
 ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
@@ -18,13 +19,13 @@ $pageDescription = 'AI yordamida marketplace mahsulotlari uchun yuqori sifatli i
                     <!-- Ulangan holat -->
                     <div id="tg-connected-badge" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
                         <i class="fa-brands fa-telegram text-sm"></i>
-                        <span>Telegram ulangan</span>
+                        <span><?= t('ig.tg_linked') ?></span>
                         <i class="fa-solid fa-circle-check text-emerald-500 text-[10px]"></i>
                     </div>
                     <!-- Ulanmagan holat -->
                     <button id="tg-connect-badge" onclick="openTgBindModal()" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-gray-500 hover:text-white hover:border-indigo-500/40 hover:bg-indigo-500/5 text-xs font-semibold transition-all group">
                         <i class="fa-brands fa-telegram text-sm group-hover:text-indigo-400 transition-colors"></i>
-                        <span>Telegram ulash</span>
+                        <span><?= t('ig.tg_link') ?></span>
                         <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-60"></i>
                     </button>
                 </div>
@@ -38,7 +39,7 @@ $pageDescription = 'AI yordamida marketplace mahsulotlari uchun yuqori sifatli i
         <!-- Page Title -->
         <div class="text-center mb-10">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
-                Marketplace <span class="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Infografika</span>
+                Marketplace <span class="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"><?= t('ig.title') ?></span>
             </h1>
             <p class="text-gray-500 max-w-lg mx-auto text-sm">
                 Mahsulot rasmini yuklang, AI sizga professional sotuvchi infografikasini yaratsin.
@@ -57,11 +58,11 @@ $pageDescription = 'AI yordamida marketplace mahsulotlari uchun yuqori sifatli i
                             <div class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                                 <i class="fa-solid fa-camera text-indigo-400 text-sm"></i>
                             </div>
-                            <span class="text-sm font-semibold text-white">Mahsulot rasmi</span>
+                            <span class="text-sm font-semibold text-white"><?= t('common.product_image') ?></span>
                         </div>
                         <div class="flex p-0.5 bg-white/5 rounded-lg border border-white/5 text-[9px]">
-                            <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2.5 py-1 rounded-md transition-all bg-indigo-500/20 text-indigo-400 font-semibold">FAYL</button>
-                            <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2.5 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300 font-semibold">HAVOLA</button>
+                            <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2.5 py-1 rounded-md transition-all bg-indigo-500/20 text-indigo-400 font-semibold"><?= t('svc.file') ?></button>
+                            <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2.5 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300 font-semibold"><?= t('svc.link') ?></button>
                         </div>
                     </label>
 
@@ -73,8 +74,8 @@ $pageDescription = 'AI yordamida marketplace mahsulotlari uchun yuqori sifatli i
                                 <div class="w-11 h-11 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-2 group-hover:bg-indigo-500/20 transition-colors">
                                     <i class="fa-solid fa-cloud-arrow-up text-indigo-400 text-lg"></i>
                                 </div>
-                                <p class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors">Rasmni yuklash</p>
-                                <p class="text-[10px] text-gray-600 mt-0.5">JPG, PNG • Maks. 10 MB</p>
+                                <p class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors"><?= t('ig.upload') ?></p>
+                                <p class="text-[10px] text-gray-600 mt-0.5"><?= t('ig.jpg_10mb') ?></p>
                             </div>
                         </label>
                         <input type="file" id="infografika-file-input" class="hidden" accept="image/*" />
@@ -104,9 +105,9 @@ $pageDescription = 'AI yordamida marketplace mahsulotlari uchun yuqori sifatli i
                             <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
                                 <i class="fa-solid fa-tag text-purple-400 text-sm"></i>
                             </div>
-                            <span class="text-sm font-semibold text-white">Mahsulot nomi <span class="text-gray-600 font-normal text-xs">(ixtiyoriy)</span></span>
+                            <span class="text-sm font-semibold text-white">Mahsulot nomi <span class="text-gray-600 font-normal text-xs"><?= t('svc.optional') ?></span></span>
                         </label>
-                        <input type="text" id="product-name-input" placeholder="Masalan: NIVEA krem, Nokia 6300" class="input-field text-sm" />
+                        <input type="text" id="product-name-input" placeholder="<?= t('ph.infografika_name') ?>" class="input-field text-sm" />
                     </div>
 
                     <div class="border-t border-white/[0.04]"></div>
@@ -152,7 +153,7 @@ $pageDescription = 'AI yordamida marketplace mahsulotlari uchun yuqori sifatli i
                         <div class="grid grid-cols-4 gap-1.5">
                             <button type="button" data-style="uzum" class="infostyle-btn py-2.5 px-1 rounded-xl border text-center transition-all duration-200 border-indigo-500/50 bg-indigo-500/10 text-white" id="style-uzum">
                                 <i class="fa-solid fa-circle text-purple-400 text-sm mb-1 block"></i>
-                                <div class="text-[9px] font-bold uppercase tracking-wider">Uzum</div>
+                                <div class="text-[9px] font-bold uppercase tracking-wider"><?= t('svc.uzum') ?></div>
                             </button>
                             <button type="button" data-style="wb" class="infostyle-btn py-2.5 px-1 rounded-xl border text-center transition-all duration-200 border-white/[0.06] bg-white/[0.02] text-gray-400 hover:border-white/15 hover:bg-white/[0.04]" id="style-wb">
                                 <i class="fa-solid fa-square text-fuchsia-400 text-sm mb-1 block"></i>
@@ -276,7 +277,7 @@ $pageDescription = 'AI yordamida marketplace mahsulotlari uchun yuqori sifatli i
                 <!-- Submit Button -->
                 <button type="submit" id="generate-button" disabled class="w-full h-14 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:via-purple-500 hover:to-pink-500 text-white font-bold text-base flex items-center justify-center gap-3 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 hover:scale-[1.01] active:scale-[0.99]">
                     <i class="fa-solid fa-wand-magic-sparkles text-lg" id="btn-icon"></i>
-                    <span id="gen-btn-text">Infografika yaratish</span>
+                    <span id="gen-btn-text"><?= t('ig.generate') ?></span>
                 </button>
                 </form>
             </div>
@@ -324,7 +325,7 @@ $pageDescription = 'AI yordamida marketplace mahsulotlari uchun yuqori sifatli i
                             <i class="fa-solid fa-download text-xs"></i>
                             Yuklab olish
                         </button>
-                        <button id="reset-result-btn" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all group" title="Tozalash">
+                        <button id="reset-result-btn" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all group" title="<?= t('tt.clear') ?>">
                             <i class="fa-solid fa-rotate-left text-sm group-hover:rotate-180 transition-transform duration-500"></i>
                         </button>
                     </div>
@@ -355,7 +356,7 @@ $pageDescription = 'AI yordamida marketplace mahsulotlari uchun yuqori sifatli i
                     <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/10 flex items-center justify-center mx-auto mb-5">
                         <i class="fa-solid fa-image text-3xl text-indigo-400/30"></i>
                     </div>
-                    <h3 class="text-base font-semibold text-gray-300 mb-1.5">Natija shu yerda ko'rinadi</h3>
+                    <h3 class="text-base font-semibold text-gray-300 mb-1.5"><?= t('common.result_here') ?></h3>
                     <p class="text-xs text-gray-600 max-w-[220px] mx-auto">
                         Rasmni yuklang va "Infografika yaratish" tugmasini bosing.
                     </p>
@@ -627,7 +628,7 @@ $pageDescription = 'AI yordamida marketplace mahsulotlari uchun yuqori sifatli i
             if (!response.ok) {
                 if (data.auth_required) { TibaAuth.showModal(); throw new Error('Avval tizimga kiring'); }
                 if (data.insufficient_balance) { showNoBalance(data.cost, data.balance); throw new Error('__nobalance__'); }
-                throw new Error(data.error || 'Xatolik yuz berdi');
+                throw new Error(data.error || _t('error'));
             }
             
             if (data.balance !== undefined) TibaAuth.updateBalance(data.balance);

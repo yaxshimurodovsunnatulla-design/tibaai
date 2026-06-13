@@ -3,6 +3,7 @@ $pageTitle = "AI namunalari — Oldin va Keyin | Tiba AI";
 $pageDescription = "Tiba AI yordamida yaratilgan infografika namunalarini ko'ring. Oldingi va keyingi holatini taqqoslang.";
 
 require_once __DIR__ . '/../api/config.php';
+require_once __DIR__ . '/../lang/i18n.php';
 $db = getDB();
 
 $row1 = $db->query("SELECT * FROM showcase_samples WHERE is_active = 1 AND type IN ('carousel-top','carousel') AND image_path IS NOT NULL ORDER BY sort_order ASC, id DESC LIMIT 20")->fetchAll();
@@ -58,7 +59,7 @@ $basamples = $db->query("SELECT * FROM showcase_samples WHERE is_active = 1 AND 
         <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 class="text-3xl sm:text-5xl font-extrabold mb-4" style="color:var(--text-heading)">
-                AI <span class="gradient-text">namunalari</span>
+                AI <span class="gradient-text"><?= t('nam.infographic_samples') ?></span>
             </h1>
             <p class="text-lg max-w-2xl mx-auto" style="color:var(--text-muted)">
                 Tiba AI yordamida yaratilgan professional infografikalar. Oldingi va keyingi holatini taqqoslang.

@@ -1,6 +1,7 @@
 <?php 
-$pageTitle = 'Biz bilan bog\'lanish – Tiba AI Texnik ko\'mak';
-$pageDescription = 'Tiba AI xizmati bo\'yicha savollaringiz bo\'lsa bizga murojaat qiling. Biz sizga yordam berishga tayyormiz.';
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('contact.title') . ' ' . t('contact.title_highlight') . ' – Tiba AI';
+$pageDescription = t('contact.subtitle');
 ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
 
@@ -9,10 +10,10 @@ $pageDescription = 'Tiba AI xizmati bo\'yicha savollaringiz bo\'lsa bizga muroja
         <!-- Header -->
         <div class="text-center mb-12">
             <h1 class="text-3xl sm:text-4xl font-bold text-white mb-3">
-                Biz bilan <span class="gradient-text">bog'laning</span>
+                <?= t('contact.title') ?> <span class="gradient-text"><?= t('contact.title_highlight') ?></span>
             </h1>
             <p class="text-gray-400 max-w-xl mx-auto">
-                Savollaringiz bormi? Biz sizga yordam berishdan mamnunmiz.
+                <?= t('contact.subtitle') ?>
             </p>
         </div>
 
@@ -26,7 +27,7 @@ $pageDescription = 'Tiba AI xizmati bo\'yicha savollaringiz bo\'lsa bizga muroja
                 </div>
                 <h3 class="text-xl font-semibold text-white mb-2">Telegram</h3>
                 <p class="text-gray-400 text-sm mb-4">
-                    Tez javob olish uchun bizga Telegram orqali yozing.
+                    <?= t('contact.telegram_desc') ?>
                 </p>
                 <div class="flex items-center gap-2 text-indigo-400 text-sm font-medium">
                     @tibaaibot
@@ -43,9 +44,9 @@ $pageDescription = 'Tiba AI xizmati bo\'yicha savollaringiz bo\'lsa bizga muroja
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-white mb-2">Email</h3>
+                <h3 class="text-xl font-semibold text-white mb-2"><?= t('contact.email_label') ?></h3>
                 <p class="text-gray-400 text-sm mb-4">
-                    Batafsil so'rovlar uchun elektron pochta orqali yozing.
+                    <?= t('contact.email_desc') ?>
                 </p>
                 <div class="flex items-center gap-2 text-indigo-400 text-sm font-medium">
                     support@tibaai.uz
@@ -58,12 +59,12 @@ $pageDescription = 'Tiba AI xizmati bo\'yicha savollaringiz bo\'lsa bizga muroja
 
         <!-- Additional Info -->
         <div class="mt-12 glass-card p-8 text-center">
-            <h3 class="text-lg font-semibold text-white mb-3">Ish vaqti</h3>
+            <h3 class="text-lg font-semibold text-white mb-3"><?= t('contact.hours_title') ?></h3>
             <p class="text-gray-400 text-sm">
-                Dushanba – Juma: 09:00 – 18:00 (Toshkent vaqti)
+                <?= t('contact.hours') ?>
             </p>
             <p class="text-gray-500 text-xs mt-2">
-                Odatda 1 soat ichida javob beramiz.
+                <?= t('contact.response') ?>
             </p>
         </div>
     </div>

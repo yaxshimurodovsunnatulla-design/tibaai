@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../api/config.php';
-$pageTitle = 'Zoom Selling AI – Bozor Tahlili – Tiba AI';
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.zoom_selling') . ' – Tiba AI';
 $pageDescription = 'Uzum Market kategoriyalar, bo\'limlar va har bir tovar uchun chuqur AI tahlil. Raqobat, narx, talab va trend analizi.';
 ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
@@ -16,7 +17,7 @@ $pageDescription = 'Uzum Market kategoriyalar, bo\'limlar va har bir tovar uchun
                 <i class="fa-solid fa-arrow-left"></i> Instrumentlarga qaytish
             </a>
             <h1 class="text-3xl sm:text-4xl font-black text-white mb-3">
-                <i class="fa-solid fa-magnifying-glass-chart text-cyan-400 mr-2"></i> Zoom Selling <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">AI Tahlil</span>
+                <i class="fa-solid fa-magnifying-glass-chart text-cyan-400 mr-2"></i> Zoom Selling <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent"><?= t('zoom.ai_analysis') ?></span>
             </h1>
             <p class="text-gray-400 text-lg">Kategoriyalar, bo'limlar va har bir tovar uchun mukammal AI tahlil. Bozorni chuqur o'rganing.</p>
         </div>
@@ -30,11 +31,11 @@ $pageDescription = 'Uzum Market kategoriyalar, bo\'limlar va har bir tovar uchun
                         class="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 transition-all">
                 </div>
                 <select id="sort-select" class="bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-cyan-500/50 w-full sm:w-48">
-                    <option value="POPULAR">Mashhurlik</option>
-                    <option value="BY_PRICE_ASC">Arzondan qimmatga</option>
-                    <option value="BY_PRICE_DESC">Qimmatdan arzonqa</option>
-                    <option value="BY_REVIEWS_AMOUNT_DESC">Ko'p sharhlar</option>
-                    <option value="BY_ORDERS_AMOUNT_DESC">Ko'p sotilgan</option>
+                    <option value="POPULAR"><?= t('zoom.popularity') ?></option>
+                    <option value="BY_PRICE_ASC"><?= t('zoom.cheap_first') ?></option>
+                    <option value="BY_PRICE_DESC"><?= t('zoom.expensive_first') ?></option>
+                    <option value="BY_REVIEWS_AMOUNT_DESC"><?= t('zoom.most_reviews') ?></option>
+                    <option value="BY_ORDERS_AMOUNT_DESC"><?= t('zoom.most_sold') ?></option>
                 </select>
                 <button onclick="searchProducts()" id="search-btn" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-cyan-600/20 active:scale-95 whitespace-nowrap flex items-center gap-2">
                     <i class="fa-solid fa-rocket" id="search-btn-icon"></i> Tahlil qilish
@@ -55,17 +56,17 @@ $pageDescription = 'Uzum Market kategoriyalar, bo\'limlar va har bir tovar uchun
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
                     <div class="glass-card p-4 border border-cyan-500/10">
                         <i class="fa-solid fa-layer-group text-cyan-400 text-xl mb-2 block"></i>
-                        <div class="text-white text-sm font-bold">Kategoriya tahlili</div>
+                        <div class="text-white text-sm font-bold"><?= t('zoom.cat_analysis') ?></div>
                         <div class="text-gray-500 text-[10px] mt-1">Narx oralig'i, raqobat darajasi</div>
                     </div>
                     <div class="glass-card p-4 border border-blue-500/10">
                         <i class="fa-solid fa-ranking-star text-blue-400 text-xl mb-2 block"></i>
-                        <div class="text-white text-sm font-bold">Tovar reytingi</div>
+                        <div class="text-white text-sm font-bold"><?= t('zoom.product_rating') ?></div>
                         <div class="text-gray-500 text-[10px] mt-1">Sharhlar, buyurtmalar soni</div>
                     </div>
                     <div class="glass-card p-4 border border-violet-500/10">
                         <i class="fa-solid fa-brain text-violet-400 text-xl mb-2 block"></i>
-                        <div class="text-white text-sm font-bold">AI maslahatlar</div>
+                        <div class="text-white text-sm font-bold"><?= t('zoom.ai_advice') ?></div>
                         <div class="text-gray-500 text-[10px] mt-1">Narx, raqobat strategiyasi</div>
                     </div>
                 </div>
@@ -166,42 +167,42 @@ function renderResults(data, query) {
         <!-- Bozor statistikasi -->
         <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-8">
             <div class="glass-card p-3 border border-cyan-500/10 text-center">
-                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Eng arzon</div>
+                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.cheapest') ?></div>
                 <div class="text-lg font-black text-emerald-400">${fmt(minPrice)}</div>
                 <div class="text-[9px] text-gray-600">so'm</div>
             </div>
             <div class="glass-card p-3 border border-blue-500/10 text-center">
-                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">O'rtacha</div>
+                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.average') ?></div>
                 <div class="text-lg font-black text-white">${fmt(avgPrice)}</div>
                 <div class="text-[9px] text-gray-600">so'm</div>
             </div>
             <div class="glass-card p-3 border border-violet-500/10 text-center">
-                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Median</div>
+                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.median') ?></div>
                 <div class="text-lg font-black text-violet-400">${fmt(medianPrice)}</div>
                 <div class="text-[9px] text-gray-600">so'm</div>
             </div>
             <div class="glass-card p-3 border border-red-500/10 text-center">
-                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Eng qimmat</div>
+                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.most_expensive') ?></div>
                 <div class="text-lg font-black text-red-400">${fmt(maxPrice)}</div>
                 <div class="text-[9px] text-gray-600">so'm</div>
             </div>
             <div class="glass-card p-3 border border-amber-500/10 text-center">
-                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">O'rt. reyting</div>
+                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.avg_rating') ?></div>
                 <div class="text-lg font-black text-amber-400">${avgRating.toFixed(1)}</div>
                 <div class="text-[9px] text-gray-600"><i class="fa-solid fa-star text-amber-500"></i></div>
             </div>
             <div class="glass-card p-3 border border-cyan-500/10 text-center">
-                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Jami sotilgan</div>
+                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.total_sold') ?></div>
                 <div class="text-lg font-black text-cyan-400">${fmt(totalOrders)}</div>
                 <div class="text-[9px] text-gray-600">ta</div>
             </div>
             <div class="glass-card p-3 border border-emerald-500/10 text-center">
-                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Sharhlar</div>
+                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.reviews') ?></div>
                 <div class="text-lg font-black text-emerald-400">${fmt(totalReviews)}</div>
                 <div class="text-[9px] text-gray-600">ta</div>
             </div>
             <div class="glass-card p-3 border border-white/5 text-center">
-                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Raqobat</div>
+                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.competition') ?></div>
                 <div class="text-lg font-black ${competColor}"><i class="fa-solid ${competIcon} mr-1"></i>${competLevel}</div>
             </div>
         </div>
@@ -391,22 +392,22 @@ function renderProductModal(p) {
             <!-- Narx va statistika -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div class="glass-card p-3 border border-cyan-500/10 text-center">
-                    <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Narxi</div>
+                    <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.price') ?></div>
                     <div class="text-xl font-black text-white">${fmt(p.price)}</div>
                     ${p.discount > 0 ? `<div class="text-[9px] text-rose-400 font-bold line-through">${fmt(p.fullPrice)}</div>` : '<div class="text-[9px] text-gray-600">so\'m</div>'}
                 </div>
                 <div class="glass-card p-3 border border-amber-500/10 text-center">
-                    <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Reyting</div>
+                    <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.rating') ?></div>
                     <div class="text-xl font-black text-amber-400">${p.rating ? p.rating.toFixed(1) : '—'}</div>
                     <div class="text-[9px] text-gray-600"><i class="fa-solid fa-star text-amber-500"></i></div>
                 </div>
                 <div class="glass-card p-3 border border-emerald-500/10 text-center">
-                    <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Sharhlar</div>
+                    <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.reviews') ?></div>
                     <div class="text-xl font-black text-emerald-400">${fmt(p.reviews || 0)}</div>
                     <div class="text-[9px] text-gray-600">ta</div>
                 </div>
                 <div class="glass-card p-3 border border-blue-500/10 text-center">
-                    <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Sotilgan</div>
+                    <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1"><?= t('zoom.sold') ?></div>
                     <div class="text-xl font-black text-blue-400">${fmt(p.orders || 0)}+</div>
                     <div class="text-[9px] text-gray-600">ta</div>
                 </div>
@@ -444,7 +445,7 @@ function renderProductModal(p) {
                 <a href="https://uzum.uz/uz/product/-${p.productId}" target="_blank" class="flex-1 flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-3 rounded-xl font-bold text-sm transition-all">
                     <i class="fa-solid fa-external-link"></i> Uzum'da ochish
                 </a>
-                <button onclick="closeProductModal()" class="px-6 py-3 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 text-sm font-bold transition-all">Yopish</button>
+                <button onclick="closeProductModal()" class="px-6 py-3 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 text-sm font-bold transition-all"><?= t('common.close') ?></button>
             </div>
         </div>`;
 }

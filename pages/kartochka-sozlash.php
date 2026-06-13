@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../api/config.php';
+require_once __DIR__ . '/../lang/i18n.php';
 $pageTitle = 'Kartochkani to\'liq sozlash – Tiba AI';
 $pageDescription = 'Marketplace uchun tovar kartochkangizni professional tarzda to\'ldiring. AI barcha maydonlarni avtomatik to\'ldirishga yordam beradi.';
 ?>
@@ -39,7 +40,7 @@ $pageDescription = 'Marketplace uchun tovar kartochkangizni professional tarzda 
             <div class="w-12 sm:w-20 h-px bg-white/10 mx-2"></div>
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-full bg-white/10 text-gray-500 text-sm font-bold flex items-center justify-center">3</div>
-                <span class="text-sm font-medium text-gray-500 hidden sm:inline">Saqlash</span>
+                <span class="text-sm font-medium text-gray-500 hidden sm:inline"><?= t('common.save') ?></span>
             </div>
         </div>
 

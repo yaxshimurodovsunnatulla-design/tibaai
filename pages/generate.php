@@ -1,4 +1,5 @@
 <?php $pageTitle = 'Marketplace Infografika – Tiba AI'; ?>
+require_once __DIR__ . '/../lang/i18n.php';
 <?php include __DIR__ . '/../components/header.php'; ?>
 
 <div class="py-12 sm:py-20">
@@ -7,7 +8,7 @@
         <div class="text-center mb-12 animate-fade-in-up">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-4">
                 <span class="text-lg">🎨</span>
-                <span class="text-xs font-medium text-indigo-300">Premium AI generator</span>
+                <span class="text-xs font-medium text-indigo-300"><?= t('gen.premium') ?></span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
                 Marketplace <span class="gradient-text">Infografika</span>
@@ -29,7 +30,7 @@
                         <input
                             type="text"
                             id="product-name"
-                            placeholder="Masalan: Smart soat X100"
+                            placeholder="<?= t('ph.product_example') ?>"
                             class="input-field"
                             required
                         />
@@ -56,7 +57,7 @@
                         </label>
                         <div class="grid grid-cols-3 gap-3" id="style-selector">
                             <button type="button" data-style="marketplace" class="style-btn p-3 rounded-xl border text-center transition-all duration-200 border-indigo-500 bg-indigo-500/15 text-white">
-                                <div class="text-sm font-semibold">Marketplace</div>
+                                <div class="text-sm font-semibold"><?= t('gen.marketplace') ?></div>
                                 <div class="text-xs mt-0.5 opacity-70">Sotuvchi dizayn</div>
                             </button>
                             <button type="button" data-style="instagram" class="style-btn p-3 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:bg-white/10">
@@ -104,8 +105,8 @@
                         <label class="block text-sm font-medium text-gray-300 mb-3 flex justify-between items-center">
                             <span>Mahsulot rasmi (ixtiyoriy)</span>
                             <div class="flex p-0.5 bg-white/5 rounded-lg border border-white/5 text-[9px]">
-                                <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2 py-1 rounded-md transition-all bg-indigo-500/20 text-indigo-400">FAYL</button>
-                                <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300">HAVOLA</button>
+                                <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2 py-1 rounded-md transition-all bg-indigo-500/20 text-indigo-400"><?= t('svc.file') ?></button>
+                                <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300"><?= t('svc.link') ?></button>
                             </div>
                         </label>
                         
@@ -116,7 +117,7 @@
                                     <svg class="w-8 h-8 text-gray-500 mb-2 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                                     </svg>
-                                    <span class="text-xs text-gray-500">Mahsulot rasmini yuklang</span>
+                                    <span class="text-xs text-gray-500"><?= t('svc.upload_image') ?></span>
                                     <input id="image-upload" type="file" accept="image/*" class="hidden" />
                                 </label>
                             </div>
@@ -158,7 +159,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a2.25 2.25 0 002.25-2.25V5.25a2.25 2.25 0 00-2.25-2.25H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Natija shu yerda ko'rinadi</h3>
+                    <h3 class="text-lg font-semibold text-white mb-2"><?= t('common.result_here') ?></h3>
                     <p class="text-sm text-gray-500">Formani to'ldiring va "Infografika yaratish" tugmasini bosing.</p>
                 </div>
 
@@ -210,7 +211,7 @@
                     </div>
                     <h3 class="text-lg font-semibold text-red-400 mb-2">Xatolik yuz berdi</h3>
                     <p id="error-message" class="text-sm text-gray-400 mb-6"></p>
-                    <button id="retry-btn" class="btn-secondary px-8">Qayta urinish</button>
+                    <button id="retry-btn" class="btn-secondary px-8"><?= t('common.retry') ?></button>
                 </div>
             </div>
         </div>

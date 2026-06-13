@@ -1,4 +1,8 @@
-﻿<?php
+<?php
+// ========== i18n TIZIMI ==========
+require_once __DIR__ . '/../lang/i18n.php';
+$_currentLang = lang();
+
 // ========== TEXNIK ISHLAR TEKSHIRUVI ==========
 $_mFlag = __DIR__ . '/../data/maintenance.flag';
 if (file_exists($_mFlag)) {
@@ -26,12 +30,12 @@ try {
 }
 ?>
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="<?= $_currentLang ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?? 'Tiba AI – Sun\'iy intellekt yordamida professional infografika' ?></title>
-    <meta name="description" content="<?= $pageDescription ?? 'Tiba AI – Marketplace (Uzum, Wildberries) va Instagram uchun professional infografikalarni sun\'iy intellekt yordamida soniyalar ichida yarating.' ?>">
+    <title><?= $pageTitle ?? t('meta.default_title') ?></title>
+    <meta name="description" content="<?= $pageDescription ?? t('meta.default_desc') ?>">
     <meta name="keywords" content="tiba ai, sun'iy intellekt infografika, uzum infografika, marketplace dizayn, ai rasm yaratish, uzbekistan ai, infografika yaratish bot, professional dizayn ai">
     <link rel="canonical" href="https://tibaai.uz<?= $currentPage ?>">
     
@@ -43,14 +47,14 @@ try {
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://tibaai.uz<?= $currentPage ?>">
     <meta property="og:title" content="<?= $pageTitle ?? 'Tiba AI – Professional AI Dizayn' ?>">
-    <meta property="og:description" content="Marketplace va Instagram uchun professional infografikalarni AI yordamida yarating.">
+    <meta property="og:description" content="<?= t('meta.og_desc') ?>">
     <meta property="og:image" content="https://tibaai.uz/generated/og-image.jpg">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://tibaai.uz<?= $currentPage ?>">
     <meta property="twitter:title" content="<?= $pageTitle ?? 'Tiba AI – Professional AI Dizayn' ?>">
-    <meta property="twitter:description" content="Marketplace va Instagram uchun professional infografikalarni AI yordamida yarating.">
+    <meta property="twitter:description" content="<?= t('meta.og_desc') ?>">
     <meta property="twitter:image" content="https://tibaai.uz/generated/og-image.jpg">
 
     <!-- Structured Data -->
@@ -61,7 +65,7 @@ try {
       "name": "Tiba AI",
       "url": "https://tibaai.uz",
       "logo": "https://tibaai.uz/assets/logo.png",
-      "description": "Sun'iy intellekt yordamida professional infografika va dizayn yaratish platformasi.",
+      "description": "<?= t('meta.schema_desc') ?>",
       "sameAs": [
         "https://t.me/tibaai_bot",
         "https://instagram.com/tibaai"
@@ -107,277 +111,129 @@ try {
     <?php if ($googleClientId && $googleClientId !== 'YOUR_GOOGLE_CLIENT_ID_HERE'): ?>
     <script src="https://accounts.google.com/gsi/client" async defer onload="if(typeof TibaAuth!=='undefined')TibaAuth.initGoogle()"></script>
     <?php endif; ?>
+<script>
+window.LANG = <?= getJsTranslations() ?>;
+window.CURRENT_LANG = '<?= $_currentLang ?>';
+function _t(key) { return (window.LANG && window.LANG[key]) ? window.LANG[key] : key; }
+function toggleLangDropdown() {
+    const dd = document.getElementById('lang-dropdown');
+    if (dd) dd.classList.toggle('hidden');
+}
+document.addEventListener('click', function(e) {
+    const w = document.getElementById('lang-switcher-wrapper');
+    const dd = document.getElementById('lang-dropdown');
+    if (w && dd && !w.contains(e.target)) dd.classList.add('hidden');
+});
+</script>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen">
 
-<!-- ========== TELEGRAM BIND NOTIFICATION ========== -->
-<style>
-@keyframes tg-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
-@keyframes tg-pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-@keyframes tg-modal-in{0%{opacity:0;transform:translateY(20px) scale(.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes tg-otp-shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-.tg-modal-card{animation:tg-modal-in .35s cubic-bezier(.34,1.56,.64,1) forwards}
-.tg-otp-shake{animation:tg-otp-shake .4s ease}
-.tg-banner-shimmer{position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);animation:tg-shimmer 3s infinite;pointer-events:none}
-</style>
-<div id="tg-bind-banner" class="hidden relative z-[60] overflow-hidden" style="background:linear-gradient(90deg,#0e0b2e 0%,#0a1628 60%,#061523 100%);border-bottom:1px solid rgba(41,167,225,0.1);">
-    <div class="tg-banner-shimmer"></div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between gap-3 py-2">
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="relative flex-shrink-0">
-                    <div class="w-1.5 h-1.5 rounded-full" style="background:#29A7E1;animation:tg-pulse-dot 2s ease-in-out infinite;"></div>
-                </div>
-                <i class="fa-brands fa-telegram flex-shrink-0 text-[13px]" style="color:#29A7E1;"></i>
-                <span class="text-white/80 text-xs font-medium truncate">Infografikalarni bevosita <strong class="text-white font-semibold">Telegramda</strong> qabul qiling</span>
-            </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-                <button onclick="openTgBindModal()"
-                    class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200"
-                    style="background:rgba(41,167,225,0.15);border:1px solid rgba(41,167,225,0.4);color:#29A7E1;"
-                    onmouseover="this.style.background='rgba(41,167,225,0.28)';this.style.borderColor='rgba(41,167,225,0.7)'"
-                    onmouseout="this.style.background='rgba(41,167,225,0.15)';this.style.borderColor='rgba(41,167,225,0.4)'">
-                    Ulash <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i>
-                </button>
-                <button onclick="document.getElementById('tg-bind-banner').classList.add('hidden')"
-                    class="w-6 h-6 flex items-center justify-center rounded-md transition-all"
-                    style="color:rgba(255,255,255,0.3);"
-                    onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='rgba(255,255,255,0.7)'"
-                    onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.3)'">
-                    <i class="fa-solid fa-xmark" style="font-size:11px;"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ========== GLOBAL TOAST ========== -->
-<div id="status-toast" class="hidden fixed top-24 right-8 z-[100] animate-slide-up">
-    <div class="bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10 backdrop-blur-md">
-        <span id="toast-icon">✅</span>
-        <span id="toast-msg">Muvaffaqiyatli!</span>
-    </div>
-</div>
-
-<!-- Navbar -->
-<nav class="sticky top-0 z-50 glass-card border-t-0 border-x-0 rounded-none">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-            <!-- Logo -->
-            <a href="/" class="flex items-center gap-2.5 group flex-shrink-0">
+<!-- ========== SIDEBAR ========== -->
+<aside id="sidebar" class="sidebar-nav fixed top-0 left-0 bottom-0 w-[260px] z-50 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+    <div class="flex flex-col h-full overflow-hidden" style="background:var(--sidebar-bg);border-right:1px solid var(--border-color);">
+        <!-- Logo -->
+        <div class="flex items-center gap-2.5 px-6 h-16 flex-shrink-0 border-b" style="border-color:var(--border-color);">
+            <a href="/" class="flex items-center gap-2.5 group">
                 <div class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/50 transition-shadow">
                     <span class="text-white font-extrabold text-sm">T</span>
                 </div>
                 <span class="text-xl font-bold gradient-text">Tiba AI</span>
             </a>
-
-            <div class="hidden md:flex items-center gap-1">
-                <?php
-                $navLinks = [
-                    ['path' => '/', 'label' => 'Bosh sahifa'],
-                    ['path' => '#', 'label' => '<i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-indigo-400"></i> Yordamchi', 'dropdown' => true, 'patterns' => ['/create', '/infografika', '/infografika-paketi', '/foto-tahrir', '/noldan-yaratish', '/uslub-nusxalash', '/fashion-ai', '/fotosesiya-pro', '/kartochka-ai', '/video-ai', '/smart-matn', '/instrumentlar', '/stuv-kalkulyatori', '/sotuvlar-analitikasi', '/raqiblar-monitori', '/zoom-selling-ai', '/qqs-kalkulyatori', '/hisobotlar']],
-                    ['path' => '/pricing', 'label' => 'Narxlar'],
-                    ['path' => '/contact', 'label' => 'Aloqa'],
-                    ['path' => '/kurslar', 'label' => 'Kurslar'],
-                ];
-                foreach ($navLinks as $link):
-                    $isActive = ($currentPage === $link['path']);
-                    
-                    // Patterns orqali aktivlikni tekshirish
-                    if (!$isActive && isset($link['patterns'])) {
-                        foreach ($link['patterns'] as $p) { if ($currentPage === $p) { $isActive = true; break; } }
-                    }
-
-                    // Dropdown aktivligini tekshirish (faqat Yaratish uchun qoldi)
-                    if (isset($link['dropdown']) && $link['dropdown']) {
-                        foreach ($headerServices as $s) {
-                            if ($currentPage === '/' . $s['slug']) { $isActive = true; break; }
-                        }
-                    }
-
-                    if (isset($link['dropdown']) && $link['dropdown']): ?>
-                    <div class="relative" id="yordamchi-wrapper">
-                        <button type="button" onclick="toggleYordamchi()" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 <?= $isActive ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?> flex items-center gap-1.5">
-                            <?= $link['label'] ?>
-                            <i class="fa-solid fa-chevron-down text-[10px] opacity-50 transition-transform" id="yordamchi-chevron"></i>
-                        </button>
-                        <div id="yordamchi-dropdown" class="absolute left-0 top-full pt-2 w-[280px] hidden animate-fade-in-up z-[60]">
-                            <div class="yordamchi-dropdown-panel p-3 border shadow-2xl rounded-2xl">
-                                <a href="/create" class="flex items-center gap-3.5 p-3 rounded-2xl hover:bg-white/5 transition-all group/item border border-transparent hover:border-white/5">
-                                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xl shadow-lg ring-1 ring-white/10 group-hover/item:scale-110 transition-transform duration-300">
-                                        <i class="fa-solid fa-wand-magic-sparkles text-white"></i>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <span class="text-sm font-bold text-white group-hover/item:text-indigo-400 transition-colors">Infografika yaratish</span>
-                                        <div class="text-[10px] text-gray-500 line-clamp-1">AI yordamida dizayn yarating</div>
-                                    </div>
-                                </a>
-                                <a href="/instrumentlar" class="flex items-center gap-3.5 p-3 rounded-2xl hover:bg-white/5 transition-all group/item border border-transparent hover:border-white/5">
-                                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-xl shadow-lg ring-1 ring-white/10 group-hover/item:scale-110 transition-transform duration-300">
-                                        <i class="fa-solid fa-toolbox text-white"></i>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <span class="text-sm font-bold text-white group-hover/item:text-violet-400 transition-colors">Instrumentlar</span>
-                                        <div class="text-[10px] text-gray-500 line-clamp-1">Yordamchi vositalar</div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <?php else: ?>
-                    <a href="<?= $link['path'] ?>" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 <?= $isActive ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>"><?= $link['label'] ?></a>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <!-- Guest -->
-                <button id="nav-login-btn" onclick="TibaAuth.showModal()" class="hidden items-center gap-2 px-4 py-2 text-sm font-medium text-gray-400 hover:text-white rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                    </svg>
-                    <span class="hidden sm:inline">Kirish</span>
-                </button>
-
-                <!-- User Profile -->
-                <div id="nav-user-profile" class="hidden relative">
-                    <div class="flex items-center gap-2">
-                        <div class="relative">
-                            <button id="nav-balance-btn" class="balance-btn flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all cursor-pointer">
-                                <i class="fa-solid fa-coins text-sm"></i>
-                                <span id="nav-user-balance" class="font-bold text-sm">0</span>
-                                <i class="fa-solid fa-chevron-down text-[9px] ml-0.5"></i>
-                            </button>
-                            <div id="nav-balance-dropdown" class="hidden absolute right-0 top-full mt-2 w-52 yordamchi-dropdown-panel border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-fade-in z-50">
-                                <div class="px-4 py-3 border-b border-white/5 text-center">
-                                    <div class="text-xs text-gray-500">Joriy balans</div>
-                                    <div class="text-lg font-bold text-amber-400 mt-0.5"><i class="fa-solid fa-coins text-amber-500 mr-1"></i> <span id="dd-balance-value">0</span> <span class="text-xs font-normal text-gray-500">tanga</span></div>
-                                </div>
-                                <div class="py-1.5">
-                                    <a href="/pricing" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                                        <i class="fa-solid fa-cart-plus text-emerald-400 w-4 text-center"></i> Tanga olish
-                                    </a>
-                                    <a href="/pricing#history" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                                        <i class="fa-solid fa-receipt text-blue-400 w-4 text-center"></i> To'lovlar tarixi
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <button id="nav-user-btn" class="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-white/5 transition-all group">
-                            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
-                                <span id="nav-user-initial" class="text-white font-bold text-xs"></span>
-                            </div>
-                            <div class="hidden lg:block text-left">
-                                <div id="nav-user-name" class="text-sm font-semibold text-white leading-tight"></div>
-                                <div id="nav-user-email" class="text-[10px] text-gray-500 leading-tight"></div>
-                            </div>
-                        </button>
-                    </div>
-                    <div id="nav-user-dropdown" class="hidden absolute right-0 top-full mt-2 w-56 yordamchi-dropdown-panel border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-fade-in z-50">
-                        <div class="px-4 py-3 border-b border-white/5">
-                            <div id="dd-user-name" class="text-sm font-semibold text-white"></div>
-                            <div id="dd-user-email" class="text-xs text-gray-500 mt-0.5"></div>
-                        </div>
-                        <div class="py-1.5">
-                            <a href="/create" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors"><i class="fa-solid fa-wand-magic-sparkles text-indigo-400 w-4 text-center"></i> Yaratish</a>
-                            <a href="/tarix" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors"><i class="fa-solid fa-clock-rotate-left text-blue-400 w-4 text-center"></i> Tarix</a>
-                        </div>
-                        <div class="border-t border-white/5 py-1.5">
-                            <button onclick="TibaAuth.logout()" class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/5"><i class="fa-solid fa-right-from-bracket"></i> Chiqish</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Boshlash: faqat guest uchun ko'rinadi -->
-                <a href="/create" id="nav-start-btn" class="hidden md:inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 transition-all duration-300">
-                    <i class="fa-solid fa-bolt"></i> Boshlash
-                </a>
-
-                <!-- Hamburger -->
-                <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 transition-colors">
-                    <i class="fa-solid fa-bars text-lg text-gray-400" id="mobile-menu-icon"></i>
-                </button>
-
-                <!-- Theme Toggle (desktop) -->
-                <button id="theme-toggle-btn" class="theme-toggle hidden md:flex" onclick="TibaTheme.toggle()" title="Rejimni o'zgartirish">
-                    <i class="fa-solid fa-sun icon-sun"></i>
-                    <i class="fa-solid fa-moon icon-moon"></i>
-                </button>
-            </div>
         </div>
-    </div>
-
-    <!-- ===== MOBILE MENU ===== -->
-    <div id="mobile-menu" class="md:hidden hidden">
-        <div class="border-t border-white/10"></div>
-        <div class="px-4 py-4 space-y-3 mobile-menu-inner">
-
-            <!-- User Card (logged in) -->
-            <div id="mobile-user-section" class="hidden">
-                <div class="mob-user-card flex items-center gap-3 p-3 rounded-2xl border">
-                    <div class="mob-icon-box-indigo w-10 h-10 rounded-xl flex items-center justify-center shadow-md">
-                        <span id="mobile-user-initial" class="font-bold text-sm" style="color:#fff"></span>
+        <!-- Nav Links -->
+        <nav class="flex-1 px-3 py-4 overflow-y-auto sidebar-scroll">
+            <div class="px-3 mb-3">
+                <span class="text-[10px] font-semibold uppercase tracking-widest" style="color:var(--text-muted);"><?= t('nav.menu') ?></span>
+            </div>
+            <?php
+            $sidebarLinks = [
+                ['path' => '/',              'label' => t('nav.home'),          'icon' => 'fa-home text-blue-400'],
+                ['path' => '/create',        'label' => t('nav.create'), 'icon' => 'fa-wand-magic-sparkles text-indigo-400'],
+                ['path' => '/instrumentlar', 'label' => t('nav.instruments'),        'icon' => 'fa-toolbox text-violet-400'],
+                ['path' => '/analitika', 'label' => t('nav.analytics'), 'icon' => 'fa-chart-line text-emerald-400'],
+                ['path' => '/pricing',       'label' => t('nav.pricing'),              'icon' => 'fa-tag text-emerald-400'],
+                ['path' => '/kurslar',       'label' => t('nav.courses'),              'icon' => 'fa-graduation-cap text-amber-400'],
+            ];
+            foreach ($sidebarLinks as $link):
+                $isActive = ($currentPage === $link['path']);
+            ?>
+                <a href="<?= $link['path'] ?>" class="sidebar-link mb-1 <?= $isActive ? 'active' : '' ?>">
+                    <i class="fa-solid <?= $link['icon'] ?> sidebar-link-icon"></i>
+                    <span><?= $link['label'] ?></span>
+                </a>
+            <?php endforeach; ?>
+        </nav>
+        <!-- Bottom section -->
+        <div class="flex-shrink-0 px-3 py-4 space-y-2" style="border-top:1px solid var(--border-color);">
+            <a href="/create" id="nav-start-btn" class="sidebar-cta"><?= t('nav.start') ?> <i class="fa-solid fa-bolt"></i></a>
+            <button id="nav-login-btn" onclick="TibaAuth.showModal()" class="hidden sidebar-link w-full">
+                <i class="fa-solid fa-right-to-bracket sidebar-link-icon text-indigo-400"></i><?= t('nav.login') ?>
+            </button>
+            <div id="nav-user-profile" class="hidden space-y-2">
+                <div class="sidebar-user-card">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md flex-shrink-0">
+                        <span id="nav-user-initial" class="text-white font-bold text-xs"></span>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div id="mobile-user-name" class="text-sm font-bold truncate" style="color:var(--text-heading)"></div>
-                        <div id="mobile-user-email" class="text-[11px] truncate" style="color:var(--text-muted)"></div>
-                        <div class="balance-btn inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-bold mt-1 border">
-                            <i class="fa-solid fa-coins text-[10px]"></i>
-                            <span id="mobile-user-balance">0</span> tanga
-                        </div>
+                        <div id="nav-user-name" class="text-sm font-semibold truncate" style="color:var(--text-heading)"></div>
+                        <div id="nav-user-email" class="text-[10px] truncate" style="color:var(--text-muted)"></div>
                     </div>
-                    <button onclick="TibaAuth.logout()" class="mob-logout-btn w-9 h-9 flex items-center justify-center rounded-xl transition-colors" title="Chiqish">
-                        <i class="fa-solid fa-right-from-bracket text-sm"></i>
-                    </button>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <a href="/pricing" class="sidebar-badge flex-1">
+                        <i class="fa-solid fa-coins text-amber-400 text-[10px]"></i>
+                        <span id="nav-user-balance" class="font-bold text-xs">0</span>
+                        <span class="text-[10px] opacity-60"><?= t('nav.coins') ?></span>
+                    </a>
+                    <a href="/tarix" class="sidebar-action-sm" title="<?= t('sidebar.history') ?>"><i class="fa-solid fa-clock-rotate-left text-blue-400"></i></a>
+                    <button onclick="TibaAuth.logout()" class="sidebar-action-sm" title="<?= t('sidebar.logout') ?>"><i class="fa-solid fa-right-from-bracket text-red-400"></i></button>
                 </div>
             </div>
-
-            <!-- Yordamchi: Infografika & Instrumentlar -->
-            <div class="grid grid-cols-2 gap-2">
-                <a href="/create" class="mob-card-infografika flex flex-col items-center gap-2 p-3.5 rounded-2xl border active:scale-[0.97] transition-all">
-                    <div class="mob-icon-box-indigo w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-wand-magic-sparkles" style="color:#fff"></i>
-                    </div>
-                    <span class="mob-card-label-indigo text-xs font-bold">Infografika</span>
-                </a>
-                <a href="/instrumentlar" class="mob-card-instrumentlar flex flex-col items-center gap-2 p-3.5 rounded-2xl border active:scale-[0.97] transition-all">
-                    <div class="mob-icon-box-violet w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-toolbox" style="color:#fff"></i>
-                    </div>
-                    <span class="mob-card-label-violet text-xs font-bold">Instrumentlar</span>
-                </a>
-            </div>
-
-            <!-- Nav Links -->
-            <div class="space-y-0.5">
-                <a href="/" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors <?= $currentPage === '/' ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">
-                    <i class="fa-solid fa-home w-5 text-center text-indigo-400 text-xs"></i> Bosh sahifa
-                </a>
-                <a href="/pricing" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors <?= $currentPage === '/pricing' ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">
-                    <i class="fa-solid fa-tag w-5 text-center text-emerald-400 text-xs"></i> Narxlar
-                </a>
-                <a href="/contact" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors <?= $currentPage === '/contact' ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">
-                    <i class="fa-solid fa-envelope w-5 text-center text-blue-400 text-xs"></i> Aloqa
-                </a>
-                <a href="/kurslar" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors <?= $currentPage === '/kurslar' ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5' ?>">
-                    <i class="fa-solid fa-graduation-cap w-5 text-center text-amber-400 text-xs"></i> Kurslar
-                </a>
-            </div>
-
-            <!-- Theme + Guest -->
-            <div class="pt-2 border-t border-white/10 flex items-center justify-between">
-                <button onclick="TibaTheme.toggle()" class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-                    <i class="fa-solid fa-circle-half-stroke w-5 text-center text-gray-500 text-xs"></i> Rejim
+            <!-- Til tanlash -->
+            <div class="sidebar-link w-full relative" id="lang-switcher-wrapper">
+                <button onclick="toggleLangDropdown()" class="sidebar-link w-full" type="button">
+                    <span class="sidebar-link-icon text-base"><?= LANG_FLAGS[$_currentLang] ?></span>
+                    <span><?= LANG_NAMES[$_currentLang] ?></span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-50 ml-auto"></i>
                 </button>
-                <div id="mobile-guest-section">
-                    <button onclick="TibaAuth.showModal()" class="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/25 active:scale-95 transition-all">
-                        <i class="fa-solid fa-user text-xs"></i> Kirish
-                    </button>
+                <div id="lang-dropdown" class="hidden absolute bottom-full left-0 right-0 mb-1 rounded-xl overflow-hidden shadow-2xl" style="background:var(--dropdown-bg);border:1px solid var(--border-color);z-index:100;">
+                    <?php foreach (SUPPORTED_LANGS as $lc): if ($lc === $_currentLang) continue; ?>
+                    <a href="?lang=<?= $lc ?>" class="flex items-center gap-2.5 px-3 py-2.5 text-sm transition-colors" style="color:var(--text-secondary);" onmouseover="this.style.background='var(--glass-bg-hover)'" onmouseout="this.style.background='transparent'">
+                        <span class="text-base"><?= LANG_FLAGS[$lc] ?></span>
+                        <span><?= LANG_NAMES[$lc] ?></span>
+                    </a>
+                    <?php endforeach; ?>
                 </div>
             </div>
+            
+            <button id="theme-toggle-btn" class="sidebar-link w-full" onclick="TibaTheme.toggle()" title="<?= t('sidebar.theme_toggle') ?>">
+                <i class="fa-solid fa-circle-half-stroke sidebar-link-icon text-gray-500"></i>
+                <span><?= t('sidebar.theme') ?></span>
+                <div class="ml-auto flex"><i class="fa-solid fa-sun icon-sun text-amber-400 text-xs"></i><i class="fa-solid fa-moon icon-moon text-indigo-400 text-xs"></i></div>
+            </button>
         </div>
     </div>
-</nav>
+</aside>
+<!-- Mobile Top Bar -->
+<div id="mobile-topbar" class="lg:hidden fixed top-0 left-0 right-0 z-40 glass-card border-t-0 border-x-0 rounded-none">
+    <div class="flex items-center justify-between h-14 px-4">
+        <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 transition-colors">
+            <i class="fa-solid fa-bars text-lg text-gray-400" id="mobile-menu-icon"></i>
+        </button>
+        <a href="/" class="flex items-center gap-2 group">
+            <div class="w-7 h-7 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <span class="text-white font-bold text-[10px]">T</span>
+            </div>
+            <span class="text-lg font-bold gradient-text">Tiba AI</span>
+        </a>
+        <div class="w-10"></div>
+    </div>
+</div>
+<!-- Sidebar Overlay -->
+<div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" onclick="toggleSidebar()"></div>
+<!-- Hidden JS compat elements -->
+<div class="hidden"><span id="dd-user-name"></span><span id="dd-user-email"></span><span id="dd-balance-value"></span><span id="mobile-user-initial"></span><span id="mobile-user-name"></span><span id="mobile-user-email"></span><span id="mobile-user-balance">0</span><div id="mobile-user-section"></div><div id="mobile-guest-section"></div><div id="nav-balance-dropdown"></div><div id="nav-user-dropdown"></div></div>
+
 
 <!-- ========== AUTH MODAL ========== -->
 <div id="auth-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -393,8 +249,8 @@ try {
                 <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30">
                     <span class="text-white font-extrabold text-lg">T</span>
                 </div>
-                <h2 id="auth-title" class="text-xl font-extrabold text-white">Tizimga kirish</h2>
-                <p id="auth-subtitle" class="text-sm text-gray-500 mt-1">Hisobingizga kiring</p>
+                <h2 id="auth-title" class="text-xl font-extrabold text-white"><?= t('auth.login_title') ?></h2>
+                <p id="auth-subtitle" class="text-sm text-gray-500 mt-1"><?= t('auth.login_subtitle') ?></p>
             </div>
 
             <!-- Error -->
@@ -405,17 +261,17 @@ try {
                 <form id="auth-form" onsubmit="TibaAuth.handleSubmit(event)" class="space-y-3">
                     <!-- Name (register only) -->
                     <div id="auth-name-wrap" class="hidden">
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5">Ismingiz</label>
+                        <label class="block text-xs font-medium text-gray-400 mb-1.5"><?= t('auth.name_label') ?></label>
                         <div class="relative">
                             <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                            <input type="text" id="auth-name" placeholder="To'liq ismingiz" autocomplete="name"
+                            <input type="text" id="auth-name" placeholder="<?= t('auth.name_placeholder') ?>" autocomplete="name"
                                 class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all">
                         </div>
                     </div>
 
                     <!-- Email -->
                     <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5">Email</label>
+                        <label class="block text-xs font-medium text-gray-400 mb-1.5"><?= t('auth.email_label') ?></label>
                         <div class="relative">
                             <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
                             <input type="email" id="auth-email" placeholder="email@example.com" autocomplete="email"
@@ -425,35 +281,35 @@ try {
 
                     <!-- Password -->
                     <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5">Parol</label>
+                        <label class="block text-xs font-medium text-gray-400 mb-1.5"><?= t('auth.password_label') ?></label>
                         <div class="relative">
                             <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                            <input type="password" id="auth-password" placeholder="Parolingiz" autocomplete="current-password"
+                            <input type="password" id="auth-password" placeholder="<?= t('auth.password_placeholder') ?>" autocomplete="current-password"
                                 class="w-full pl-10 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all">
                             <button type="button" onclick="TibaAuth.togglePassword()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors p-1">
                                 <i id="auth-eye-icon" class="fa-solid fa-eye text-sm"></i>
                             </button>
                         </div>
-                        <p id="auth-pass-hint" class="hidden text-[11px] text-gray-600 mt-1.5">Kamida 8 belgi, harf va raqam</p>
+                        <p id="auth-pass-hint" class="hidden text-[11px] text-gray-600 mt-1.5"><?= t('auth.password_hint') ?></p>
                     </div>
 
                     <!-- Submit -->
                     <button type="submit" id="auth-submit-btn" class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-sm transition-all duration-200 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 active:scale-[0.98] mt-1">
                         <i class="fa-solid fa-right-to-bracket"></i>
-                        <span id="auth-submit-text">Kirish</span>
+                        <span id="auth-submit-text"><?= t('auth.login_btn') ?></span>
                     </button>
                 </form>
 
                 <!-- Toggle -->
                 <div class="text-center mt-4">
-                    <span id="auth-toggle-text" class="text-xs text-gray-500">Hisobingiz yo'qmi? </span>
-                    <button type="button" onclick="TibaAuth.toggleMode()" id="auth-toggle-btn" class="text-xs text-indigo-400 font-semibold hover:text-indigo-300 transition-colors">Ro'yxatdan o'tish</button>
+                    <span id="auth-toggle-text" class="text-xs text-gray-500"><?= t('auth.no_account') ?> </span>
+                    <button type="button" onclick="TibaAuth.toggleMode()" id="auth-toggle-btn" class="text-xs text-indigo-400 font-semibold hover:text-indigo-300 transition-colors"><?= t('auth.register_title') ?></button>
                 </div>
 
                 <!-- Divider -->
                 <div class="flex items-center gap-3 my-4">
                     <div class="flex-1 h-px bg-white/10"></div>
-                    <span class="text-xs text-gray-600 font-medium">yoki</span>
+                    <span class="text-xs text-gray-600 font-medium"><?= t('auth.or') ?></span>
                     <div class="flex-1 h-px bg-white/10"></div>
                 </div>
 
@@ -467,13 +323,13 @@ try {
                     <div class="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
                         <i class="fa-solid fa-envelope-open-text text-indigo-400 text-2xl"></i>
                     </div>
-                    <p class="text-sm text-gray-400">Tasdiqlash kodi yuborildi:</p>
+                    <p class="text-sm text-gray-400"><?= t('auth.otp_sent') ?></p>
                     <p id="otp-email-display" class="text-sm text-white font-semibold mt-1"></p>
                 </div>
 
                 <form onsubmit="TibaAuth.verifyOtp(event)" class="space-y-3">
                     <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5">6 xonali kod</label>
+                        <label class="block text-xs font-medium text-gray-400 mb-1.5"><?= t('auth.otp_label') ?></label>
                         <input type="text" id="auth-otp" maxlength="6" placeholder="000000" inputmode="numeric" autocomplete="one-time-code"
                             class="w-full text-center text-2xl font-bold tracking-[0.5em] py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-700 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all"
                             oninput="this.value = this.value.replace(/\D/g, '').slice(0, 6)">
@@ -481,24 +337,24 @@ try {
 
                     <button type="submit" id="otp-submit-btn" class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-500/20 active:scale-[0.98]">
                         <i class="fa-solid fa-check-circle"></i>
-                        <span id="otp-submit-text">Tasdiqlash</span>
+                        <span id="otp-submit-text"><?= t('auth.otp_verify') ?></span>
                     </button>
                 </form>
 
                 <div class="flex items-center justify-between mt-4">
                     <button type="button" onclick="TibaAuth.backToStep1()" class="text-xs text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors">
-                        <i class="fa-solid fa-arrow-left text-[10px]"></i> Orqaga
+                        <i class="fa-solid fa-arrow-left text-[10px]"></i> <?= t('common.back') ?>
                     </button>
                     <button type="button" onclick="TibaAuth.resendOtp()" id="otp-resend-btn" class="text-xs text-indigo-400 font-semibold hover:text-indigo-300 transition-colors disabled:opacity-30 disabled:pointer-events-none">
-                        Qayta yuborish
+                        <?= t('auth.otp_resend') ?>
                     </button>
                 </div>
 
-                <p class="text-[11px] text-gray-600 text-center mt-4">Kod 5 daqiqa ichida amal qiladi</p>
+                <p class="text-[11px] text-gray-600 text-center mt-4"><?= t('auth.otp_expires') ?></p>
             </div>
 
             <p class="text-[11px] text-gray-600 text-center mt-5 leading-relaxed">
-                Davom etish orqali siz <a href="#" class="text-indigo-400 hover:underline">Foydalanish shartlari</a>ga rozilik bildirasiz
+                <?= t('auth.terms') ?>
             </p>
         </div>
     </div>
@@ -538,18 +394,18 @@ try {
             </div>
 
             <div class="px-6 pb-7 -mt-2">
-                <h3 class="text-xl font-extrabold text-white text-center mb-1">Tanga yetarli emas!</h3>
-                <p class="text-sm text-gray-400 text-center mb-5">Yaratish uchun tanga sotib oling</p>
+                <h3 class="text-xl font-extrabold text-white text-center mb-1"><?= t('nobal.title') ?></h3>
+                <p class="text-sm text-gray-400 text-center mb-5"><?= t('nobal.subtitle') ?></p>
 
                 <!-- Balance info -->
                 <div class="flex items-center gap-3 mb-5">
                     <div class="flex-1 rounded-xl bg-red-500/5 border border-red-500/15 p-3 text-center">
-                        <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Balans</div>
+                        <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1"><?= t('nobal.balance') ?></div>
                         <div class="text-lg font-extrabold text-red-400" id="nobal-current">0</div>
                     </div>
                     <div class="text-gray-600"><i class="fa-solid fa-arrow-right"></i></div>
                     <div class="flex-1 rounded-xl bg-amber-500/5 border border-amber-500/15 p-3 text-center">
-                        <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Kerak</div>
+                        <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1"><?= t('nobal.required') ?></div>
                         <div class="text-lg font-extrabold text-amber-400" id="nobal-required">5</div>
                     </div>
                 </div>
@@ -558,12 +414,12 @@ try {
                 <a href="/pricing" class="group relative flex items-center justify-center gap-2.5 w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-sm transition-all duration-300 shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.02] active:scale-[0.98] overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                     <i class="fa-solid fa-cart-plus relative z-10"></i>
-                    <span class="relative z-10">Tanga sotib olish</span>
+                    <span class="relative z-10"><?= t('nobal.buy_btn') ?></span>
                     <i class="fa-solid fa-arrow-right relative z-10 group-hover:translate-x-1 transition-transform"></i>
                 </a>
 
                 <button onclick="closeNoBalance()" class="w-full mt-3 py-2.5 rounded-xl text-xs text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all">
-                    Yopish
+                    <?= t('common.close') ?>
                 </button>
             </div>
         </div>
@@ -623,24 +479,24 @@ const TibaAuth = (() => {
         isRegisterMode = !isRegisterMode;
         $('auth-error').classList.add('hidden');
         if (isRegisterMode) {
-            $('auth-title').textContent = "Ro'yxatdan o'tish";
-            $('auth-subtitle').textContent = "Yangi hisob yaratish";
+            $('auth-title').textContent = _t('auth_register_title');
+            $('auth-subtitle').textContent = _t('auth_register_subtitle');
             $('auth-name-wrap').classList.remove('hidden');
             $('auth-pass-hint').classList.remove('hidden');
-            $('auth-submit-text').textContent = "Davom etish";
+            $('auth-submit-text').textContent = _t('auth_continue_btn');
             $('auth-submit-btn').querySelector('i').className = 'fa-solid fa-arrow-right';
-            $('auth-toggle-text').textContent = "Hisobingiz bormi? ";
-            $('auth-toggle-btn').textContent = "Kirish";
+            $('auth-toggle-text').textContent = _t('auth_has_account');
+            $('auth-toggle-btn').textContent = _t('auth_login_btn');
             $('auth-password').setAttribute('autocomplete', 'new-password');
         } else {
-            $('auth-title').textContent = "Tizimga kirish";
-            $('auth-subtitle').textContent = "Hisobingizga kiring";
+            $('auth-title').textContent = _t('auth_login_title');
+            $('auth-subtitle').textContent = _t('auth_login_subtitle');
             $('auth-name-wrap').classList.add('hidden');
             $('auth-pass-hint').classList.add('hidden');
-            $('auth-submit-text').textContent = "Kirish";
+            $('auth-submit-text').textContent = _t('auth_login_btn');
             $('auth-submit-btn').querySelector('i').className = 'fa-solid fa-right-to-bracket';
-            $('auth-toggle-text').textContent = "Hisobingiz yo'qmi? ";
-            $('auth-toggle-btn').textContent = "Ro'yxatdan o'tish";
+            $('auth-toggle-text').textContent = _t('auth_no_account');
+            $('auth-toggle-btn').textContent = _t('auth_register_title');
             $('auth-password').setAttribute('autocomplete', 'current-password');
         }
     }
@@ -672,7 +528,7 @@ const TibaAuth = (() => {
         if (loading) {
             btn.disabled = true;
             btn.classList.add('opacity-70', 'pointer-events-none');
-            textEl.textContent = 'Kutib turing...';
+            textEl.textContent = _t('auth_waiting');
         } else {
             btn.disabled = false;
             btn.classList.remove('opacity-70', 'pointer-events-none');
@@ -688,14 +544,14 @@ const TibaAuth = (() => {
         const email = ($('auth-email').value || '').trim().toLowerCase();
         const password = $('auth-password').value;
 
-        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError("To'g'ri email kiriting"); return; }
-        if (!password || password.length < 6) { showError("Parol kamida 6 belgi bo'lishi kerak"); return; }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError(_t('auth_err_email')); return; }
+        if (!password || password.length < 6) { showError(_t('auth_err_pass_short')); return; }
 
         if (isRegisterMode) {
             const name = ($('auth-name').value || '').trim();
-            if (!name || name.length < 2) { showError("Ismingizni kiriting"); return; }
-            if (password.length < 8) { showError("Parol kamida 8 belgi bo'lishi kerak"); return; }
-            if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) { showError("Parolda harf va raqam bo'lishi kerak"); return; }
+            if (!name || name.length < 2) { showError(_t('auth_err_name')); return; }
+            if (password.length < 8) { showError(_t('auth_err_pass_8')); return; }
+            if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) { showError(_t('auth_err_pass_format')); return; }
 
             // OTP yuborish
             pendingRegData = { name, email, password };
@@ -712,9 +568,9 @@ const TibaAuth = (() => {
                 $('auth-error').classList.add('hidden');
                 startResendTimer();
             } catch (err) {
-                showError('Xatolik yuz berdi');
+                showError(_t('auth_err_generic'));
             } finally {
-                setLoading($('auth-submit-btn'), $('auth-submit-text'), false, "Davom etish");
+                setLoading($('auth-submit-btn'), $('auth-submit-text'), false, _t('auth_continue_btn'));
             }
         } else {
             // Login
@@ -724,9 +580,9 @@ const TibaAuth = (() => {
                 if (resp.error) { showError(resp.error); return; }
                 onAuthSuccess(resp);
             } catch (err) {
-                showError('Xatolik yuz berdi');
+                showError(_t('auth_err_generic'));
             } finally {
-                setLoading($('auth-submit-btn'), $('auth-submit-text'), false, "Kirish");
+                setLoading($('auth-submit-btn'), $('auth-submit-text'), false, _t('auth_login_btn'));
             }
         }
     }
@@ -737,8 +593,8 @@ const TibaAuth = (() => {
         $('auth-error').classList.add('hidden');
 
         const code = ($('auth-otp').value || '').trim();
-        if (!code || code.length !== 6) { showError("6 xonali kodni kiriting"); return; }
-        if (!pendingRegData) { showError("Ma'lumotlar topilmadi. Qaytadan urinib ko'ring."); backToStep1(); return; }
+        if (!code || code.length !== 6) { showError(_t('auth_err_otp')); return; }
+        if (!pendingRegData) { showError(_t('auth_err_data')); backToStep1(); return; }
 
         setLoading($('otp-submit-btn'), $('otp-submit-text'), true);
         try {
@@ -753,7 +609,7 @@ const TibaAuth = (() => {
             pendingRegData = null;
             onAuthSuccess(resp);
         } catch (err) {
-            showError('Xatolik yuz berdi');
+            showError(_t('auth_err_generic'));
         } finally {
             setLoading($('otp-submit-btn'), $('otp-submit-text'), false, "Tasdiqlash");
         }
@@ -764,15 +620,15 @@ const TibaAuth = (() => {
         let sec = 120;
         const btn = $('otp-resend-btn');
         btn.disabled = true;
-        btn.textContent = `Qayta yuborish (${sec}s)`;
+        btn.textContent = `${_t("auth_otp_resend")} (${sec}s)`;
         resendTimer = setInterval(() => {
             sec--;
             if (sec <= 0) {
                 clearInterval(resendTimer); resendTimer = null;
                 btn.disabled = false;
-                btn.textContent = 'Qayta yuborish';
+                btn.textContent = _t('auth_otp_resend');
             } else {
-                btn.textContent = `Qayta yuborish (${sec}s)`;
+                btn.textContent = `${_t("auth_otp_resend")} (${sec}s)`;
             }
         }, 1000);
     }
@@ -783,10 +639,10 @@ const TibaAuth = (() => {
         try {
             const resp = await apiCall('send_otp', { email: pendingRegData.email });
             if (resp.error) { showError(resp.error); return; }
-            showToast('Yangi kod yuborildi!', 'success');
+            showToast(_t('auth_otp_new_sent'), 'success');
             startResendTimer();
         } catch (err) {
-            showError('Xatolik yuz berdi');
+            showError(_t('auth_err_generic'));
         }
     }
 
@@ -807,7 +663,7 @@ const TibaAuth = (() => {
         if (data.token) localStorage.setItem('auth_token', data.token);
         updateUI();
         hideModal();
-        showToast(`Xush kelibsiz, ${data.user.name}!`, 'success');
+        showToast(`${_t("auth_welcome")}, ${data.user.name}!`, 'success');
         if (authCallback) { const cb = authCallback; authCallback = null; cb(); }
     }
 
@@ -950,7 +806,7 @@ const TibaAuth = (() => {
             onAuthSuccess(resp);
         } catch (err) { 
             console.error('Network Error:', err);
-            showToast('Google bilan kirishda texnik xatolik', 'error'); 
+            showToast(_t('auth_google_error'), 'error'); 
         }
     }
 
@@ -974,7 +830,7 @@ const TibaAuth = (() => {
         localStorage.removeItem('auth_token');
         currentUser = null;
         updateUI();
-        showToast("Tizimdan chiqdingiz", "info");
+        showToast(_t('auth_logged_out'), "info");
     }
 
     function showToast(msg, type = 'error') {
@@ -1088,11 +944,63 @@ function toggleMobileMenu() {
     const isHidden = menu.classList.contains('hidden');
     menu.classList.toggle('hidden');
     if (icon) {
-        icon.className = isHidden 
-            ? 'fa-solid fa-xmark text-lg text-white' 
+        icon.className = isHidden
+            ? 'fa-solid fa-xmark text-lg text-white'
             : 'fa-solid fa-bars text-lg text-gray-400';
     }
 }
+
+// ========== MOBILE SIDEBAR TOGGLE ==========
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const icon = document.getElementById('mobile-menu-icon');
+    if (!sidebar) return;
+
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    if (isOpen) {
+        sidebar.classList.add('-translate-x-full');
+        if (overlay) overlay.classList.add('hidden');
+        if (icon) icon.className = 'fa-solid fa-bars text-lg text-gray-400';
+        document.body.style.overflow = '';
+    } else {
+        sidebar.classList.remove('-translate-x-full');
+        if (overlay) overlay.classList.remove('hidden');
+        if (icon) icon.className = 'fa-solid fa-xmark text-lg text-white';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Sidebar havolasi bosilganda mobilda yopilsin (anchor/SPA holatlar uchun)
+    document.querySelectorAll('#sidebar a[href]').forEach(a => {
+        a.addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth < 1024 && sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+        });
+    });
+    // Escape bilan yopish
+    document.addEventListener('keydown', (e) => {
+        const sidebar = document.getElementById('sidebar');
+        if (e.key === 'Escape' && sidebar && window.innerWidth < 1024 && !sidebar.classList.contains('-translate-x-full')) {
+            toggleSidebar();
+        }
+    });
+    // Desktopga o'tilganda holatni tiklash
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 1024) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const icon = document.getElementById('mobile-menu-icon');
+            if (sidebar) sidebar.classList.add('-translate-x-full');
+            if (overlay) overlay.classList.add('hidden');
+            if (icon) icon.className = 'fa-solid fa-bars text-lg text-gray-400';
+            document.body.style.overflow = '';
+        }
+    });
+});
 
 // ========== GLOBAL UTILS ==========
 function showToast(msg, type = 'success') {
@@ -1149,8 +1057,8 @@ function showToast(msg, type = 'success') {
                     <i class="fa-solid fa-link text-[8px] text-white"></i>
                 </div>
             </div>
-            <h3 class="text-lg font-bold text-white mb-1">Telegram ulash</h3>
-            <p class="text-xs text-gray-500 mb-5">Infografikalaringizni to'g'ridan to'g'ri<br>Telegramda qabul qiling</p>
+            <h3 class="text-lg font-bold text-white mb-1"><?= t('tg.bind_title') ?></h3>
+            <p class="text-xs text-gray-500 mb-5"><?= t('tg.bind_desc') ?></p>
         </div>
 
         <!-- Progress bar steps -->
@@ -1158,11 +1066,11 @@ function showToast(msg, type = 'success') {
             <div class="flex items-center gap-0">
                 <div class="flex items-center gap-2">
                     <div id="tg-step-dot-1" class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all duration-300" style="background:linear-gradient(135deg,rgba(41,167,225,0.3),rgba(41,167,225,0.15));border:1.5px solid #29A7E1;color:#29A7E1;box-shadow:0 0 12px rgba(41,167,225,0.3);">1</div>
-                    <span id="tg-step-lbl-1" class="text-[10px] font-semibold transition-colors duration-300" style="color:#29A7E1;">Botga o'tish</span>
+                    <span id="tg-step-lbl-1" class="text-[10px] font-semibold transition-colors duration-300" style="color:#29A7E1;"><?= t('tg.step1_label') ?></span>
                 </div>
                 <div class="flex-1 mx-3 h-px" style="background:linear-gradient(90deg,rgba(41,167,225,0.4),rgba(255,255,255,0.06));"></div>
                 <div class="flex items-center gap-2">
-                    <span id="tg-step-lbl-2" class="text-[10px] font-semibold transition-colors duration-300" style="color:rgba(255,255,255,0.25);">Kodni kiriting</span>
+                    <span id="tg-step-lbl-2" class="text-[10px] font-semibold transition-colors duration-300" style="color:rgba(255,255,255,0.25);"><?= t('tg.step2_label') ?></span>
                     <div id="tg-step-dot-2" class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold transition-all duration-300" style="background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.25);">2</div>
                 </div>
             </div>
@@ -1173,7 +1081,7 @@ function showToast(msg, type = 'success') {
             <!-- Phone input -->
             <div class="mb-4">
                 <label class="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest mb-2" style="color:rgba(255,255,255,0.35);">
-                    Telefon <span style="color:rgba(255,255,255,0.18);font-weight:400;text-transform:none;letter-spacing:0;">— ixtiyoriy</span>
+                    <?= t('tg.phone_label') ?> <span style="color:rgba(255,255,255,0.18);font-weight:400;text-transform:none;letter-spacing:0;"><?= t('tg.phone_optional') ?></span>
                 </label>
                 <div class="flex items-stretch rounded-2xl overflow-hidden transition-all duration-200" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);" id="tg-phone-wrap">
                     <div class="flex items-center px-3.5 gap-1.5 flex-shrink-0" style="border-right:1px solid rgba(255,255,255,0.07);">
@@ -1191,11 +1099,11 @@ function showToast(msg, type = 'success') {
             <div class="rounded-2xl p-4 mb-5 space-y-2.5" style="background:rgba(41,167,225,0.05);border:1px solid rgba(41,167,225,0.1);">
                 <div class="flex items-start gap-3">
                     <span class="w-5 h-5 rounded-lg flex-shrink-0 flex items-center justify-center text-[9px] font-black" style="background:rgba(41,167,225,0.2);color:#29A7E1;margin-top:1px;">1</span>
-                    <p class="text-[11px] leading-relaxed" style="color:rgba(255,255,255,0.5);">Quyidagi tugmani bosib <span class="font-semibold text-white">@<?= htmlspecialchars($botUsername) ?></span> botga o'ting</p>
+                    <p class="text-[11px] leading-relaxed" style="color:rgba(255,255,255,0.5);"><?= t('tg.instruction1') ?> <span class="font-semibold text-white">@<?= htmlspecialchars($botUsername) ?></span></p>
                 </div>
                 <div class="flex items-start gap-3">
                     <span class="w-5 h-5 rounded-lg flex-shrink-0 flex items-center justify-center text-[9px] font-black" style="background:rgba(41,167,225,0.2);color:#29A7E1;margin-top:1px;">2</span>
-                    <p class="text-[11px] leading-relaxed" style="color:rgba(255,255,255,0.5);"><span class="font-bold text-white">/start</span> tugmasini bosing — bot sizga 6 xonali kod yuboradi</p>
+                    <p class="text-[11px] leading-relaxed" style="color:rgba(255,255,255,0.5);"><?= t('tg.instruction2') ?></p>
                 </div>
             </div>
 
@@ -1208,17 +1116,17 @@ function showToast(msg, type = 'success') {
                 onmouseout="this.style.boxShadow='0 4px 24px rgba(41,167,225,0.3),inset 0 1px 0 rgba(255,255,255,0.2)';this.style.transform=''">
                 <div class="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
                 <i class="fa-brands fa-telegram text-lg relative z-10"></i>
-                <span class="relative z-10">Botga o'tish</span>
+                <span class="relative z-10"><?= t('tg.go_to_bot') ?></span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-70 relative z-10"></i>
             </a>
             <button onclick="tgGoToStep2()" class="w-full py-2.5 rounded-xl text-xs transition-all duration-200" style="color:rgba(255,255,255,0.3);" onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.3)'">
-                Kod oldim <i class="fa-solid fa-arrow-right text-[10px] ml-1"></i>
+                <?= t('tg.got_code') ?> <i class="fa-solid fa-arrow-right text-[10px] ml-1"></i>
             </button>
         </div>
 
         <!-- STEP 2 -->
         <div id="tg-modal-step2" class="hidden relative z-10 px-7 pb-7">
-            <p class="text-xs text-center mb-4" style="color:rgba(255,255,255,0.4);">Bot yuborgan <span class="text-white font-semibold">6 xonali</span> kodni kiriting</p>
+            <p class="text-xs text-center mb-4" style="color:rgba(255,255,255,0.4);"><?= t('tg.enter_code') ?></p>
 
             <!-- 6 separate OTP boxes -->
             <div class="flex items-center justify-center gap-2 mb-2" id="tg-otp-boxes">
@@ -1234,7 +1142,7 @@ function showToast(msg, type = 'success') {
             </div>
             <!-- Hidden real OTP value -->
             <input type="hidden" id="tg-bind-otp">
-            <p class="text-[10px] text-center mb-5" style="color:rgba(255,255,255,0.2);">Kod 30 daqiqa amal qiladi</p>
+            <p class="text-[10px] text-center mb-5" style="color:rgba(255,255,255,0.2);"><?= t('tg.code_expires') ?></p>
 
             <button onclick="submitTgBind()" id="tg-bind-submit-btn"
                 class="group relative w-full py-3.5 rounded-2xl text-sm font-bold overflow-hidden transition-all duration-300 mb-3"
@@ -1243,10 +1151,10 @@ function showToast(msg, type = 'success') {
                 onmouseout="this.style.boxShadow='0 4px 24px rgba(41,167,225,0.3),inset 0 1px 0 rgba(255,255,255,0.2)';this.style.transform=''">
                 <div class="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
                 <i class="fa-solid fa-check-circle mr-2 relative z-10"></i>
-                <span class="relative z-10">Tasdiqlash va Ulash</span>
+                <span class="relative z-10"><?= t('tg.verify_btn') ?></span>
             </button>
             <button onclick="tgGoToStep1()" class="w-full py-2.5 rounded-xl text-xs transition-all duration-200" style="color:rgba(255,255,255,0.3);" onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.color='rgba(255,255,255,0.6)'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.3)'">
-                <i class="fa-solid fa-arrow-left text-[10px] mr-1"></i> Orqaga
+                <i class="fa-solid fa-arrow-left text-[10px] mr-1"></i> <?= t('common.back') ?>
             </button>
         </div>
         </div>
@@ -1334,7 +1242,7 @@ async function submitTgBind() {
         setTimeout(() => boxes.forEach(b => { b.style.borderColor='rgba(255,255,255,0.1)'; b.style.boxShadow=''; }), 1200);
         const wrap = document.getElementById('tg-otp-boxes');
         if(wrap){ wrap.classList.add('tg-otp-shake'); setTimeout(()=>wrap.classList.remove('tg-otp-shake'),400); }
-        return showToast("6 xonali kodni to'liq kiriting", "error");
+        return showToast(_t('tg_err_otp'), "error");
     }
 
     btn.disabled = true;
@@ -1353,7 +1261,7 @@ async function submitTgBind() {
         // Muvaffaqiyat: yashil holat
         const boxes = document.querySelectorAll('.tg-otp-box');
         boxes.forEach(b => { b.style.borderColor='rgba(16,185,129,0.6)'; b.style.background='rgba(16,185,129,0.08)'; });
-        showToast("Telegram muvaffaqiyatli ulandi!", "success");
+        showToast(_t('tg_success'), "success");
         document.getElementById('tg-bind-banner').classList.add('hidden');
         setTimeout(() => closeTgBindModal(), 800);
         const user = TibaAuth.getUser();
@@ -1375,13 +1283,13 @@ async function submitTgBind() {
 
         // Xato xabarini aniqlashtirish
         let errMsg = e.message;
-        if (errMsg.includes('xato yoki muddati')) errMsg = "Kod xato yoki muddati tugagan. Botdan yangi kod oling.";
-        else if (errMsg.includes('allaqachon boshqa')) errMsg = "Bu Telegram boshqa akkauntga ulangan.";
-        else if (errMsg.includes('Sessiya')) errMsg = "Iltimos, sahifani yangilab qayta kiring.";
+        if (errMsg.includes('xato yoki muddati')) errMsg = _t('tg_err_wrong_code');
+        else if (errMsg.includes('allaqachon boshqa')) errMsg = _t('tg_err_already_linked');
+        else if (errMsg.includes('Sessiya')) errMsg = _t('tg_err_session');
         showToast(errMsg, 'error');
     } finally {
         btn.disabled=false;
-        btn.innerHTML='<i class="fa-solid fa-check-circle mr-2 relative z-10"></i><span class="relative z-10">Tasdiqlash va Ulash</span>';
+        btn.innerHTML='<i class="fa-solid fa-check-circle mr-2 relative z-10"></i><span class="relative z-10">' + _t('tg_verify_btn') + '</span>';
     }
 }
 
@@ -1409,6 +1317,57 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1500);
 });
 </script>
+
+
+<div id="content-wrapper" class="lg:ml-[260px] pt-14 lg:pt-0 min-h-screen flex flex-col">
+<!-- ========== TELEGRAM BIND NOTIFICATION ========== -->
+<style>
+@keyframes tg-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+@keyframes tg-pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes tg-modal-in{0%{opacity:0;transform:translateY(20px) scale(.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes tg-otp-shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.tg-modal-card{animation:tg-modal-in .35s cubic-bezier(.34,1.56,.64,1) forwards}
+.tg-otp-shake{animation:tg-otp-shake .4s ease}
+.tg-banner-shimmer{position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);animation:tg-shimmer 3s infinite;pointer-events:none}
+</style>
+<div id="tg-bind-banner" class="hidden relative z-30 overflow-hidden" style="background:linear-gradient(90deg,#0e0b2e 0%,#0a1628 60%,#061523 100%);border-bottom:1px solid rgba(41,167,225,0.1);">
+    <div class="tg-banner-shimmer"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between gap-3 py-2">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="relative flex-shrink-0">
+                    <div class="w-1.5 h-1.5 rounded-full" style="background:#29A7E1;animation:tg-pulse-dot 2s ease-in-out infinite;"></div>
+                </div>
+                <i class="fa-brands fa-telegram flex-shrink-0 text-[13px]" style="color:#29A7E1;"></i>
+                <span class="text-white/80 text-xs font-medium truncate"><?= t('tg.banner_text') ?></span>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <button onclick="openTgBindModal()"
+                    class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200"
+                    style="background:rgba(41,167,225,0.15);border:1px solid rgba(41,167,225,0.4);color:#29A7E1;"
+                    onmouseover="this.style.background='rgba(41,167,225,0.28)';this.style.borderColor='rgba(41,167,225,0.7)'"
+                    onmouseout="this.style.background='rgba(41,167,225,0.15)';this.style.borderColor='rgba(41,167,225,0.4)'">
+                    <?= t('tg.banner_btn') ?> <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i>
+                </button>
+                <button onclick="document.getElementById('tg-bind-banner').classList.add('hidden')"
+                    class="w-6 h-6 flex items-center justify-center rounded-md transition-all"
+                    style="color:rgba(255,255,255,0.3);"
+                    onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='rgba(255,255,255,0.7)'"
+                    onmouseout="this.style.background='';this.style.color='rgba(255,255,255,0.3)'">
+                    <i class="fa-solid fa-xmark" style="font-size:11px;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== GLOBAL TOAST ========== -->
+<div id="status-toast" class="hidden fixed top-24 right-8 z-[100] animate-slide-up">
+    <div class="bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10 backdrop-blur-md">
+        <span id="toast-icon">✅</span>
+        <span id="toast-msg"><?= t('toast.success') ?></span>
+    </div>
+</div>
 
 
 <main class="flex-1">

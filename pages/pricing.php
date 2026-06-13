@@ -4,6 +4,7 @@ $pageDescription = 'Tiba AI xizmatlaridan foydalanish uchun hamyonbop narxlar va
 ?>
 <?php
 require_once __DIR__ . '/../api/config.php';
+require_once __DIR__ . '/../lang/i18n.php';
 $db = getDB();
 try {
     $stmtPkg = $db->query("SELECT * FROM packages WHERE is_active = 1 ORDER BY sort_order ASC");
@@ -27,104 +28,118 @@ $paymeEnabled = getSetting('payme_enabled', '1') !== '0';
 <div class="py-12 sm:py-20 relative overflow-hidden">
     <!-- Background -->
     <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-48 right-1/3 w-80 h-80 bg-fuchsia-600/[0.07] rounded-full blur-3xl"></div>
     <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <!-- Header -->
-        <div class="text-center mb-12">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-4">
+        <div class="text-center mb-14">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-5">
                 <i class="fa-solid fa-coins text-sm text-amber-400"></i>
-                <span class="text-xs font-medium text-indigo-300">Tanga tizimi</span>
+                <span class="text-xs font-medium text-indigo-300"><?= t('pricing.coin_system') ?></span>
             </div>
-            <h1 class="text-3xl sm:text-5xl font-extrabold text-white mb-4">
-                Tanga sotib oling, <span class="gradient-text">xohlagancha ishlating</span>
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-white mb-5 tracking-tight">
+                <?= t('pricing.title') ?> <span class="gradient-text"><?= t('pricing.title_highlight') ?></span>
             </h1>
-            <p class="text-gray-400 max-w-2xl mx-auto text-lg">
-                Oylik obuna yo'q. Faqat kerakli miqdorda tanga sotib oling — har bir AI asbob ma'lum tanga sarflaydi. Muddati cheksiz.
+            <p class="text-gray-400 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">
+                <?= t('pricing.no_subscription') ?>
             </p>
         </div>
 
         <!-- Tanga Packages -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-8 lg:gap-4 mb-20 lg:pt-4 items-stretch">
             <?php foreach ($dbPackages as $idx => $pkg):
                 $perCoin = $pkg['credits'] > 0 ? $pkg['price'] / $pkg['credits'] : 0;
                 $discount = ($basePerCoin > 0 && $idx > 0) ? round((1 - $perCoin / $basePerCoin) * 100) : 0;
                 $features = json_decode($pkg['features'] ?? '[]', true) ?: [];
                 $hasBadge = !empty($pkg['badge']);
+                $isFeatured = $hasBadge && $idx === 1;
                 $badgeGradient = $pkg['badge_gradient'] ?: $pkg['gradient'];
-                $borderClass = $hasBadge ? 'border-white/20' : '';
             ?>
-            <div class="relative glass-card p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 <?= $borderClass ?>">
+            <div class="relative transition-transform duration-300 hover:-translate-y-1">
                 <?php if ($hasBadge): ?>
-                <div class="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                    <span class="px-3 py-0.5 text-[10px] font-bold text-white bg-gradient-to-r <?= htmlspecialchars($badgeGradient) ?> rounded-full shadow-lg">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                    <span class="px-4 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white bg-gradient-to-r <?= htmlspecialchars($badgeGradient) ?> rounded-full shadow-lg shadow-indigo-500/40 whitespace-nowrap">
                         <?= htmlspecialchars($pkg['badge']) ?>
                     </span>
                 </div>
                 <?php endif; ?>
-                <div class="mb-5">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br <?= htmlspecialchars($pkg['gradient']) ?> mb-3">
-                        <i class="fa-solid <?= htmlspecialchars($pkg['icon']) ?> text-xl text-white"></i>
+                <div class="glass-card h-full p-6 flex flex-col relative overflow-hidden rounded-2xl <?= $isFeatured ? '!border-indigo-500/40 shadow-[0_0_45px_rgba(99,102,241,0.15)]' : '' ?>">
+                    <?php if ($isFeatured): ?>
+                    <div class="absolute -top-20 -right-20 w-48 h-48 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                    <?php endif; ?>
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br <?= htmlspecialchars($pkg['gradient']) ?> flex items-center justify-center shadow-lg">
+                            <i class="fa-solid <?= htmlspecialchars($pkg['icon']) ?> text-lg text-white"></i>
+                        </div>
+                        <?php if ($discount > 0): ?>
+                        <span class="text-[10px] px-2 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/20 text-emerald-400 font-bold">-<?= $discount ?>%</span>
+                        <?php endif; ?>
                     </div>
-                    <h3 class="text-lg font-bold text-white"><?= htmlspecialchars($pkg['name']) ?></h3>
-                </div>
-                <div class="mb-1">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="text-3xl font-extrabold text-white"><?= number_format($pkg['credits']) ?></span>
+                    <h3 class="text-base font-bold text-white mb-2"><?= htmlspecialchars($pkg['name']) ?></h3>
+                    <div class="flex items-baseline gap-1.5 mb-4">
+                        <span class="text-4xl font-extrabold text-white tracking-tight"><?= number_format($pkg['credits']) ?></span>
                         <span class="text-sm text-gray-400"><i class="fa-solid fa-coins text-amber-400 text-xs"></i> tanga</span>
                     </div>
-                </div>
-                <div class="mb-5">
-                    <div class="flex items-baseline gap-1">
-                        <span class="text-2xl font-extrabold text-white"><?= number_format($pkg['price'], 0, '', ',') ?></span>
-                        <span class="text-sm text-gray-500">so'm</span>
-                        <?php if (!empty($pkg['original_price']) && $pkg['original_price'] > $pkg['price']): ?>
-                        <span class="text-xs text-gray-600 line-through ml-1"><?= number_format($pkg['original_price'], 0, '', ',') ?></span>
-                        <?php endif; ?>
+                    <div class="pb-4 mb-4 border-b border-white/5">
+                        <div class="flex items-baseline gap-1.5 flex-wrap">
+                            <span class="text-2xl font-extrabold gradient-text"><?= number_format($pkg['price'], 0, '', ',') ?></span>
+                            <span class="text-sm text-gray-500"><?= t('common.sum') ?></span>
+                            <?php if (!empty($pkg['original_price']) && $pkg['original_price'] > $pkg['price']): ?>
+                            <span class="text-xs text-gray-600 line-through"><?= number_format($pkg['original_price'], 0, '', ',') ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <p class="text-[11px] text-gray-500 mt-1"><?= t("pricing.per_coin") ?> <?= number_format(round($perCoin), 0, '', ',') ?> <?= t('common.sum') ?></p>
                     </div>
-                    <div class="flex items-center gap-2 mt-1">
-                        <p class="text-[11px] text-gray-600">1 tanga = <?= number_format(round($perCoin), 0, '', ',') ?> so'm</p>
-                        <?php if ($discount > 0): ?>
-                        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-bold">-<?= $discount ?>%</span>
-                        <?php endif; ?>
-                    </div>
+                    <ul class="space-y-2.5 mb-6 flex-1">
+                        <?php foreach ($features as $feat): ?>
+                        <li class="flex items-start gap-2.5 text-xs text-gray-400">
+                            <span class="w-4 h-4 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 mt-px"><i class="fa-solid fa-check text-emerald-400 text-[8px]"></i></span>
+                            <span><?= htmlspecialchars($feat) ?></span>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <button onclick="PaymentModal.open('<?= htmlspecialchars($pkg['id']) ?>')" class="<?= $isFeatured ? 'btn-primary' : 'btn-secondary' ?> w-full text-center text-sm py-3 cursor-pointer"><?= t('pricing.buy') ?></button>
                 </div>
-                <ul class="space-y-2 mb-6 flex-1 text-xs">
-                    <?php foreach ($features as $feat): ?>
-                    <li class="flex items-center gap-2 text-gray-400">
-                        <i class="fa-solid fa-circle-check text-green-400 text-[11px]"></i> <?= htmlspecialchars($feat) ?>
-                    </li>
-                    <?php endforeach; ?>
-                </ul>
-                <button onclick="PaymentModal.open('<?= htmlspecialchars($pkg['id']) ?>')" class="<?= ($hasBadge && $idx === 1) ? 'btn-primary' : 'btn-secondary' ?> w-full text-center text-sm py-3 cursor-pointer">Sotib olish</button>
             </div>
             <?php endforeach; ?>
         </div>
 
         <!-- ========== REFERAL TIZIMI ========== -->
-        <div id="referral-section" class="mb-16 hidden">
-            <div class="glass-card p-6 sm:p-8 border-indigo-500/20 border-2 shadow-[0_0_30px_rgba(99,102,241,0.1)] relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
-                
-                <div class="flex flex-col md:flex-row items-center gap-8">
-                    <div class="flex-1">
+        <div id="referral-section" class="mb-20 hidden">
+            <div class="glass-card relative overflow-hidden p-6 sm:p-10">
+                <div class="absolute -top-24 -right-24 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center relative">
+                    <div>
                         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-4">
                             <i class="fa-solid fa-gift text-sm text-indigo-400"></i>
-                            <span class="text-xs font-medium text-indigo-300">Referal dasturi</span>
+                            <span class="text-xs font-medium text-indigo-300"><?= t('pricing.ref_program') ?></span>
                         </div>
-                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">
-                            Do'stlaringizni taklif qiling va <span class="gradient-text">bepul tanga</span> oling!
-                        </h2>
-                        <ul class="space-y-2 mb-6 text-sm text-gray-400">
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Sizning havolangiz orqali ro'yxatdan o'tgan har bir foydalanuvchi uchun <b class="text-white"><?= getSetting('ref_signup_reward', 1) ?> tanga</b> qo'shiladi.</li>
-                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Ular to'lov qilganda, sizga <b class="text-white">to'lov summasidan <?= getSetting('ref_payment_percent', 10) ?>% tanga</b> taqdim etiladi!</li>
-                        </ul>
-                        
-                        <div class="bg-black/30 p-2 rounded-xl border border-white/5 flex items-center gap-2 max-w-md">
-                            <input type="text" id="referral-link-input" class="bg-transparent border-none text-white text-sm w-full focus:ring-0 px-2 font-mono" readonly>
-                            <button onclick="copyReferralLink()" class="btn-primary py-2 px-4 text-xs shrink-0 rounded-lg flex items-center gap-2">
-                                <i class="fa-solid fa-copy"></i> Nusxa olish
-                            </button>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-5"><?= t('pricing.ref_invite') ?></h2>
+                        <div class="grid sm:grid-cols-2 gap-3">
+                            <div class="bg-white/[0.03] border border-white/5 rounded-xl p-4">
+                                <div class="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-3"><i class="fa-solid fa-user-plus text-emerald-400 text-sm"></i></div>
+                                <div class="text-xl font-extrabold text-white mb-1">+<?= getSetting('ref_signup_reward', 1) ?> <i class="fa-solid fa-coins text-amber-400 text-sm"></i></div>
+                                <p class="text-[11px] text-gray-500 leading-relaxed"><?= t('pricing.ref_signup_reward') ?> <b class="text-gray-300"><?= getSetting('ref_signup_reward', 1) ?></b> <?= t('pricing.ref_coins_added') ?></p>
+                            </div>
+                            <div class="bg-white/[0.03] border border-white/5 rounded-xl p-4">
+                                <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center mb-3"><i class="fa-solid fa-percent text-indigo-400 text-sm"></i></div>
+                                <div class="text-xl font-extrabold text-white mb-1">+<?= getSetting('ref_payment_percent', 10) ?>%</div>
+                                <p class="text-[11px] text-gray-500 leading-relaxed"><?= t('pricing.ref_payment_reward') ?> <b class="text-gray-300"><?= getSetting('ref_payment_percent', 10) ?><?= t('pricing.ref_percent_coins') ?></b></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-5 sm:p-6">
+                            <div class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3"><i class="fa-solid fa-link mr-1.5 text-indigo-400"></i> <?= t('pricing.ref_program') ?></div>
+                            <div class="bg-black/30 p-2 rounded-xl border border-white/5 flex items-center gap-2">
+                                <input type="text" id="referral-link-input" class="bg-transparent border-none text-white text-sm w-full focus:ring-0 px-2 font-mono" readonly>
+                                <button onclick="copyReferralLink()" class="btn-primary py-2 px-4 text-xs shrink-0 rounded-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-copy"></i> <?= t('pricing.ref_copy') ?>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -137,12 +152,9 @@ $paymeEnabled = getSetting('payme_enabled', '1') !== '0';
                 <div class="text-center mb-8">
                     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4">
                         <i class="fa-solid fa-receipt text-sm text-blue-400"></i>
-                        <span class="text-xs font-medium text-blue-300">To'lovlar tarixi</span>
+                        <span class="text-xs font-medium text-blue-300"><?= t('pricing.payments_history') ?></span>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">
-                        <i class="fa-solid fa-clock-rotate-left text-blue-400 mr-2"></i>Sizning to'lovlaringiz
-                    </h2>
-                    <p class="text-gray-400 text-sm">Barcha to'lov amaliyotlaringiz shu yerda ko'rinadi</p>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white"><?= t('pricing.payments_history') ?></h2>
                 </div>
 
                 <div class="glass-card border border-white/10 overflow-hidden">
@@ -150,17 +162,17 @@ $paymeEnabled = getSetting('payme_enabled', '1') !== '0';
                     <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <i class="fa-solid fa-list text-indigo-400 text-sm"></i>
-                            <span class="text-sm font-semibold text-white">So'nggi to'lovlar</span>
+                            <span class="text-sm font-semibold text-white"><?= t('pricing.payments_history') ?></span>
                         </div>
                         <button onclick="loadPaymentHistory()" class="text-xs text-gray-500 hover:text-indigo-400 transition-colors flex items-center gap-1">
-                            <i class="fa-solid fa-arrows-rotate text-[10px]"></i> Yangilash
+                            <i class="fa-solid fa-arrows-rotate text-[10px]"></i> <?= t('pricing.refresh') ?>
                         </button>
                     </div>
 
                     <!-- Loading -->
                     <div id="history-loading" class="hidden py-12 text-center">
                         <i class="fa-solid fa-circle-notch fa-spin text-indigo-400 text-2xl mb-3"></i>
-                        <p class="text-sm text-gray-500">Yuklanmoqda...</p>
+                        <p class="text-sm text-gray-500"><?= t('common.loading') ?></p>
                     </div>
 
                     <!-- Empty State -->
@@ -168,8 +180,8 @@ $paymeEnabled = getSetting('payme_enabled', '1') !== '0';
                         <div class="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <i class="fa-solid fa-inbox text-gray-600 text-2xl"></i>
                         </div>
-                        <p class="text-sm text-gray-500 mb-1">Hali to'lov mavjud emas</p>
-                        <p class="text-xs text-gray-600">Birinchi tangalaringizni sotib oling!</p>
+                        <p class="text-sm text-gray-500 mb-1"><?= t('history.empty') ?></p>
+                        <p class="text-xs text-gray-600"><?= t('pricing.buy') ?>!</p>
                     </div>
 
                     <!-- Payment List -->
@@ -178,231 +190,118 @@ $paymeEnabled = getSetting('payme_enabled', '1') !== '0';
             </div>
         </div>
 
-        <!-- Tanga Cost Table -->
-        <div class="glass-card p-6 sm:p-8 mb-16">
-            <h2 class="text-2xl font-bold text-white text-center mb-3"><i class="fa-solid fa-coins text-amber-400"></i> Har bir asbob nechta tanga sarflaydi?</h2>
-            <p class="text-sm text-gray-500 text-center mb-8">Har bir generatsiya quyidagi miqdorda tanga sarflaydi</p>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b border-white/10">
-                            <th class="text-left text-gray-400 py-3 px-4 font-medium">AI Asbob</th>
-                            <th class="text-center text-gray-400 py-3 px-4 font-medium"><i class="fa-solid fa-coins text-amber-400 text-xs"></i> Tanga</th>
-                            <th class="text-center text-gray-400 py-3 px-4 font-medium">Natija</th>
-                            <th class="text-right text-gray-400 py-3 px-4 font-medium">50 tangada ≈</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5">
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="py-3.5 px-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center"><i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i></span>
-                                    <div>
-                                        <div class="text-white font-medium">Foto Tahrir</div>
-                                        <div class="text-[10px] text-gray-600">Fon almashtirish</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <span class="text-lg font-bold text-indigo-400">5</span>
-                                <span class="text-[10px] text-gray-600 ml-1"><i class="fa-solid fa-coins text-amber-500/60"></i></span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center text-gray-400 text-xs">1 ta rasm</td>
-                            <td class="py-3.5 px-4 text-right text-gray-400 text-xs">10 ta rasm</td>
-                        </tr>
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="py-3.5 px-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center"><i class="fa-solid fa-palette text-purple-400"></i></span>
-                                    <div>
-                                        <div class="text-white font-medium">Infografika</div>
-                                        <div class="text-[10px] text-gray-600">Marketplace dizayn</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <span class="text-lg font-bold text-indigo-400">5</span>
-                                <span class="text-[10px] text-gray-600 ml-1"><i class="fa-solid fa-coins text-amber-500/60"></i></span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center text-gray-400 text-xs">1 ta rasm</td>
-                            <td class="py-3.5 px-4 text-right text-gray-400 text-xs">10 ta rasm</td>
-                        </tr>
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="py-3.5 px-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center"><i class="fa-solid fa-boxes-stacked text-violet-400"></i></span>
-                                    <div>
-                                        <div class="text-white font-medium">Infografika Paketi</div>
-                                        <div class="text-[10px] text-gray-600">5 ta slayd</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <span class="text-lg font-bold text-purple-400">20</span>
-                                <span class="text-[10px] text-gray-600 ml-1"><i class="fa-solid fa-coins text-amber-500/60"></i></span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center text-gray-400 text-xs">5 ta slayd</td>
-                            <td class="py-3.5 px-4 text-right text-gray-400 text-xs">2 paket</td>
-                        </tr>
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="py-3.5 px-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center"><i class="fa-solid fa-rocket text-sky-400"></i></span>
-                                    <div>
-                                        <div class="text-white font-medium">Noldan Yaratish</div>
-                                        <div class="text-[10px] text-gray-600">Text-to-Image</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <span class="text-lg font-bold text-indigo-400">5</span>
-                                <span class="text-[10px] text-gray-600 ml-1"><i class="fa-solid fa-coins text-amber-500/60"></i></span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center text-gray-400 text-xs">1 ta rasm</td>
-                            <td class="py-3.5 px-4 text-right text-gray-400 text-xs">10 ta rasm</td>
-                        </tr>
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="py-3.5 px-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-8 h-8 rounded-lg bg-fuchsia-500/10 flex items-center justify-center"><i class="fa-solid fa-masks-theater text-fuchsia-400"></i></span>
-                                    <div>
-                                        <div class="text-white font-medium">Uslub Nusxalash</div>
-                                        <div class="text-[10px] text-gray-600">Style Transfer</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <span class="text-lg font-bold text-indigo-400">5</span>
-                                <span class="text-[10px] text-gray-600 ml-1"><i class="fa-solid fa-coins text-amber-500/60"></i></span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center text-gray-400 text-xs">1 ta rasm</td>
-                            <td class="py-3.5 px-4 text-right text-gray-400 text-xs">10 ta rasm</td>
-                        </tr>
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="py-3.5 px-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center"><i class="fa-solid fa-font text-cyan-400"></i></span>
-                                    <div>
-                                        <div class="text-white font-medium">Smart Matn</div>
-                                        <div class="text-[10px] text-gray-600">Matnli dizayn</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <span class="text-lg font-bold text-indigo-400">5</span>
-                                <span class="text-[10px] text-gray-600 ml-1"><i class="fa-solid fa-coins text-amber-500/60"></i></span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center text-gray-400 text-xs">1 ta rasm</td>
-                            <td class="py-3.5 px-4 text-right text-gray-400 text-xs">10 ta rasm</td>
-                        </tr>
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="py-3.5 px-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center"><i class="fa-solid fa-shirt text-pink-400"></i></span>
-                                    <div>
-                                        <div class="text-white font-medium">Fashion AI</div>
-                                        <div class="text-[10px] text-gray-600">Virtual try-on</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <span class="text-lg font-bold text-orange-400">8</span>
-                                <span class="text-[10px] text-gray-600 ml-1"><i class="fa-solid fa-coins text-amber-500/60"></i></span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center text-gray-400 text-xs">1 ta rasm</td>
-                            <td class="py-3.5 px-4 text-right text-gray-400 text-xs">6 ta rasm</td>
-                        </tr>
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="py-3.5 px-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center"><i class="fa-solid fa-camera-retro text-rose-400"></i></span>
-                                    <div>
-                                        <div class="text-white font-medium">Fotosesiya PRO</div>
-                                        <div class="text-[10px] text-gray-600">8 ta professional kadr</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <span class="text-lg font-bold text-rose-400">30</span>
-                                <span class="text-[10px] text-gray-600 ml-1"><i class="fa-solid fa-coins text-amber-500/60"></i></span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center text-gray-400 text-xs">8 ta rasm</td>
-                            <td class="py-3.5 px-4 text-right text-gray-400 text-xs">1 sesiya</td>
-                        </tr>
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="py-3.5 px-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center"><i class="fa-solid fa-brain text-emerald-400"></i></span>
-                                    <div>
-                                        <div class="text-white font-medium">Kartochka AI</div>
-                                        <div class="text-[10px] text-gray-600">Mahsulot ma'lumotlari</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <span class="text-lg font-bold text-emerald-400">3</span>
-                                <span class="text-[10px] text-gray-600 ml-1"><i class="fa-solid fa-coins text-amber-500/60"></i></span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center text-gray-400 text-xs">2 tilda</td>
-                            <td class="py-3.5 px-4 text-right text-gray-400 text-xs">16 ta tahlil</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- Tanga Cost Grid -->
+        <?php
+        $toolCosts = [
+            ['icon' => 'fa-wand-magic-sparkles', 'color' => 'indigo',  'name' => t('service.foto_tahrir'),        'desc' => t('pricing.bg_change'),          'cost' => 5,  'result' => t('pricing.1_image'),    'in50' => t('pricing.10_images')],
+            ['icon' => 'fa-palette',             'color' => 'purple',  'name' => 'Infografika',                    'desc' => t('pricing.marketplace_design'), 'cost' => 5,  'result' => t('pricing.1_image'),    'in50' => t('pricing.10_images')],
+            ['icon' => 'fa-boxes-stacked',       'color' => 'violet',  'name' => t('service.infografika_paketi'), 'desc' => t('pricing.5_slides'),           'cost' => 20, 'result' => t('pricing.5_slides'),   'in50' => t('pricing.2_packages')],
+            ['icon' => 'fa-rocket',              'color' => 'sky',     'name' => t('service.noldan'),             'desc' => 'Text-to-Image',                 'cost' => 5,  'result' => t('pricing.1_image'),    'in50' => t('pricing.10_images')],
+            ['icon' => 'fa-masks-theater',       'color' => 'fuchsia', 'name' => t('service.uslub'),              'desc' => 'Style Transfer',                'cost' => 5,  'result' => t('pricing.1_image'),    'in50' => t('pricing.10_images')],
+            ['icon' => 'fa-font',                'color' => 'cyan',    'name' => t('service.smart_matn'),         'desc' => t('pricing.text_design'),        'cost' => 5,  'result' => t('pricing.1_image'),    'in50' => t('pricing.10_images')],
+            ['icon' => 'fa-shirt',               'color' => 'pink',    'name' => t('service.fashion_ai'),         'desc' => 'Virtual try-on',                'cost' => 8,  'result' => t('pricing.1_image'),    'in50' => t('pricing.6_images')],
+            ['icon' => 'fa-camera-retro',        'color' => 'rose',    'name' => t('service.fotosesiya'),         'desc' => t('pricing.8_pro_frames'),       'cost' => 30, 'result' => t('pricing.8_images'),   'in50' => t('pricing.1_session')],
+            ['icon' => 'fa-brain',               'color' => 'emerald', 'name' => t('service.kartochka_ai'),       'desc' => t('pricing.product_data'),       'cost' => 3,  'result' => t('pricing.2_languages'),'in50' => t('pricing.16_analyses')],
+        ];
+        ?>
+        <div class="mb-20">
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4">
+                    <i class="fa-solid fa-coins text-sm text-amber-400"></i>
+                    <span class="text-xs font-medium text-amber-300"><?= t('pricing.coins') ?></span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2"><?= t('pricing.tool_costs') ?></h2>
+                <p class="text-sm text-gray-500"><?= t('pricing.tool_costs_desc') ?></p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <?php foreach ($toolCosts as $tool): ?>
+                <div class="glass-card p-5 transition-all duration-300 hover:-translate-y-0.5">
+                    <div class="flex items-start justify-between gap-3 mb-4">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <span class="w-11 h-11 rounded-xl bg-<?= $tool['color'] ?>-500/10 flex items-center justify-center shrink-0"><i class="fa-solid <?= $tool['icon'] ?> text-<?= $tool['color'] ?>-400 text-lg"></i></span>
+                            <div class="min-w-0">
+                                <div class="text-white font-semibold text-sm truncate"><?= $tool['name'] ?></div>
+                                <div class="text-[11px] text-gray-500 truncate"><?= $tool['desc'] ?></div>
+                            </div>
+                        </div>
+                        <span class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
+                            <i class="fa-solid fa-coins text-amber-400 text-[10px]"></i>
+                            <span class="text-sm font-extrabold text-amber-400"><?= $tool['cost'] ?></span>
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-white/5 text-[11px]">
+                        <span class="text-gray-500"><i class="fa-solid fa-image mr-1 text-gray-600"></i><?= $tool['result'] ?></span>
+                        <span class="text-gray-400 font-medium"><?= t('pricing.in_50_coins') ?> <?= $tool['in50'] ?></span>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
         </div>
 
         <!-- Calculator -->
-        <div class="glass-card p-6 sm:p-8 mb-16 border border-indigo-500/10">
-            <h2 class="text-2xl font-bold text-white text-center mb-2"><i class="fa-solid fa-calculator text-indigo-400"></i> Tanga kalkulyator</h2>
-            <p class="text-sm text-gray-500 text-center mb-8">Qancha tanga kerakligini hisoblang</p>
+        <?php
+        $calcItems = [
+            ['id' => 'calc-foto',       'icon' => 'fa-wand-magic-sparkles', 'color' => 'indigo',  'name' => t('service.foto_tahrir'),        'cost' => 5],
+            ['id' => 'calc-info',       'icon' => 'fa-palette',             'color' => 'purple',  'name' => 'Infografika',                   'cost' => 5],
+            ['id' => 'calc-paket',      'icon' => 'fa-boxes-stacked',       'color' => 'violet',  'name' => t('service.infografika_paketi'), 'cost' => 20],
+            ['id' => 'calc-fashion',    'icon' => 'fa-shirt',               'color' => 'pink',    'name' => t('service.fashion_ai'),         'cost' => 8],
+            ['id' => 'calc-fotosesiya', 'icon' => 'fa-camera-retro',        'color' => 'rose',    'name' => t('service.fotosesiya'),         'cost' => 30],
+            ['id' => 'calc-kartochka',  'icon' => 'fa-brain',               'color' => 'emerald', 'name' => t('service.kartochka_ai'),       'cost' => 3],
+        ];
+        ?>
+        <style>
+            .calc-input::-webkit-outer-spin-button, .calc-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+            .calc-input { -moz-appearance: textfield; appearance: textfield; }
+        </style>
+        <div class="glass-card p-6 sm:p-10 mb-20 relative overflow-hidden">
+            <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="text-center mb-8 relative">
+                <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-calculator text-indigo-400 text-lg"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2"><?= t('pricing.calculator') ?></h2>
+                <p class="text-sm text-gray-500"><?= t('pricing.calc_desc') ?></p>
+            </div>
 
-            <div class="max-w-2xl mx-auto space-y-5">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="glass-card p-4 border border-white/5">
-                        <label class="text-xs text-gray-500 mb-2 block"><i class="fa-solid fa-wand-magic-sparkles text-indigo-400 mr-1"></i> Foto Tahrir (5 <i class="fa-solid fa-coins text-amber-400 text-[10px]"></i>)</label>
-                        <input type="number" id="calc-foto" value="0" min="0" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500/50 calc-input" />
+            <div class="max-w-3xl mx-auto space-y-5 relative">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <?php foreach ($calcItems as $ci): ?>
+                    <div class="flex items-center justify-between gap-3 bg-white/[0.03] border border-white/5 rounded-xl p-3.5 hover:border-indigo-500/20 transition-colors">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-10 h-10 rounded-lg bg-<?= $ci['color'] ?>-500/10 flex items-center justify-center shrink-0"><i class="fa-solid <?= $ci['icon'] ?> text-<?= $ci['color'] ?>-400 text-sm"></i></span>
+                            <div class="min-w-0">
+                                <div class="text-[13px] text-white font-medium leading-snug"><?= $ci['name'] ?></div>
+                                <div class="text-[10px] text-gray-500"><i class="fa-solid fa-coins text-amber-400/70 text-[9px]"></i> <?= $ci['cost'] ?> tanga</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button type="button" onclick="calcStep('<?= $ci['id'] ?>', -1)" class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center cursor-pointer"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                            <input type="number" id="<?= $ci['id'] ?>" value="0" min="0" class="calc-input w-10 text-center bg-transparent border border-white/10 rounded-lg py-1.5 text-white text-sm font-bold focus:outline-none focus:border-indigo-500/50" />
+                            <button type="button" onclick="calcStep('<?= $ci['id'] ?>', 1)" class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center cursor-pointer"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                        </div>
                     </div>
-                    <div class="glass-card p-4 border border-white/5">
-                        <label class="text-xs text-gray-500 mb-2 block"><i class="fa-solid fa-palette text-purple-400 mr-1"></i> Infografika (5 <i class="fa-solid fa-coins text-amber-400 text-[10px]"></i>)</label>
-                        <input type="number" id="calc-info" value="0" min="0" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500/50 calc-input" />
-                    </div>
-                    <div class="glass-card p-4 border border-white/5">
-                        <label class="text-xs text-gray-500 mb-2 block"><i class="fa-solid fa-boxes-stacked text-violet-400 mr-1"></i> Infografika Paketi (20 <i class="fa-solid fa-coins text-amber-400 text-[10px]"></i>)</label>
-                        <input type="number" id="calc-paket" value="0" min="0" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500/50 calc-input" />
-                    </div>
-                    <div class="glass-card p-4 border border-white/5">
-                        <label class="text-xs text-gray-500 mb-2 block"><i class="fa-solid fa-shirt text-pink-400 mr-1"></i> Fashion AI (8 <i class="fa-solid fa-coins text-amber-400 text-[10px]"></i>)</label>
-                        <input type="number" id="calc-fashion" value="0" min="0" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500/50 calc-input" />
-                    </div>
-                    <div class="glass-card p-4 border border-white/5">
-                        <label class="text-xs text-gray-500 mb-2 block"><i class="fa-solid fa-camera-retro text-rose-400 mr-1"></i> Fotosesiya PRO (30 <i class="fa-solid fa-coins text-amber-400 text-[10px]"></i>)</label>
-                        <input type="number" id="calc-fotosesiya" value="0" min="0" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500/50 calc-input" />
-                    </div>
-                    <div class="glass-card p-4 border border-white/5">
-                        <label class="text-xs text-gray-500 mb-2 block"><i class="fa-solid fa-brain text-emerald-400 mr-1"></i> Kartochka AI (3 <i class="fa-solid fa-coins text-amber-400 text-[10px]"></i>)</label>
-                        <input type="number" id="calc-kartochka" value="0" min="0" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500/50 calc-input" />
-                    </div>
+                    <?php endforeach; ?>
                 </div>
 
                 <!-- Result -->
-                <div class="glass-card p-5 border border-indigo-500/20 bg-gradient-to-r from-indigo-900/10 to-purple-900/10">
-                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="rounded-2xl border border-indigo-500/20 bg-gradient-to-r from-indigo-900/15 via-purple-900/10 to-indigo-900/15 p-5 sm:p-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
                         <div class="text-center sm:text-left">
-                            <div class="text-xs text-gray-500 mb-1">Sizga kerak:</div>
-                            <div class="flex items-baseline gap-2">
+                            <div class="text-[11px] text-gray-500 mb-1 uppercase tracking-wider"><?= t('pricing.you_need') ?></div>
+                            <div class="flex items-baseline gap-1.5 justify-center sm:justify-start">
                                 <span id="calc-total" class="text-3xl font-extrabold text-white">0</span>
                                 <span class="text-sm text-gray-400"><i class="fa-solid fa-coins text-amber-400 text-xs"></i> tanga</span>
                             </div>
                         </div>
                         <div class="text-center">
-                            <div class="text-xs text-gray-500 mb-1">Tavsiya etiladi:</div>
-                            <div id="calc-recommend" class="text-lg font-bold text-indigo-400">—</div>
+                            <div class="text-[11px] text-gray-500 mb-1 uppercase tracking-wider"><?= t('pricing.recommended') ?></div>
+                            <div id="calc-recommend" class="text-base font-bold text-indigo-400">—</div>
                         </div>
                         <div class="text-center sm:text-right">
-                            <div class="text-xs text-gray-500 mb-1">Narxi:</div>
+                            <div class="text-[11px] text-gray-500 mb-1 uppercase tracking-wider"><?= t('pricing.price_label') ?></div>
                             <div class="flex items-baseline gap-1 justify-center sm:justify-end">
                                 <span id="calc-price" class="text-2xl font-extrabold text-emerald-400">0</span>
-                                <span class="text-sm text-gray-500">so'm</span>
+                                <span class="text-sm text-gray-500"><?= t('common.sum') ?></span>
                             </div>
                         </div>
                     </div>
@@ -411,77 +310,55 @@ $paymeEnabled = getSetting('payme_enabled', '1') !== '0';
         </div>
 
         <!-- FAQ Section -->
-        <div class="max-w-3xl mx-auto mb-16">
-            <h2 class="text-2xl font-bold text-white text-center mb-8"><i class="fa-solid fa-circle-question text-indigo-400"></i> Ko'p so'raladigan savollar</h2>
+        <div class="max-w-3xl mx-auto mb-20">
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-4">
+                    <i class="fa-solid fa-circle-question text-sm text-indigo-400"></i>
+                    <span class="text-xs font-medium text-indigo-300">FAQ</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white"><?= t('pricing.faq') ?></h2>
+            </div>
             <div class="space-y-3" id="faq-list">
-                <div class="faq-item glass-card border border-white/5 overflow-hidden">
-                    <button class="faq-toggle w-full text-left p-5 flex items-center justify-between" onclick="toggleFaq(this)">
-                        <span class="text-sm font-medium text-white">Tanga muddati bormi?</span>
-                        <svg class="w-5 h-5 text-gray-500 faq-arrow transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                <?php for ($i = 1; $i <= 5; $i++): ?>
+                <div class="faq-item glass-card overflow-hidden transition-colors">
+                    <button class="faq-toggle w-full text-left p-5 flex items-center gap-4 cursor-pointer" onclick="toggleFaq(this)">
+                        <span class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 text-xs font-extrabold flex items-center justify-center shrink-0">0<?= $i ?></span>
+                        <span class="flex-1 text-sm font-semibold text-white"><?= t("pricing.faq{$i}_q") ?></span>
+                        <span class="faq-arrow w-7 h-7 rounded-full bg-white/5 flex items-center justify-center shrink-0 transition-transform"><i class="fa-solid fa-chevron-down text-gray-400 text-[10px]"></i></span>
                     </button>
                     <div class="faq-answer hidden px-5 pb-5">
-                        <p class="text-sm text-gray-400 leading-relaxed"><strong class="text-white">Yo'q!</strong> Sotib olingan tangalarning muddati cheksiz. Xohlaganingizda ishlating — tanga yo'qolmaydi.</p>
+                        <p class="text-sm text-gray-400 leading-relaxed pl-12"><?= t("pricing.faq{$i}_a") ?></p>
                     </div>
                 </div>
-                <div class="faq-item glass-card border border-white/5 overflow-hidden">
-                    <button class="faq-toggle w-full text-left p-5 flex items-center justify-between" onclick="toggleFaq(this)">
-                        <span class="text-sm font-medium text-white">To'lov qanday amalga oshiriladi?</span>
-                        <svg class="w-5 h-5 text-gray-500 faq-arrow transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                    </button>
-                    <div class="faq-answer hidden px-5 pb-5">
-                        <p class="text-sm text-gray-400 leading-relaxed">To'lovlar <strong class="text-white">Click</strong>, <strong class="text-white">Payme</strong>, <strong class="text-white">Uzum Bank</strong> va bank kartasi orqali amalga oshiriladi. To'lov darhol hisobga tushadi.</p>
-                    </div>
-                </div>
-                <div class="faq-item glass-card border border-white/5 overflow-hidden">
-                    <button class="faq-toggle w-full text-left p-5 flex items-center justify-between" onclick="toggleFaq(this)">
-                        <span class="text-sm font-medium text-white">Tanga yetmasa nima bo'ladi?</span>
-                        <svg class="w-5 h-5 text-gray-500 faq-arrow transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                    </button>
-                    <div class="faq-answer hidden px-5 pb-5">
-                        <p class="text-sm text-gray-400 leading-relaxed">Xavotir olmang — tangalar tugaganda istalgan paketni qo'shimcha sotib olasiz. Yangi tangalar avvalgisiga qo'shiladi. Hech nimani yo'qotmaysiz.</p>
-                    </div>
-                </div>
-                <div class="faq-item glass-card border border-white/5 overflow-hidden">
-                    <button class="faq-toggle w-full text-left p-5 flex items-center justify-between" onclick="toggleFaq(this)">
-                        <span class="text-sm font-medium text-white">Yaratilgan rasmlar meniki bo'ladimi?</span>
-                        <svg class="w-5 h-5 text-gray-500 faq-arrow transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                    </button>
-                    <div class="faq-answer hidden px-5 pb-5">
-                        <p class="text-sm text-gray-400 leading-relaxed">Ha! Barcha yaratilgan rasmlar to'liq sizniki. Tijorat maqsadlarda, marketplace'larda, reklama uchun — hech qanday cheklovsiz foydalaning.</p>
-                    </div>
-                </div>
-                <div class="faq-item glass-card border border-white/5 overflow-hidden">
-                    <button class="faq-toggle w-full text-left p-5 flex items-center justify-between" onclick="toggleFaq(this)">
-                        <span class="text-sm font-medium text-white">Qaytarish mumkinmi?</span>
-                        <svg class="w-5 h-5 text-gray-500 faq-arrow transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                    </button>
-                    <div class="faq-answer hidden px-5 pb-5">
-                        <p class="text-sm text-gray-400 leading-relaxed">Agar birorta ham tanga ishlatmagan bo'lsangiz, 24 soat ichida to'liq qaytarish mumkin. Tanga ishlatilgan bo'lsa, qolgan tangalar saqlanadi.</p>
-                    </div>
-                </div>
+                <?php endfor; ?>
             </div>
         </div>
 
         <!-- CTA -->
-        <div class="glass-card p-8 sm:p-12 text-center border border-indigo-500/10 bg-gradient-to-br from-indigo-900/10 to-purple-900/10">
-            <div class="text-3xl mb-3"><i class="fa-solid fa-gift text-indigo-400"></i></div>
-            <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3">
-                Birinchi marta ro'yxatdan o'ting
-            </h2>
-            <p class="text-gray-400 max-w-lg mx-auto mb-6">
-                Hoziroq ro'yxatdan o'ting va <strong class="text-emerald-400">10 ta bepul tanga</strong> oling. Karta ma'lumotlarini kiritish shart emas.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <a href="/create" class="btn-primary px-8 py-3 text-lg font-bold">
-                    <i class="fa-solid fa-sparkles mr-2"></i> Bepul sinash
-                </a>
-                <a href="/contact" class="btn-secondary px-8 py-3 text-lg">
-                    <i class="fa-solid fa-comment-dots mr-2"></i> Savollar?
-                </a>
+        <div class="glass-card relative overflow-hidden p-8 sm:p-14 text-center">
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-transparent to-purple-600/10 pointer-events-none"></div>
+            <div class="absolute -top-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-500/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative">
+                <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-gift text-white text-2xl"></i>
+                </div>
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-3">
+                    <?= t('cta.title') ?>
+                </h2>
+                <p class="text-gray-400 max-w-lg mx-auto mb-8">
+                    <?= t('pricing.cta_desc') ?>
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <a href="/create" class="btn-primary px-8 py-3 text-base font-bold">
+                        <i class="fa-solid fa-sparkles mr-2"></i> <?= t('pricing.free_trial') ?>
+                    </a>
+                    <a href="/contact" class="btn-secondary px-8 py-3 text-base">
+                        <i class="fa-solid fa-comment-dots mr-2"></i> <?= t('pricing.questions') ?>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-
     </div>
 </div>
 
@@ -496,12 +373,19 @@ const prices = {
     'calc-kartochka': 3,
 };
 
-const packages = [
-    { name: 'Boshlang\'ich (50)', credits: 50, price: 69000 },
-    { name: 'Professional (150)', credits: 150, price: 189000 },
-    { name: 'Biznes (500)', credits: 500, price: 549000 },
-    { name: 'Enterprise (1500)', credits: 1500, price: 1449000 },
-];
+const packages = <?= json_encode(array_values(array_map(function($p) {
+    return [
+        'name'    => $p['name'] . ' (' . number_format($p['credits']) . ')',
+        'credits' => intval($p['credits']),
+        'price'   => intval($p['price']),
+    ];
+}, $dbPackages)), JSON_UNESCAPED_UNICODE) ?>.sort((a, b) => a.credits - b.credits);
+
+function calcStep(id, delta) {
+    const el = document.getElementById(id);
+    el.value = Math.max(0, (parseInt(el.value) || 0) + delta);
+    updateCalc();
+}
 
 function updateCalc() {
     let total = 0;
@@ -512,13 +396,13 @@ function updateCalc() {
 
     document.getElementById('calc-total').textContent = total.toLocaleString('uz-UZ');
 
-    if (total === 0) {
+    if (total === 0 || packages.length === 0) {
         document.getElementById('calc-recommend').textContent = '—';
         document.getElementById('calc-price').textContent = '0';
         return;
     }
 
-    let best = packages[packages.length - 1];
+    let best = null;
     for (const pkg of packages) {
         if (pkg.credits >= total) {
             best = pkg;
@@ -526,10 +410,11 @@ function updateCalc() {
         }
     }
 
-    if (total > 1500) {
-        const count = Math.ceil(total / 1500);
-        document.getElementById('calc-recommend').textContent = count + 'x Enterprise (1500)';
-        document.getElementById('calc-price').textContent = (count * 1449000).toLocaleString('uz-UZ');
+    if (!best) {
+        const top = packages[packages.length - 1];
+        const count = Math.ceil(total / top.credits);
+        document.getElementById('calc-recommend').textContent = count + 'x ' + top.name;
+        document.getElementById('calc-price').textContent = (count * top.price).toLocaleString('uz-UZ');
     } else {
         document.getElementById('calc-recommend').textContent = best.name;
         document.getElementById('calc-price').textContent = best.price.toLocaleString('uz-UZ');
@@ -593,9 +478,9 @@ async function loadPaymentHistory() {
 
         data.payments.forEach(p => {
             const statusMap = {
-                pending:  { icon: 'fa-clock',        color: 'amber',   text: 'Kutilmoqda' },
-                approved: { icon: 'fa-circle-check',  color: 'emerald', text: 'Tasdiqlangan' },
-                rejected: { icon: 'fa-circle-xmark',  color: 'red',     text: 'Rad etilgan' },
+                pending:  { icon: 'fa-clock',        color: 'amber',   text: _t('pricing_pending') },
+                approved: { icon: 'fa-circle-check',  color: 'emerald', text: _t('pricing_approved') },
+                rejected: { icon: 'fa-circle-xmark',  color: 'red',     text: _t('pricing_rejected') },
             };
             const s = statusMap[p.status] || statusMap.pending;
             const date = new Date(p.created_at).toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -625,7 +510,7 @@ async function loadPaymentHistory() {
                             </div>
                         </div>
                     </div>
-                    ${p.status === 'rejected' && p.admin_note ? `<div class="mt-2 ml-13 pl-14 text-[11px] text-red-400/80 flex items-center gap-1.5"><i class="fa-solid fa-comment-dots text-[9px]"></i> <span>Sabab: ${p.admin_note}</span></div>` : ''}
+                    ${p.status === 'rejected' && p.admin_note ? `<div class="mt-2 ml-13 pl-14 text-[11px] text-red-400/80 flex items-center gap-1.5"><i class="fa-solid fa-comment-dots text-[9px]"></i> <span>' + _t('pricing_reason') + ': ${p.admin_note}</span></div>` : ''}
                 </div>
             `;
         });
@@ -669,7 +554,7 @@ function copyReferralLink() {
     navigator.clipboard.writeText(input.value).then(() => {
         showToast('Referal havola nusxalandi!');
     }).catch(err => {
-        showToast('Nusxa olishda xatolik yuz berdi', 'error');
+        showToast('<?= t('common.copy') ?>da xatolik yuz berdi', 'error');
     });
 }
 </script>
@@ -689,8 +574,8 @@ function copyReferralLink() {
                     <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30">
                         <i class="fa-solid fa-cart-shopping text-white text-xl"></i>
                     </div>
-                    <h2 class="text-xl font-extrabold text-white">To'lov</h2>
-                    <p class="text-sm text-gray-500 mt-1">To'lov usulini tanlang</p>
+                    <h2 class="text-xl font-extrabold text-white"><?= t("pricing.payment") ?></h2>
+                    <p class="text-sm text-gray-500 mt-1"><?= t("pricing.select_method") ?></p>
                 </div>
 
                 <!-- Tanlangan paket -->
@@ -716,7 +601,7 @@ function copyReferralLink() {
                 <div class="mb-5 px-1">
                     <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 px-0.5">Promokod (agar bo'lsa)</label>
                     <div class="flex gap-2">
-                        <input type="text" id="pay-promo-input" placeholder="KOD..." class="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500/40 uppercase font-mono">
+                        <input type="text" id="pay-promo-input" placeholder="<?= t('ph.promo_code') ?>" class="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500/40 uppercase font-mono">
                         <button onclick="PaymentModal.applyPromo()" id="pay-promo-btn" class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-bold hover:bg-white/10 transition-all">Qo'llash</button>
                     </div>
                     <div id="pay-promo-msg" class="hidden text-[10px] mt-1.5 px-0.5"></div>
@@ -740,7 +625,7 @@ function copyReferralLink() {
                             <i class="fa-solid fa-mobile-screen text-blue-400"></i>
                         </div>
                         <div class="flex-1">
-                            <div class="text-white font-semibold text-sm flex items-center gap-2">Click <?php if (!$clickEnabled): ?><span class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20">Tez kunda</span><?php endif; ?></div>
+                            <div class="text-white font-semibold text-sm flex items-center gap-2">Click <?php if (!$clickEnabled): ?><span class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20"><?= t("pricing.coming_soon") ?></span><?php endif; ?></div>
                             <div class="text-[11px] text-gray-500"><?= $clickEnabled ? 'Online to\'lov — Click ilovasi' : 'Tez orada ishga tushadi' ?></div>
                         </div>
                         <?php if ($clickEnabled): ?><i class="fa-solid fa-chevron-right text-gray-600 group-hover:text-blue-400 transition-colors text-xs"></i><?php else: ?><i class="fa-solid fa-clock text-amber-400/40 text-xs"></i><?php endif; ?>
@@ -751,7 +636,7 @@ function copyReferralLink() {
                             <i class="fa-solid fa-wallet text-cyan-400"></i>
                         </div>
                         <div class="flex-1">
-                            <div class="text-white font-semibold text-sm flex items-center gap-2">Payme <?php if (!$paymeEnabled): ?><span class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20">Tez kunda</span><?php endif; ?></div>
+                            <div class="text-white font-semibold text-sm flex items-center gap-2">Payme <?php if (!$paymeEnabled): ?><span class="px-2 py-0.5 text-[9px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20"><?= t("pricing.coming_soon") ?></span><?php endif; ?></div>
                             <div class="text-[11px] text-gray-500"><?= $paymeEnabled ? 'Online to\'lov — Payme ilovasi' : 'Tez orada ishga tushadi' ?></div>
                         </div>
                         <?php if ($paymeEnabled): ?><i class="fa-solid fa-chevron-right text-gray-600 group-hover:text-cyan-400 transition-colors text-xs"></i><?php else: ?><i class="fa-solid fa-clock text-amber-400/40 text-xs"></i><?php endif; ?>
@@ -766,7 +651,7 @@ function copyReferralLink() {
                         <i class="fa-solid fa-credit-card text-white text-xl"></i>
                     </div>
                     <h2 class="text-xl font-extrabold text-white">Karta orqali to'lov</h2>
-                    <p class="text-sm text-gray-500 mt-1">Quyidagi kartaga to'lovni amalga oshiring</p>
+                    <p class="text-sm text-gray-500 mt-1"><?= t("pricing.transfer_instruction") ?></p>
                 </div>
 
                 <!-- Karta raqami -->
@@ -776,7 +661,7 @@ function copyReferralLink() {
                         <div class="text-[11px] text-gray-500 mb-2 font-medium uppercase tracking-wider">Karta raqami</div>
                         <div class="flex items-center justify-between">
                             <span id="pay-card-number" class="text-xl sm:text-2xl font-bold text-white tracking-wider font-mono">8600 0000 0000 0000</span>
-                            <button onclick="PaymentModal.copyCard()" id="pay-copy-btn" class="w-9 h-9 rounded-lg bg-white/10 hover:bg-emerald-500/20 flex items-center justify-center transition-all" title="Nusxalash">
+                            <button onclick="PaymentModal.copyCard()" id="pay-copy-btn" class="w-9 h-9 rounded-lg bg-white/10 hover:bg-emerald-500/20 flex items-center justify-center transition-all" title="<?= t('tt.copy') ?>">
                                 <i id="pay-copy-icon" class="fa-solid fa-copy text-gray-400 text-sm"></i>
                             </button>
                         </div>
@@ -791,7 +676,7 @@ function copyReferralLink() {
 
                 <!-- To'lov summasi -->
                 <div class="flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-xl p-4 mb-4">
-                    <span class="text-sm text-gray-400">To'lov summasi:</span>
+                    <span class="text-sm text-gray-400"><?= t("pricing.payment_amount") ?></span>
                     <span class="text-lg font-extrabold text-white"><span id="pay-amount">189,000</span> so'm</span>
                 </div>
 
@@ -832,7 +717,7 @@ function copyReferralLink() {
                     </button>
                     <button onclick="PaymentModal.submit()" id="pay-submit-btn" class="flex-[2] py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-500/20 active:scale-[0.98] flex items-center justify-center gap-2">
                         <i class="fa-solid fa-paper-plane"></i>
-                        <span id="pay-submit-text">Chekni yuborish</span>
+                        <span id="pay-submit-text"><?= t("pricing.submit_receipt") ?></span>
                     </button>
                 </div>
             </div>
@@ -844,24 +729,24 @@ function copyReferralLink() {
                         <i class="fa-solid fa-circle-check text-emerald-400 text-4xl"></i>
                     </div>
                     <h2 class="text-xl font-extrabold text-white mb-2">Chek yuborildi!</h2>
-                    <p class="text-sm text-gray-400 mb-1">To'lovingiz tekshirilmoqda</p>
-                    <p class="text-xs text-gray-600 mb-6">Odatda 5–30 daqiqada tasdiqlanadi</p>
+                    <p class="text-sm text-gray-400 mb-1"><?= t("pricing.payment_checking") ?></p>
+                    <p class="text-xs text-gray-600 mb-6"><?= t("pricing.payment_check_time") ?></p>
 
                     <div id="pay-success-details" class="glass-card p-4 border border-white/5 text-left mb-6 space-y-2">
                         <div class="flex justify-between text-xs">
-                            <span class="text-gray-500">To'lov ID:</span>
+                            <span class="text-gray-500"><?= t("pricing.payment_id") ?></span>
                             <span id="pay-result-id" class="text-white font-mono">#—</span>
                         </div>
                         <div class="flex justify-between text-xs">
-                            <span class="text-gray-500">Paket:</span>
+                            <span class="text-gray-500"><?= t("pricing.package_label") ?></span>
                             <span id="pay-result-pkg" class="text-white">—</span>
                         </div>
                         <div class="flex justify-between text-xs">
-                            <span class="text-gray-500">Summa:</span>
+                            <span class="text-gray-500"><?= t("pricing.amount_label") ?></span>
                             <span id="pay-result-amount" class="text-white">—</span>
                         </div>
                         <div class="flex justify-between text-xs">
-                            <span class="text-gray-500">Holat:</span>
+                            <span class="text-gray-500"><?= t("pricing.status_label") ?></span>
                             <span class="text-amber-400 font-medium"><i class="fa-solid fa-clock mr-1"></i> Kutilmoqda</span>
                         </div>
                     </div>
@@ -1142,7 +1027,7 @@ const PaymentModal = (() => {
 
                 // Reset check button state
                 $('pay-check-btn').disabled = false;
-                $('pay-check-text').textContent = "To'lov qildim — Tekshirish";
+                $('pay-check-text').textContent = _t('pricing_i_paid');
                 $('pay-polling-status').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-[10px]"></i> Avtomatik tekshirilmoqda...';
 
                 // Avtomatik yangi tabda ochish
@@ -1262,7 +1147,7 @@ const PaymentModal = (() => {
                 const btn = $('pay-check-btn');
                 const txt = $('pay-check-text');
                 if (btn) btn.disabled = false;
-                if (txt) txt.textContent = "To'lov qildim — Tekshirish";
+                if (txt) txt.textContent = _t('pricing_i_paid');
             }
         }
     }

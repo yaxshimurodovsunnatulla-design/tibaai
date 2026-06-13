@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../api/config.php';
-$pageTitle = 'Sotuvlar Analitikasi – Tiba AI';
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.sales_analytics') . ' – Tiba AI';
 $pageDescription = 'Sotuvlaringizni tahlil qiling va biznesingiz o\'sishini kuzatib boring.';
 ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
@@ -58,7 +59,7 @@ $pageDescription = 'Sotuvlaringizni tahlil qiling va biznesingiz o\'sishini kuza
         <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 print-hide">
             <div>
                 <h1 class="text-3xl sm:text-4xl font-black text-white mb-3">
-                    <i class="fa-solid fa-chart-line text-emerald-500 mr-2"></i> Sotuvlar <span class="gradient-text">Analitikasi</span>
+                    <i class="fa-solid fa-chart-line text-emerald-500 mr-2"></i> Sotuvlar <span class="gradient-text"><?= t('sa.title2') ?></span>
                 </h1>
                 <p class="text-gray-400 text-lg">Uzum Market do'koningizni API orqali tahlil qiling.</p>
             </div>
@@ -72,9 +73,9 @@ $pageDescription = 'Sotuvlaringizni tahlil qiling va biznesingiz o\'sishini kuza
                     </button>
                 </div>
                 <select id="analytics-period" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500/50 transition-all w-full sm:w-auto">
-                    <option value="7">So'nggi 7 kun</option>
-                    <option value="30" selected>So'nggi 30 kun</option>
-                    <option value="90">So'nggi 3 oy</option>
+                    <option value="7"><?= t('sa.last_7') ?></option>
+                    <option value="30" selected><?= t('sa.last_30') ?></option>
+                    <option value="90"><?= t('sa.last_90') ?></option>
                 </select>
                 <button onclick="syncUzumData()" id="sync-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-600/20 active:scale-95 whitespace-nowrap w-full sm:w-auto flex items-center justify-center gap-2">
                     <i class="fa-solid fa-sync-alt"></i> Tahlil qilish
@@ -87,12 +88,12 @@ $pageDescription = 'Sotuvlaringizni tahlil qiling va biznesingiz o\'sishini kuza
             <!-- Stats Cards Row -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
                 <div class="glass-card p-6 border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent">
-                    <div class="text-xs text-gray-500 uppercase font-bold tracking-widest mb-1">Umumiy Sotuv</div>
+                    <div class="text-xs text-gray-500 uppercase font-bold tracking-widest mb-1"><?= t('sa.total_sales') ?></div>
                     <div id="stat-total-sales" class="text-3xl font-black text-white">0 <span class="text-xs font-normal text-gray-500">so'm</span></div>
                 </div>
                 
                 <div class="glass-card p-6 border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent">
-                    <div class="text-xs text-gray-500 uppercase font-bold tracking-widest mb-1">Buyurtmalar</div>
+                    <div class="text-xs text-gray-500 uppercase font-bold tracking-widest mb-1"><?= t('sa.total_orders') ?></div>
                     <div id="stat-orders" class="text-3xl font-black text-white">0 <span class="text-xs font-normal text-gray-500">ta</span></div>
                 </div>
 
@@ -115,7 +116,7 @@ $pageDescription = 'Sotuvlaringizni tahlil qiling va biznesingiz o\'sishini kuza
             <!-- Deep Analysis Row (Secondary Stats) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <div class="glass-card p-4 border border-white/5 flex items-center justify-between">
-                    <div class="text-sm text-gray-400">O'rtacha chek</div>
+                    <div class="text-sm text-gray-400"><?= t('sa.avg_check') ?></div>
                     <div id="stat-avg-check" class="text-lg font-bold text-white">0</div>
                 </div>
                 <div class="glass-card p-4 border border-white/5 flex items-center justify-between">
@@ -141,7 +142,7 @@ $pageDescription = 'Sotuvlaringizni tahlil qiling va biznesingiz o\'sishini kuza
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="w-3 h-1 rounded-full bg-indigo-500"></span>
-                                <span class="text-gray-400">Buyurtmalar</span>
+                                <span class="text-gray-400"><?= t('sa.total_orders') ?></span>
                             </div>
                         </div>
                     </div>
@@ -235,7 +236,7 @@ $pageDescription = 'Sotuvlaringizni tahlil qiling va biznesingiz o\'sishini kuza
         </div>
 
         <div id="analytics-history-list" class="space-y-3">
-            <div class="text-center py-8 text-gray-600 text-sm"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Yuklanmoqda...</div>
+            <div class="text-center py-8 text-gray-600 text-sm"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i><?= t('common.loading') ?></div>
         </div>
     </div>
 </div>
@@ -760,10 +761,10 @@ async function loadAnalyticsHistory() {
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="downloadHistoryPDF(${item.id})" title="PDF yuklash" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors">
+                    <button onclick="downloadHistoryPDF(${item.id})" title="<?= t('tt.pdf_download') ?>" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors">
                         <i class="fa-solid fa-file-pdf text-xs"></i>
                     </button>
-                    <button onclick="deleteHistory(${item.id})" title="O'chirish" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-colors">
+                    <button onclick="deleteHistory(${item.id})" title="<?= t('tt.delete') ?>" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-colors">
                         <i class="fa-solid fa-trash text-xs"></i>
                     </button>
                 </div>

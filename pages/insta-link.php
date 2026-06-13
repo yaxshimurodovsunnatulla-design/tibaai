@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../api/config.php';
-$pageTitle = 'InstaLink AI – Instagram Komment Avtomatizatsiyasi';
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.insta_link') . ' – Tiba AI';
 $pageDescription = 'Instagram videolaringizga izoh qoldirganlaringizga avtomatik Direct xabar va linklar yuboring. Sotuvlarni avtomatlashtiring.';
 ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
@@ -29,7 +30,7 @@ $pageDescription = 'Instagram videolaringizga izoh qoldirganlaringizga avtomatik
                         <i class="fa-solid fa-circle-check"></i> Instagram Ulangan
                     </div>
                     <h1 class="text-4xl sm:text-6xl font-black text-white mb-6 leading-tight">
-                        Izohlarni <span class="gradient-text">Xaridorga</span> Aylantiring
+                        Izohlarni <span class="gradient-text"><?= t('il.to_buyer') ?></span> Aylantiring
                     </h1>
                     <p class="text-gray-400 text-lg mb-8 leading-relaxed">
                         Sizning Instagram hisobingiz muvaffaqiyatli ulangan. Quyida o'z avtomatizatsiya qoidalaringizni boshqarishingiz mumkin.
@@ -55,7 +56,7 @@ $pageDescription = 'Instagram videolaringizga izoh qoldirganlaringizga avtomatik
                         <div class="w-64 h-64 mb-10 relative">
                             <img src="/chatplace_style_illustrations_1773320672745.png" alt="Instagram Automation" class="w-full h-full object-contain">
                         </div>
-                        <h2 class="text-3xl font-black text-white mb-4">Instagramga kiring</h2>
+                        <h2 class="text-3xl font-black text-white mb-4"><?= t('il.login') ?></h2>
                         <p class="text-gray-400">InstaLink AI uchun barcha ruxsatnomalarni taqdim eting</p>
                     </div>
 
@@ -333,7 +334,7 @@ Pastdagi tugmani bosib batafsil tanishishingiz mumkin:</textarea>
                 updatePreview();
                 loadRules();
             } else {
-                alert(data.error || 'Xatolik yuz berdi');
+                alert(data.error || _t('error'));
             }
         } catch (e) {
             alert('Server bilan aloqa uzildi');
@@ -396,7 +397,7 @@ Pastdagi tugmani bosib batafsil tanishishingiz mumkin:</textarea>
                 alert(data.error || 'Xatolik');
             }
         } catch (e) {
-            alert('Xatolik yuz berdi');
+            alert(_t('error'));
         }
     }
 

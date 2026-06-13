@@ -44,7 +44,7 @@ if (!$isBypass && file_exists($maintenanceFlag)) {
 
 // ========== XAVFSIZLIK: Bloklangan yo'llar ==========
 $blocked = ['/.env', '/.git', '/.htaccess', '/.gitignore'];
-$blockedPrefixes = ['/data/', '/tmp/', '/config/'];
+$blockedPrefixes = ['/data/', '/tmp/', '/config/', '/lang/'];
 $blockedFiles = ['/sync_prompts.php', '/init.php', '/sync_prompts', '/init', '/cleanup.php', '/cleanup'];
 
 foreach ($blocked as $b) {
@@ -111,6 +111,7 @@ $routes = [
     '/video-ai' => '/pages/video-ai.php',
     '/instrumentlar' => '/pages/instruments.php',
     '/stuv-kalkulyatori' => '/pages/stuv-calculator.php',
+    '/analitika' => '/pages/analitika.php',
     '/sotuvlar-analitikasi' => '/pages/sales-analytics.php',
     '/raqiblar-monitori' => '/pages/competitor-monitor.php',
     '/zoom-selling-ai' => '/pages/zoom-selling-ai.php',
@@ -149,11 +150,12 @@ http_response_code(404);
 header("Content-Type: text/html");
 ?>
 <!DOCTYPE html>
-<html lang="uz">
+<?php require_once __DIR__ . '/lang/i18n.php'; ?>
+<html lang="<?= lang() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 | Sahifa topilmadi – Tiba AI</title>
+    <title>404 | <?= t('page404.title') ?> – Tiba AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -169,10 +171,10 @@ header("Content-Type: text/html");
 <body>
     <div class="card">
         <h1>404</h1>
-        <p>Voy! Siz qidirayotgan sahifa koinotda adashib qoldi.</p>
+        <p><?= t('page404.desc') ?></p>
         <a href="/">
             <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="margin-right:8px"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Bosh sahifaga qaytish
+            <?= t('page404.btn') ?>
         </a>
     </div>
 </body>

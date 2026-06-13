@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../lang/i18n.php';
 $pageTitle = 'Mening Tarixim – Tiba AI';
 include __DIR__ . '/../components/header.php';
 ?>
@@ -7,8 +8,8 @@ include __DIR__ . '/../components/header.php';
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
             <div>
-                <h1 class="text-3xl font-extrabold text-white">Mening <span class="gradient-text">Tarixim</span></h1>
-                <p class="text-gray-400 text-sm mt-1">Siz yaratgan barcha infografikalar tarixi</p>
+                <h1 class="text-3xl font-extrabold text-white"><?= t('history.title') ?> <span class="gradient-text"><?= t('hist.my_history') ?></span></h1>
+                <p class="text-gray-400 text-sm mt-1"><?= t('hist.subtitle') ?></p>
                 <div class="inline-flex items-center gap-2 mt-3 px-3 py-1 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
                     <span class="text-xs text-yellow-500/80">⚠️ Tarix admin belgilagan vaqtda (standart: 7 kun) avtomatik tozalanadi.</span>
                 </div>
@@ -18,13 +19,13 @@ include __DIR__ . '/../components/header.php';
         <!-- Loading State -->
         <div id="history-loading" class="py-20 text-center">
             <div class="loader w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 mx-auto mb-4"></div>
-            <p class="text-gray-500 text-sm animate-pulse">Tarix yuklanmoqda...</p>
+            <p class="text-gray-500 text-sm animate-pulse"><?= t('hist.loading') ?></p>
         </div>
 
         <!-- Empty State -->
         <div id="history-empty" class="hidden py-20 text-center">
             <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">📜</div>
-            <h3 class="text-xl font-bold text-white mb-2">Hali hech narsa yaratmadingiz</h3>
+            <h3 class="text-xl font-bold text-white mb-2"><?= t('hist.empty') ?></h3>
             <p class="text-gray-500 max-w-sm mx-auto mb-8">Birinchi infografikangizni hoziroq yarating va u shu yerda paydo bo'ladi.</p>
             <a href="/create" class="btn-primary px-8 py-3 font-bold inline-flex items-center gap-2">
                 <span>✨</span> Yaratishni boshlash

@@ -1127,7 +1127,7 @@
             <p class="text-[9px] text-gray-500 mt-1">Bo'sh qoldiring — foydalanuvchilarda «Video qo'llanma» tugmasi ko'rinmaydi</p>
         </div>
         <div class="flex gap-3 pt-2">
-            <button onclick="saveServiceData()" class="btn-primary flex-1 py-3 font-bold">Saqlash</button>
+            <button onclick="saveServiceData()" class="btn-primary flex-1 py-3 font-bold"><?= t('svc.save') ?></button>
             <button onclick="document.getElementById('section-edit-modal').classList.add('hidden')" class="btn-secondary px-6">Bekor qilish</button>
         </div>
     </div>
@@ -2946,7 +2946,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <svg class="w-3 h-3 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                         <input type="url" id="inst-video-${i.id}" value="${i.video_url || ''}" placeholder="YouTube URL (bo'sh = tugma ko'rinmaydi)"
                             class="flex-1 text-[10px] bg-white/[0.03] border border-white/8 rounded-lg px-2 py-1.5 text-gray-300 font-mono placeholder-gray-600 outline-none focus:border-red-500/40 transition-colors">
-                        <button onclick="saveInstrumentVideoUrl(${i.id})" class="flex-shrink-0 px-2.5 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold hover:bg-red-500/20 transition-all">Saqlash</button>
+                        <button onclick="saveInstrumentVideoUrl(${i.id})" class="flex-shrink-0 px-2.5 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold hover:bg-red-500/20 transition-all"><?= t('svc.save') ?></button>
                     </div>
                 </div>`;
             });

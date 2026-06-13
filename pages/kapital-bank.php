@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../api/config.php';
-$pageTitle = 'Kapital Bank – Biznes Hisob Ochish | Tiba AI';
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.kapital_bank') . ' – Tiba AI';
 $pageDescription = 'Kapital Bank orqali biznes hisob varag\'ini onlayn oching. YaTT va MChJ uchun qadamba-qadam yo\'riqnoma, narxlar va afzalliklar.';
 ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
@@ -267,9 +268,9 @@ $pageDescription = 'Kapital Bank orqali biznes hisob varag\'ini onlayn oching. Y
 
         <!-- Breadcrumb -->
         <div class="kb-breadcrumb">
-            <a href="/">Bosh sahifa</a>
+            <a href="/"><?= t('kb.home') ?></a>
             <span class="sep">›</span>
-            <a href="/instrumentlar">Instrumentlar</a>
+            <a href="/instrumentlar"><?= t('kb.instruments') ?></a>
             <span class="sep">›</span>
             <span class="cur">Kapital Bank – Hisob Ochish</span>
         </div>

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../lang/i18n.php';
 /**
  * Tiba AI — Texnik ishlar sahifasi
  * Bu sahifa maintenance rejim yoqilganda barcha foydalanuvchilarga ko'rsatiladi
@@ -211,7 +212,7 @@ header('Retry-After: 3600');
             <span class="gear">⚙️</span>
         </div>
 
-        <h1>Texnik ishlar olib borilmoqda</h1>
+        <h1><?= t('maintenance.title') ?></h1>
         <p class="subtitle">
             Platformamizni yanada yaxshilash uchun texnik ishlar olib borilmoqda. 
             Tez orada qaytamiz!
@@ -228,17 +229,17 @@ header('Retry-After: 3600');
         <div class="info-grid">
             <div class="info-item">
                 <span class="ii-icon">💰</span>
-                <div class="ii-label">Balans</div>
-                <div class="ii-value">Saqlanmoqda</div>
+                <div class="ii-label"><?= t('service.balance') ?></div>
+                <div class="ii-value"><?= t('maint.saving') ?></div>
             </div>
             <div class="info-item">
                 <span class="ii-icon">🎨</span>
-                <div class="ii-label">Rasmlar</div>
-                <div class="ii-value">Xavfsiz</div>
+                <div class="ii-label"><?= t('maint.images') ?></div>
+                <div class="ii-value"><?= t('maint.secure') ?></div>
             </div>
             <div class="info-item">
                 <span class="ii-icon">💳</span>
-                <div class="ii-label">To'lovlar</div>
+                <div class="ii-label"><?= t('maint.payments') ?></div>
                 <div class="ii-value">Himoyalangan</div>
             </div>
             <div class="info-item">

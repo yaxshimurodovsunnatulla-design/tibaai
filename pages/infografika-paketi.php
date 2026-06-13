@@ -1,4 +1,6 @@
-<?php $pageTitle = 'Infografika Paketi – Tiba AI'; ?>
+<?php
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.infografika_paketi') . ' – Tiba AI'; ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
 
 <div class="min-h-screen py-6 sm:py-10">
@@ -15,19 +17,19 @@
                     <!-- Ulangan holat -->
                     <div id="tg-connected-badge" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
                         <i class="fa-brands fa-telegram text-sm"></i>
-                        <span>Telegram ulangan</span>
+                        <span><?= t('ip.tg_linked') ?></span>
                         <i class="fa-solid fa-circle-check text-emerald-500 text-[10px]"></i>
                     </div>
                     <!-- Ulanmagan holat -->
                     <button id="tg-connect-badge" onclick="openTgBindModal()" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-gray-500 hover:text-white hover:border-indigo-500/40 hover:bg-indigo-500/5 text-xs font-semibold transition-all group">
                         <i class="fa-brands fa-telegram text-sm group-hover:text-indigo-400 transition-colors"></i>
-                        <span>Telegram ulash</span>
+                        <span><?= t('ip.tg_link') ?></span>
                         <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-60"></i>
                     </button>
                 </div>
                 <div class="flex items-center gap-2 text-xs text-gray-500">
                     <i class="fa-solid fa-coins"></i>
-                    <span>1 ta paket = 20 tanga</span>
+                    <span><?= t('ip.price_info') ?></span>
                 </div>
             </div>
         </div>
@@ -35,7 +37,7 @@
         <!-- Page Title -->
         <div class="text-center mb-10">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
-                5 ta slaydni <span class="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">birda yarating</span>
+                5 ta slaydni <span class="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"><?= t('ip.create_all') ?></span>
             </h1>
             <p class="text-gray-500 max-w-lg mx-auto text-sm">
                 Mahsulotingiz uchun barcha kerakli infografikalarni bir marta yaratib oling.
@@ -48,40 +50,40 @@
                 <div class="flex items-center gap-2.5">
                     <span class="w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-400 text-[10px] font-bold flex items-center justify-center border border-indigo-500/15">1</span>
                     <div class="flex flex-col">
-                        <span class="text-[10px] font-bold text-gray-300 tracking-wider">HERO POSTER</span>
-                        <span class="text-[9px] text-gray-600">Asosiy slayd</span>
+                        <span class="text-[10px] font-bold text-gray-300 tracking-wider"><?= t('ip.hero') ?></span>
+                        <span class="text-[9px] text-gray-600"><?= t('ip.main_slide') ?></span>
                     </div>
                 </div>
                 <div class="w-px h-8 bg-white/[0.04]"></div>
                 <div class="flex items-center gap-2.5">
                     <span class="w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-400 text-[10px] font-bold flex items-center justify-center border border-indigo-500/15">2</span>
                     <div class="flex flex-col">
-                        <span class="text-[10px] font-bold text-gray-300 tracking-wider">AFZALLIKLAR</span>
-                        <span class="text-[9px] text-gray-600">Ustun jihatlari</span>
+                        <span class="text-[10px] font-bold text-gray-300 tracking-wider"><?= t('ip.advantages') ?></span>
+                        <span class="text-[9px] text-gray-600"><?= t('ip.strong_points') ?></span>
                     </div>
                 </div>
                 <div class="w-px h-8 bg-white/[0.04]"></div>
                 <div class="flex items-center gap-2.5">
                     <span class="w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-400 text-[10px] font-bold flex items-center justify-center border border-indigo-500/15">3</span>
                     <div class="flex flex-col">
-                        <span class="text-[10px] font-bold text-gray-300 tracking-wider">DETALLAR</span>
-                        <span class="text-[9px] text-gray-600">Materiallar</span>
+                        <span class="text-[10px] font-bold text-gray-300 tracking-wider"><?= t('ip.details') ?></span>
+                        <span class="text-[9px] text-gray-600"><?= t('ip.materials') ?></span>
                     </div>
                 </div>
                 <div class="w-px h-8 bg-white/[0.04]"></div>
                 <div class="flex items-center gap-2.5">
                     <span class="w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-400 text-[10px] font-bold flex items-center justify-center border border-indigo-500/15">4</span>
                     <div class="flex flex-col">
-                        <span class="text-[10px] font-bold text-gray-300 tracking-wider">LIFESTYLE</span>
-                        <span class="text-[9px] text-gray-600">Hayotda ishlatilishi</span>
+                        <span class="text-[10px] font-bold text-gray-300 tracking-wider"><?= t('ip.lifestyle') ?></span>
+                        <span class="text-[9px] text-gray-600"><?= t('ip.in_life') ?></span>
                     </div>
                 </div>
                 <div class="w-px h-8 bg-white/[0.04]"></div>
                 <div class="flex items-center gap-2.5">
                     <span class="w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-400 text-[10px] font-bold flex items-center justify-center border border-indigo-500/15">5</span>
                     <div class="flex flex-col">
-                        <span class="text-[10px] font-bold text-gray-300 tracking-wider">DINAMIK CTA</span>
-                        <span class="text-[9px] text-gray-600">Sotib olishga undash</span>
+                        <span class="text-[10px] font-bold text-gray-300 tracking-wider"><?= t('svc.dynamic_cta') ?></span>
+                        <span class="text-[9px] text-gray-600"><?= t('svc.buy_call') ?></span>
                     </div>
                 </div>
             </div>
@@ -97,7 +99,7 @@
                         <div class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                             <i class="fa-solid fa-images text-indigo-400 text-sm"></i>
                         </div>
-                        <span class="text-sm font-semibold text-white">Mahsulot rasmlari <span class="text-gray-600 font-normal text-xs">(maks. 5)</span></span>
+                        <span class="text-sm font-semibold text-white">Mahsulot rasmlari <span class="text-gray-600 font-normal text-xs"><?= t('svc.max5') ?></span></span>
                     </label>
                     <div class="grid grid-cols-3 gap-2 mb-3">
                         <div id="pkg-previews-container" class="col-span-2 grid grid-cols-2 gap-2"></div>
@@ -106,7 +108,7 @@
                                 <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/0 to-purple-500/0 group-hover:from-indigo-500/5 group-hover:to-purple-500/5 transition-all duration-500"></div>
                                 <div class="relative z-10 flex flex-col items-center">
                                     <i class="fa-solid fa-cloud-arrow-up text-lg text-gray-500 group-hover:text-indigo-400 transition-colors"></i>
-                                    <span class="text-[9px] font-bold text-gray-500 uppercase mt-1 group-hover:text-indigo-400">Yuklash</span>
+                                    <span class="text-[9px] font-bold text-gray-500 uppercase mt-1 group-hover:text-indigo-400"><?= t('svc.upload_label') ?></span>
                                 </div>
                                 <input type="file" class="hidden" accept="image/*" multiple id="pkg-image-input" />
                             </label>
@@ -139,9 +141,9 @@
                             <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
                                 <i class="fa-solid fa-tag text-purple-400 text-sm"></i>
                             </div>
-                            <span class="text-sm font-semibold text-white">Mahsulot nomi <span class="text-gray-600 font-normal text-xs">(ixtiyoriy)</span></span>
+                            <span class="text-sm font-semibold text-white">Mahsulot nomi <span class="text-gray-600 font-normal text-xs"><?= t('svc.optional') ?></span></span>
                         </label>
-                        <input type="text" id="pkg-product-name" class="input-field text-sm" placeholder="Masalan: Dyson V15 Vacuum" />
+                        <input type="text" id="pkg-product-name" class="input-field text-sm" placeholder="<?= t('ph.infografika_pak') ?>" />
                     </div>
 
                     <div class="border-t border-white/[0.04]"></div>

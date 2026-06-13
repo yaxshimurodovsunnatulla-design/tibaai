@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../api/config.php';
-$pageTitle = 'Sotuv Kalkulyatori – Tiba AI';
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.stuv_calc') . ' – Tiba AI';
 $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyatori. Foydangizni aniq hisoblang va saqlang.';
 ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
@@ -9,7 +10,7 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
     <div class="max-w-4xl mx-auto px-4 sm:px-6">
         <div class="mb-10 text-center">
             <h1 class="text-3xl sm:text-4xl font-black mb-3" style="color:var(--text-heading)">
-                <i class="fa-solid fa-calculator text-violet-500 mr-2"></i> Sotuv <span class="gradient-text">Kalkulyatori</span>
+                <i class="fa-solid fa-calculator text-violet-500 mr-2"></i> Sotuv <span class="gradient-text"><?= t('stuv.title2') ?></span>
             </h1>
             <p style="color:var(--text-muted)">Mahsulotingizning tannarxi, komissiya va soliqlarini hisobga olib, aniq foydani aniqlang.</p>
         </div>
@@ -28,16 +29,16 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
         <div id="calc-tannarx" class="calc-panel">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="glass-card p-6 sm:p-8 space-y-5">
-                    <h3 class="text-sm font-bold uppercase tracking-widest mb-4" style="color:var(--text-heading)">Ma'lumotlarni kiriting</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest mb-4" style="color:var(--text-heading)"><?= t('stuv.enter_data') ?></h3>
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Marketpleysdagi sotuv narxi (UZS) <span class="text-red-400">*</span></label>
-                        <div class="relative"><input type="number" id="t-price" placeholder="300 000" class="input-field text-lg font-bold pr-16"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">UZS</span></div>
-                        <p class="text-[10px] mt-1" style="color:var(--text-muted)">Marketplasdagi haqiqiy sotuv narxi</p>
+                        <div class="relative"><input type="number" id="t-price" placeholder="<?= t('ph.stuv_sell') ?>" class="input-field text-lg font-bold pr-16"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">UZS</span></div>
+                        <p class="text-[10px] mt-1" style="color:var(--text-muted)"><?= t('stuv.sell_price_hint') ?></p>
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Xarid narxi (UZS) <span class="text-red-400">*</span></label>
-                        <div class="relative"><input type="number" id="t-cost" placeholder="100 000" class="input-field text-lg font-bold pr-16"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">UZS</span></div>
-                        <p class="text-[10px] mt-1" style="color:var(--text-muted)">Tovarni sotib olish narxi</p>
+                        <div class="relative"><input type="number" id="t-cost" placeholder="<?= t('ph.stuv_buy') ?>" class="input-field text-lg font-bold pr-16"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">UZS</span></div>
+                        <p class="text-[10px] mt-1" style="color:var(--text-muted)"><?= t('stuv.purchase_hint') ?></p>
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Yetkazib berish turi <span class="text-red-400">*</span></label>
@@ -49,40 +50,40 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Kargo (logistika) <span class="text-[9px] font-normal">(ixtiyoriy)</span></label>
+                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Kargo (logistika) <span class="text-[9px] font-normal"><?= t('svc.optional') ?></span></label>
                             <div class="relative"><input type="number" id="t-kargo" value="50000" class="input-field pr-16"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">UZS</span></div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Fulfillment <span class="text-[9px] font-normal">(ixtiyoriy)</span></label>
+                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Fulfillment <span class="text-[9px] font-normal"><?= t('svc.optional') ?></span></label>
                             <div class="relative"><input type="number" id="t-fulfill" value="3000" class="input-field pr-16"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">UZS</span></div>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Komissiya (%) <span class="text-[9px] font-normal">(ixtiyoriy)</span></label>
+                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Komissiya (%) <span class="text-[9px] font-normal"><?= t('svc.optional') ?></span></label>
                             <div class="relative"><input type="number" id="t-comm" value="20" class="input-field pr-10"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">%</span></div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">MP logistika <span class="text-[9px] font-normal">(ixtiyoriy)</span></label>
+                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">MP logistika <span class="text-[9px] font-normal"><?= t('svc.optional') ?></span></label>
                             <div class="relative"><input type="number" id="t-mplog" value="5000" class="input-field pr-16"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">UZS</span></div>
                         </div>
                     </div>
                     <!-- Foiz xarajatlar -->
                     <div class="glass-card p-4 border border-white/5 space-y-3">
-                        <h4 class="text-xs font-bold" style="color:var(--text-heading)">Foiz xarajatlar</h4>
+                        <h4 class="text-xs font-bold" style="color:var(--text-heading)"><?= t('stuv.percent_costs') ?></h4>
                         <div class="grid grid-cols-2 gap-3">
-                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Bank foizi (%)</label><div class="relative"><input type="number" id="t-bank" value="1" class="input-field text-sm pr-8"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px]" style="color:var(--text-muted)">%</span></div></div>
-                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Pul yechish (%)</label><div class="relative"><input type="number" id="t-withdraw" value="1" class="input-field text-sm pr-8"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px]" style="color:var(--text-muted)">%</span></div></div>
-                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Brak/yo'qotish (%)</label><div class="relative"><input type="number" id="t-defect" value="3" class="input-field text-sm pr-8"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px]" style="color:var(--text-muted)">%</span></div></div>
-                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Qo'shimcha (%)</label><div class="relative"><input type="number" id="t-extra" value="5" class="input-field text-sm pr-8"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px]" style="color:var(--text-muted)">%</span></div></div>
+                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)"><?= t('stuv.bank_percent') ?></label><div class="relative"><input type="number" id="t-bank" value="1" class="input-field text-sm pr-8"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px]" style="color:var(--text-muted)">%</span></div></div>
+                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)"><?= t('stuv.withdrawal') ?></label><div class="relative"><input type="number" id="t-withdraw" value="1" class="input-field text-sm pr-8"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px]" style="color:var(--text-muted)">%</span></div></div>
+                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)"><?= t('stuv.defect') ?></label><div class="relative"><input type="number" id="t-defect" value="3" class="input-field text-sm pr-8"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px]" style="color:var(--text-muted)">%</span></div></div>
+                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)"><?= t('stuv.extra') ?></label><div class="relative"><input type="number" id="t-extra" value="5" class="input-field text-sm pr-8"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px]" style="color:var(--text-muted)">%</span></div></div>
                         </div>
-                        <div class="w-1/2"><label class="text-[10px] font-bold" style="color:var(--text-muted)">Soliq (%)</label><div class="relative"><input type="number" id="t-tax" value="1" class="input-field text-sm pr-8"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px]" style="color:var(--text-muted)">%</span></div></div>
+                        <div class="w-1/2"><label class="text-[10px] font-bold" style="color:var(--text-muted)"><?= t('stuv.tax') ?></label><div class="relative"><input type="number" id="t-tax" value="1" class="input-field text-sm pr-8"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px]" style="color:var(--text-muted)">%</span></div></div>
                     </div>
                     <!-- Maqsadli foyda - sariq highlight -->
                     <div class="rounded-2xl border-2 border-amber-400/30 bg-amber-500/5 p-4 space-y-2">
                         <p class="text-xs font-bold text-amber-400">25% Maqsadli foyda olish uchun</p>
                         <div>
-                            <label class="text-[10px] font-bold" style="color:var(--text-muted)">Maqsadli foyda (%) <span class="text-[9px] font-normal">(ixtiyoriy)</span></label>
+                            <label class="text-[10px] font-bold" style="color:var(--text-muted)">Maqsadli foyda (%) <span class="text-[9px] font-normal"><?= t('svc.optional') ?></span></label>
                             <div class="relative"><input type="number" id="t-target" value="25" class="input-field text-sm pr-8"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px]" style="color:var(--text-muted)">%</span></div>
                             <p class="text-[9px] mt-1 text-amber-400/60">Tavsiya narxini hisoblash uchun maqsadli foyda foizi</p>
                         </div>
@@ -93,25 +94,25 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
                             <i class="fa-solid fa-chevron-right text-[8px] mr-1 group-open:rotate-90 transition-transform"></i> Ixtiyoriy ma'lumotlar
                         </summary>
                         <div class="mt-3 space-y-3">
-                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot nomi <span class="text-[8px] font-normal">(ixtiyoriy)</span></label><input type="text" id="t-name" placeholder="Mahsulotning nomi (saqlash uchun)" class="input-field text-sm"></div>
+                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot nomi <span class="text-[8px] font-normal"><?= t('svc.optional') ?></span></label><input type="text" id="t-name" placeholder="<?= t('ph.stuv_name') ?>" class="input-field text-sm"></div>
                             <div>
-                                <label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot rasmi <span class="text-[8px] font-normal">(ixtiyoriy)</span></label>
+                                <label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot rasmi <span class="text-[8px] font-normal"><?= t('svc.optional') ?></span></label>
                                 <div class="mt-1 border-2 border-dashed rounded-xl p-6 text-center cursor-pointer hover:border-indigo-400/50 transition-colors" style="border-color:var(--border-color)" onclick="document.getElementById('t-image').click()">
                                     <i class="fa-regular fa-image text-2xl mb-2 block opacity-30" style="color:var(--text-muted)"></i>
-                                    <p class="text-xs font-bold" style="color:var(--text-heading)">Rasm tanlash</p>
-                                    <p class="text-[9px]" style="color:var(--text-muted)">Maksimal fayl hajmi: 10MB</p>
+                                    <p class="text-xs font-bold" style="color:var(--text-heading)"><?= t('svc.select_image') ?></p>
+                                    <p class="text-[9px]" style="color:var(--text-muted)"><?= t('svc.max_file_10mb') ?></p>
                                     <input type="file" id="t-image" accept="image/*" class="hidden">
                                 </div>
                             </div>
-                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot havolasi <span class="text-[8px] font-normal">(ixtiyoriy)</span></label><input type="url" id="t-link" placeholder="https://uzum.uz/product/..." class="input-field text-sm"><p class="text-[9px] mt-1" style="color:var(--text-muted)">Marketplace'dagi mahsulot havolasi</p></div>
-                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Izohlar <span class="text-[8px] font-normal">(ixtiyoriy)</span></label><textarea id="t-notes" rows="2" placeholder="Qo'shimcha ma'lumotlar" class="input-field text-sm"></textarea></div>
+                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot havolasi <span class="text-[8px] font-normal"><?= t('svc.optional') ?></span></label><input type="url" id="t-link" placeholder="<?= t('ph.stuv_link') ?>" class="input-field text-sm"><p class="text-[9px] mt-1" style="color:var(--text-muted)"><?= t('stuv.product_link_hint') ?></p></div>
+                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Izohlar <span class="text-[8px] font-normal"><?= t('svc.optional') ?></span></label><textarea id="t-notes" rows="2" placeholder="<?= t('ph.stuv_extra') ?>" class="input-field text-sm"></textarea></div>
                         </div>
                     </details>
                     <div class="flex gap-3">
                         <button onclick="calcTannarx()" class="flex-1 py-4 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold shadow-lg shadow-violet-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                             <i class="fa-solid fa-calculator"></i> Hisoblash
                         </button>
-                        <button onclick="clearForm('tannarx')" class="px-6 py-4 rounded-xl border font-bold transition-all hover:scale-[1.02]" style="border-color:var(--border-color);color:var(--text-muted)">Tozalash</button>
+                        <button onclick="clearForm('tannarx')" class="px-6 py-4 rounded-xl border font-bold transition-all hover:scale-[1.02]" style="border-color:var(--border-color);color:var(--text-muted)"><?= t('svc.clear') ?></button>
                     </div>
                 </div>
 
@@ -124,34 +125,34 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
                     <div id="t-results-data" class="hidden space-y-4">
                         <div class="glass-card p-8 border border-white/5">
                             <div class="text-center mb-8">
-                                <div class="text-xs uppercase tracking-widest mb-2 font-bold" style="color:var(--text-muted)">Sof Foyda</div>
+                                <div class="text-xs uppercase tracking-widest mb-2 font-bold" style="color:var(--text-muted)"><?= t('stuv.net_profit') ?></div>
                                 <div id="t-profit" class="text-5xl font-black" style="color:var(--text-heading)">0 <span class="text-xl font-normal" style="color:var(--text-muted)">so'm</span></div>
                             </div>
                             <div class="space-y-3 pt-6 border-t border-white/5">
-                                <div class="flex justify-between"><span class="text-sm" style="color:var(--text-muted)">Rentabellik (ROI)</span><span id="t-roi" class="text-emerald-400 font-bold">0%</span></div>
-                                <div class="flex justify-between"><span class="text-sm" style="color:var(--text-muted)">Marginal daraja</span><span id="t-margin" class="text-blue-400 font-bold">0%</span></div>
+                                <div class="flex justify-between"><span class="text-sm" style="color:var(--text-muted)"><?= t('stuv.roi') ?></span><span id="t-roi" class="text-emerald-400 font-bold">0%</span></div>
+                                <div class="flex justify-between"><span class="text-sm" style="color:var(--text-muted)"><?= t('stuv.margin') ?></span><span id="t-margin" class="text-blue-400 font-bold">0%</span></div>
                                 <div class="flex justify-between"><span class="text-sm" style="color:var(--text-muted)">Yetkazish turi</span><span id="t-delivery-s" class="font-bold text-indigo-400">FBO</span></div>
                             </div>
                         </div>
                         <div class="glass-card p-6 border border-white/5 space-y-2">
-                            <h4 class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--text-muted)">Xarajatlar strukturasi</h4>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Xarid narxi:</span><span id="t-cost-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">MP komissiya:</span><span id="t-comm-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Fulfillment:</span><span id="t-fulfill-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Kargo:</span><span id="t-kargo-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">MP logistika:</span><span id="t-mplog-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Bank foizi:</span><span id="t-bank-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Pul yechish:</span><span id="t-withdraw-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Brak/yo'qotish:</span><span id="t-defect-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Qo'shimcha:</span><span id="t-extra-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Soliq:</span><span id="t-tax-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm font-bold border-t border-white/5 pt-2 mt-2"><span style="color:var(--text-muted)">Jami xarajat:</span><span id="t-total-s" class="text-red-400">0</span></div>
+                            <h4 class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--text-muted)"><?= t('stuv.cost_structure') ?></h4>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.purchase_cost') ?></span><span id="t-cost-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.mp_commission') ?></span><span id="t-comm-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.fulfillment_cost') ?></span><span id="t-fulfill-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.cargo_cost') ?></span><span id="t-kargo-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.mp_logistics_cost') ?></span><span id="t-mplog-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.bank_cost') ?></span><span id="t-bank-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.withdrawal_cost') ?></span><span id="t-withdraw-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.defect_cost') ?></span><span id="t-defect-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.extra_cost') ?></span><span id="t-extra-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.tax_cost') ?></span><span id="t-tax-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm font-bold border-t border-white/5 pt-2 mt-2"><span style="color:var(--text-muted)"><?= t('stuv.total_cost') ?></span><span id="t-total-s" class="text-red-400">0</span></div>
                         </div>
                         <!-- Tavsiya narx -->
                         <div id="t-tavsiya-box" class="hidden rounded-2xl border-2 border-amber-400/30 bg-amber-500/5 p-5 text-center">
                             <p class="text-xs font-bold text-amber-400 mb-1">Maqsadli foydaga erishish uchun</p>
                             <div class="text-2xl font-black text-amber-400" id="t-tavsiya-narx">0 so'm</div>
-                            <p class="text-[10px] mt-1" style="color:var(--text-muted)">Tavsiya etilgan sotuv narxi</p>
+                            <p class="text-[10px] mt-1" style="color:var(--text-muted)"><?= t('stuv.recommended_price') ?></p>
                         </div>
                     </div>
                     <!-- Saqlash/Yuklab olish tugmalari -->
@@ -171,10 +172,10 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
         <div id="calc-sotuv" class="calc-panel hidden">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="glass-card p-6 sm:p-8 space-y-5">
-                    <h3 class="text-sm font-bold uppercase tracking-widest mb-4" style="color:var(--text-heading)">Ma'lumotlarni kiriting</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest mb-4" style="color:var(--text-heading)"><?= t('stuv.enter_data') ?></h3>
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Marketpleysdagi sotuv narxi (UZS) <span class="text-red-400">*</span></label>
-                        <div class="relative"><input type="number" id="s-price-input" placeholder="100 000" class="input-field text-lg font-bold pr-16"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">UZS</span></div>
+                        <div class="relative"><input type="number" id="s-price-input" placeholder="<?= t('ph.stuv_buy') ?>" class="input-field text-lg font-bold pr-16"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">UZS</span></div>
                         <p class="text-[10px] mt-1" style="color:var(--text-muted)">Tovarni sotmoqchi bo'lgan narx</p>
                     </div>
                     <div>
@@ -189,7 +190,7 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Kategoriya <span class="text-red-400">*</span></label>
                         <div class="relative">
-                            <input type="text" id="s-category" list="category-list" placeholder="Kategoriya nomini kiriting..." class="input-field text-sm">
+                            <input type="text" id="s-category" list="category-list" placeholder="<?= t('ph.stuv_category') ?>" class="input-field text-sm">
                             <datalist id="category-list">
                                 <option value="Kiyim-kechak" data-comm="20">
                                 <option value="Elektronika" data-comm="15">
@@ -216,15 +217,15 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
                         </div>
                         <div class="grid grid-cols-3 gap-3">
                             <div>
-                                <label class="text-[9px] font-bold" style="color:var(--text-muted)">Uzunlik</label>
+                                <label class="text-[9px] font-bold" style="color:var(--text-muted)"><?= t('stuv.length') ?></label>
                                 <div class="relative"><input type="number" id="s-dim-l" value="0" class="input-field text-sm pr-10"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[9px]" style="color:var(--text-muted)" id="s-unit-l">cm</span></div>
                             </div>
                             <div>
-                                <label class="text-[9px] font-bold" style="color:var(--text-muted)">Eni</label>
+                                <label class="text-[9px] font-bold" style="color:var(--text-muted)"><?= t('stuv.width') ?></label>
                                 <div class="relative"><input type="number" id="s-dim-w" value="0" class="input-field text-sm pr-10"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[9px]" style="color:var(--text-muted)" id="s-unit-w">cm</span></div>
                             </div>
                             <div>
-                                <label class="text-[9px] font-bold" style="color:var(--text-muted)">Balandlik</label>
+                                <label class="text-[9px] font-bold" style="color:var(--text-muted)"><?= t('stuv.height') ?></label>
                                 <div class="relative"><input type="number" id="s-dim-h" value="0" class="input-field text-sm pr-10"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[9px]" style="color:var(--text-muted)" id="s-unit-h">cm</span></div>
                             </div>
                         </div>
@@ -232,12 +233,12 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Fulfillment (UZS) <span class="text-[9px] font-normal">(ixtiyoriy)</span></label>
+                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Fulfillment (UZS) <span class="text-[9px] font-normal"><?= t('svc.optional') ?></span></label>
                             <div class="relative"><input type="number" id="s-fulfill" value="3000" class="input-field pr-16"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">UZS</span></div>
                             <p class="text-[9px] mt-1" style="color:var(--text-muted)">Fulfillment xizmati xarajati</p>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Logistika (kargo) <span class="text-[9px] font-normal">(ixtiyoriy)</span></label>
+                            <label class="block text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted)">Logistika (kargo) <span class="text-[9px] font-normal"><?= t('svc.optional') ?></span></label>
                             <div class="relative"><input type="number" id="s-other" value="10000" class="input-field pr-16"><span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold" style="color:var(--text-muted)">UZS</span></div>
                             <p class="text-[9px] mt-1" style="color:var(--text-muted)">Tovarni olib kelish xarajati</p>
                         </div>
@@ -252,25 +253,25 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
                             <i class="fa-solid fa-chevron-right text-[8px] mr-1 group-open:rotate-90 transition-transform"></i> Ixtiyoriy ma'lumotlar
                         </summary>
                         <div class="mt-3 space-y-3">
-                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot nomi <span class="text-[8px] font-normal">(ixtiyoriy)</span></label><input type="text" id="s-name" placeholder="Mahsulotning nomi (saqlash uchun)" class="input-field text-sm"><p class="text-[9px] mt-1" style="color:var(--text-muted)">Mahsulotning nomi (saqlash uchun)</p></div>
+                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot nomi <span class="text-[8px] font-normal"><?= t('svc.optional') ?></span></label><input type="text" id="s-name" placeholder="<?= t('ph.stuv_name') ?>" class="input-field text-sm"><p class="text-[9px] mt-1" style="color:var(--text-muted)">Mahsulotning nomi (saqlash uchun)</p></div>
                             <div>
-                                <label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot rasmi <span class="text-[8px] font-normal">(ixtiyoriy)</span></label>
+                                <label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot rasmi <span class="text-[8px] font-normal"><?= t('svc.optional') ?></span></label>
                                 <div class="mt-1 border-2 border-dashed rounded-xl p-6 text-center cursor-pointer hover:border-indigo-400/50 transition-colors" style="border-color:var(--border-color)" onclick="document.getElementById('s-image').click()">
                                     <i class="fa-regular fa-image text-2xl mb-2 block opacity-30" style="color:var(--text-muted)"></i>
-                                    <p class="text-xs font-bold" style="color:var(--text-heading)">Rasm tanlash</p>
-                                    <p class="text-[9px]" style="color:var(--text-muted)">Maksimal fayl hajmi: 10MB</p>
+                                    <p class="text-xs font-bold" style="color:var(--text-heading)"><?= t('svc.select_image') ?></p>
+                                    <p class="text-[9px]" style="color:var(--text-muted)"><?= t('svc.max_file_10mb') ?></p>
                                     <input type="file" id="s-image" accept="image/*" class="hidden">
                                 </div>
                             </div>
-                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot havolasi <span class="text-[8px] font-normal">(ixtiyoriy)</span></label><input type="url" id="s-link" placeholder="https://uzum.uz/product/..." class="input-field text-sm"><p class="text-[9px] mt-1" style="color:var(--text-muted)">Marketplace'dagi mahsulot havolasi</p></div>
-                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Izohlar <span class="text-[8px] font-normal">(ixtiyoriy)</span></label><textarea id="s-notes" rows="3" placeholder="Qo'shimcha ma'lumotlar" class="input-field text-sm"></textarea></div>
+                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Mahsulot havolasi <span class="text-[8px] font-normal"><?= t('svc.optional') ?></span></label><input type="url" id="s-link" placeholder="<?= t('ph.stuv_link') ?>" class="input-field text-sm"><p class="text-[9px] mt-1" style="color:var(--text-muted)"><?= t('stuv.product_link_hint') ?></p></div>
+                            <div><label class="text-[10px] font-bold" style="color:var(--text-muted)">Izohlar <span class="text-[8px] font-normal"><?= t('svc.optional') ?></span></label><textarea id="s-notes" rows="3" placeholder="<?= t('ph.stuv_extra') ?>" class="input-field text-sm"></textarea></div>
                         </div>
                     </details>
                     <div class="flex gap-3">
                         <button onclick="calcSotuv()" class="flex-1 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold shadow-lg shadow-indigo-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                             <i class="fa-solid fa-calculator"></i> Hisoblash
                         </button>
-                        <button onclick="clearForm('sotuv')" class="px-6 py-4 rounded-xl border font-bold transition-all hover:scale-[1.02]" style="border-color:var(--border-color);color:var(--text-muted)">Tozalash</button>
+                        <button onclick="clearForm('sotuv')" class="px-6 py-4 rounded-xl border font-bold transition-all hover:scale-[1.02]" style="border-color:var(--border-color);color:var(--text-muted)"><?= t('svc.clear') ?></button>
                     </div>
                 </div>
 
@@ -284,7 +285,7 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
                     <div id="s-results-data" class="hidden space-y-4">
                         <div class="glass-card p-8 border border-white/5">
                             <div class="text-center mb-8">
-                                <div class="text-xs uppercase tracking-widest mb-2 font-bold" style="color:var(--text-muted)">Natija</div>
+                                <div class="text-xs uppercase tracking-widest mb-2 font-bold" style="color:var(--text-muted)"><?= t('svc.result') ?></div>
                                 <div id="s-price" class="text-5xl font-black text-indigo-400">0 <span class="text-xl font-normal" style="color:var(--text-muted)">so'm</span></div>
                             </div>
                             <div class="space-y-3 pt-6 border-t border-white/5">
@@ -294,11 +295,11 @@ $pageDescription = 'Marketplacelar uchun professional Sotuv va Tannarx kalkulyat
                         </div>
                         <div class="glass-card p-6 border border-white/5 space-y-2">
                             <h4 class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--text-muted)">Narx tarkibi</h4>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Sotuv narxi:</span><span id="s-sell-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Fulfillment:</span><span id="s-fulfill-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Logistika:</span><span id="s-other-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)">Rentabellik:</span><span id="s-rent-s" style="color:var(--text-heading)">0</span></div>
-                            <div class="flex justify-between text-sm font-bold border-t border-white/5 pt-2 mt-2"><span style="color:var(--text-muted)">Sof foyda:</span><span id="s-profit-s" class="text-emerald-400">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.sell_price_label') ?></span><span id="s-sell-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.fulfillment_cost') ?></span><span id="s-fulfill-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.logistics_label') ?></span><span id="s-other-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm"><span style="color:var(--text-muted)"><?= t('stuv.margin_label') ?></span><span id="s-rent-s" style="color:var(--text-heading)">0</span></div>
+                            <div class="flex justify-between text-sm font-bold border-t border-white/5 pt-2 mt-2"><span style="color:var(--text-muted)"><?= t('stuv.net_profit_label') ?></span><span id="s-profit-s" class="text-emerald-400">0</span></div>
                         </div>
                     </div>
                     <div id="s-actions" class="hidden flex gap-3">
@@ -572,7 +573,7 @@ function renderSaved() {
                     <span style="color:var(--text-muted)">ROI: <b class="text-blue-400">${roiVal}%</b></span>
                 </div>
             </div>
-            <button onclick="deleteCalc(${c.id})" class="flex-shrink-0 p-2 text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all" title="O'chirish">
+            <button onclick="deleteCalc(${c.id})" class="flex-shrink-0 p-2 text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all" title="<?= t('tt.delete') ?>">
                 <i class="fa-solid fa-trash-can text-xs"></i>
             </button>
         </div>`;

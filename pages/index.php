@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../lang/i18n.php';
 $pageTitle = 'Tiba AI – Onlayn Savdo uchun AI Yordamchi | 90% ishni avtomatlashtiring';
 $pageDescription = 'Uzum, Wildberries va boshqa marketplace sotuvchilari uchun AI yordamchi. Infografika, analitika, hisobotlar, ETTY va boshqa vositalar bilan ishingizni 90% gacha yengillashtiring.';
 
@@ -48,25 +49,25 @@ $userDisplay = formatStat($userCount);
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full hero-badge mb-8 animate-fade-in">
                 <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span class="text-xs font-semibold text-indigo-300">Marketplace sotuvchilar uchun #1 AI yordamchi</span>
+                <span class="text-xs font-semibold text-indigo-300"><?= t('hero.badge') ?></span>
             </div>
 
             <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-tight mb-6 animate-fade-in-up">
-                <span class="text-white">Onlayn savdo ishlaringizni</span><br/>
-                <span class="gradient-text">90% gacha</span>
-                <span class="text-white"> yengillashtiring</span>
+                <span class="text-white"><?= t('hero.title_1') ?></span><br/>
+                <span class="gradient-text"><?= t('hero.title_2') ?></span>
+                <span class="text-white"> <?= t('hero.title_3') ?></span>
             </h1>
 
             <p class="max-w-2xl mx-auto text-lg sm:text-xl text-gray-400 mb-10 animate-fade-in-up" style="animation-delay:0.2s">
-                Infografika, kartochka sozlash, analitika, hisobotlar, ETTY va boshqa vositalar — barchasi bitta platformada. Uzum va Wildberries sotuvchilari uchun yaratilgan.
+                <?= t('hero.subtitle') ?>
             </p>
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style="animation-delay:0.4s">
                 <button onclick="toggleStartPopup(this)" class="btn-primary text-lg px-10 py-4 animate-pulse-glow relative" id="hero-cta">
                     <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    Boshlash
+                    <?= t('hero.btn_start') ?>
                 </button>
-                <a href="/pricing" class="btn-secondary text-lg">Narxlarni ko'rish</a>
+                <a href="/pricing" class="btn-secondary text-lg"><?= t('hero.btn_pricing') ?></a>
                 <?php if (!empty($youtubeLink)): ?>
                 <button onclick="openYoutubeModal()" id="video-tutorial-btn"
                     class="group inline-flex items-center gap-3 px-7 py-4 rounded-2xl text-base font-semibold transition-all duration-300 border border-red-500/30 hover:border-red-500/60 hover:bg-red-500/10"
@@ -74,7 +75,7 @@ $userDisplay = formatStat($userCount);
                     <span class="w-9 h-9 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform flex-shrink-0">
                         <svg class="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                     </span>
-                    Video qo'llanma
+                    <?= t('hero.btn_video') ?>
                 </button>
                 <?php endif; ?>
             </div>
@@ -83,19 +84,19 @@ $userDisplay = formatStat($userCount);
             <div class="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl mx-auto animate-fade-in-up" style="animation-delay:0.6s">
                 <div>
                     <div class="text-2xl sm:text-3xl font-bold gradient-text stat-glow" data-count="<?= $genCount ?>"><?= htmlspecialchars($genDisplay) ?></div>
-                    <div class="text-xs sm:text-sm text-gray-500 mt-1">Ishlar bajarildi</div>
+                    <div class="text-xs sm:text-sm text-gray-500 mt-1"><?= t('hero.stat_generations') ?></div>
                 </div>
                 <div>
                     <div class="text-2xl sm:text-3xl font-bold gradient-text stat-glow" data-count="<?= $userCount ?>"><?= htmlspecialchars($userDisplay) ?></div>
-                    <div class="text-xs sm:text-sm text-gray-500 mt-1">Faol sotuvchilar</div>
+                    <div class="text-xs sm:text-sm text-gray-500 mt-1"><?= t('hero.stat_users') ?></div>
                 </div>
                 <div>
                     <div class="text-2xl sm:text-3xl font-bold gradient-text"><?= $serviceCount + 5 ?>+</div>
-                    <div class="text-xs sm:text-sm text-gray-500 mt-1">AI vositalar</div>
+                    <div class="text-xs sm:text-sm text-gray-500 mt-1"><?= t('hero.stat_tools') ?></div>
                 </div>
                 <div>
                     <div class="text-2xl sm:text-3xl font-bold gradient-text">90%</div>
-                    <div class="text-xs sm:text-sm text-gray-500 mt-1">Vaqt tejash</div>
+                    <div class="text-xs sm:text-sm text-gray-500 mt-1"><?= t('hero.stat_time') ?></div>
                 </div>
             </div>
         </div>
@@ -161,9 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-3xl sm:text-4xl font-bold mb-4" style="color:var(--text-heading)">
-                    AI yaratgan <span class="gradient-text">namunalar</span>
+                    <?= t('samples.title') ?> <span class="gradient-text"><?= t('samples.title_highlight') ?></span>
                 </h2>
-                <p style="color:var(--text-muted)" class="max-w-xl mx-auto">Tiba AI yordamida yaratilgan infografikalar va dizaynlarni ko'ring</p>
+                <p style="color:var(--text-muted)" class="max-w-xl mx-auto"><?= t('samples.subtitle') ?></p>
             </div>
         </div>
 
@@ -218,12 +219,12 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
             <a href="/namunalar" class="btn-secondary inline-flex items-center gap-2 px-8 py-3 text-base">
                 <i class="fa-solid fa-images"></i>
-                Ko'proq namunalar ko'rish
+                <?= t('samples.more_btn') ?>
                 <i class="fa-solid fa-arrow-right text-xs"></i>
             </a>
             <a href="/create" class="btn-primary inline-flex items-center gap-2 px-8 py-3 text-base">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
-                Hoziroq infografika yaratish
+                <?= t('samples.create_btn') ?>
             </a>
         </div>
     </section>
@@ -264,9 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
-                    Tiba AI bilan <span class="gradient-text">nima qila olasiz?</span>
+                    <?= t('categories.title') ?> <span class="gradient-text"><?= t('categories.title_highlight') ?></span>
                 </h2>
-                <p class="text-gray-400 max-w-xl mx-auto">Marketplace sotuvchisining deyarli barcha ishlarini AI yordamida bajarish mumkin.</p>
+                <p class="text-gray-400 max-w-xl mx-auto"><?= t('categories.subtitle') ?></p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -275,12 +276,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <i class="fa-solid fa-palette text-white text-xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Dizayn & Vizual</h3>
-                    <p class="text-gray-400 leading-relaxed text-sm mb-4">Infografika, kartochka dizayni, fotosesiya, fashion AI — barcha vizual ishlarni AI bajaradi.</p>
+                    <h3 class="text-xl font-semibold text-white mb-3"><?= t('categories.design') ?></h3>
+                    <p class="text-gray-400 leading-relaxed text-sm mb-4"><?= t('categories.design_desc') ?></p>
                     <div class="flex flex-wrap gap-1.5">
-                        <span class="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-semibold border border-blue-500/20">Infografika</span>
-                        <span class="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-[10px] font-semibold border border-cyan-500/20">Fotosesiya</span>
-                        <span class="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-semibold border border-indigo-500/20">Kartochka</span>
+                        <span class="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-semibold border border-blue-500/20"><?= t('index.infografika') ?></span>
+                        <span class="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-[10px] font-semibold border border-cyan-500/20"><?= t('index.fotosesiya') ?></span>
+                        <span class="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-semibold border border-indigo-500/20"><?= t('index.kartochka') ?></span>
                     </div>
                 </a>
 
@@ -289,11 +290,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <i class="fa-solid fa-chart-line text-white text-xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Analitika & Tahlil</h3>
-                    <p class="text-gray-400 leading-relaxed text-sm mb-4">Sotuvlaringizni tahlil qiling, trendlarni kuzating, yo'qolgan tovarlarni aniqlang.</p>
+                    <h3 class="text-xl font-semibold text-white mb-3"><?= t('categories.analytics') ?></h3>
+                    <p class="text-gray-400 leading-relaxed text-sm mb-4"><?= t('categories.analytics_desc') ?></p>
                     <div class="flex flex-wrap gap-1.5">
-                        <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold border border-emerald-500/20">Sotuvlar</span>
-                        <span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-semibold border border-amber-500/20">Hisobotlar</span>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold border border-emerald-500/20"><?= t('index.sotuvlar') ?></span>
+                        <span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-semibold border border-amber-500/20"><?= t('index.hisobotlar') ?></span>
                     </div>
                 </a>
 
@@ -302,11 +303,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <i class="fa-solid fa-calculator text-white text-xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Kalkulyatorlar</h3>
-                    <p class="text-gray-400 leading-relaxed text-sm mb-4">STUV, QQS limiti va boshqa hisob-kitoblarni tez va aniq bajaring.</p>
+                    <h3 class="text-xl font-semibold text-white mb-3"><?= t('categories.calculators') ?></h3>
+                    <p class="text-gray-400 leading-relaxed text-sm mb-4"><?= t('categories.calculators_desc') ?></p>
                     <div class="flex flex-wrap gap-1.5">
-                        <span class="px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 text-[10px] font-semibold border border-violet-500/20">STUV</span>
-                        <span class="px-2 py-0.5 rounded-full bg-fuchsia-500/10 text-fuchsia-400 text-[10px] font-semibold border border-fuchsia-500/20">QQS</span>
+                        <span class="px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 text-[10px] font-semibold border border-violet-500/20"><?= t('index.stuv') ?></span>
+                        <span class="px-2 py-0.5 rounded-full bg-fuchsia-500/10 text-fuchsia-400 text-[10px] font-semibold border border-fuchsia-500/20"><?= t('index.qqs') ?></span>
                     </div>
                 </a>
 
@@ -315,8 +316,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <i class="fa-solid fa-file-invoice text-white text-xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Hujjatlar & ETTY</h3>
-                    <p class="text-gray-400 leading-relaxed text-sm mb-4">Didox orqali ETTY yukxatlarini avtomatik yarating. Buyurtmalarga bir tugma bilan rasmiylashtiring.</p>
+                    <h3 class="text-xl font-semibold text-white mb-3"><?= t('categories.documents') ?></h3>
+                    <p class="text-gray-400 leading-relaxed text-sm mb-4"><?= t('categories.documents_desc') ?></p>
                     <div class="flex flex-wrap gap-1.5">
                         <span class="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-[10px] font-semibold border border-cyan-500/20">ETTY</span>
                         <span class="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-semibold border border-blue-500/20">Didox</span>
@@ -328,11 +329,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-400 flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <i class="fa-solid fa-pen-fancy text-white text-xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Smart Matn & SEO</h3>
-                    <p class="text-gray-400 leading-relaxed text-sm mb-4">Tovar tavsiflarini AI yozadi. SEO-optimallashtirilgan sarlavha va kalit so'zlar.</p>
+                    <h3 class="text-xl font-semibold text-white mb-3"><?= t('categories.smart_text') ?></h3>
+                    <p class="text-gray-400 leading-relaxed text-sm mb-4"><?= t('categories.smart_text_desc') ?></p>
                     <div class="flex flex-wrap gap-1.5">
-                        <span class="px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 text-[10px] font-semibold border border-pink-500/20">Tavsif</span>
-                        <span class="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 text-[10px] font-semibold border border-rose-500/20">SEO</span>
+                        <span class="px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 text-[10px] font-semibold border border-pink-500/20"><?= t('index.tavsif') ?></span>
+                        <span class="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 text-[10px] font-semibold border border-rose-500/20"><?= t('index.seo') ?></span>
                     </div>
                 </a>
 
@@ -341,8 +342,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <i class="fa-brands fa-instagram text-white text-xl"></i>
                     </div>
-                    <h3 class="text-xl font-semibold text-white mb-3">Marketing & Reklama</h3>
-                    <p class="text-gray-400 leading-relaxed text-sm mb-4">InstaLink AI, video yaratish va Instagram reklama postlarini avtomatlashitring.</p>
+                    <h3 class="text-xl font-semibold text-white mb-3"><?= t('categories.marketing') ?></h3>
+                    <p class="text-gray-400 leading-relaxed text-sm mb-4"><?= t('categories.marketing_desc') ?></p>
                     <div class="flex flex-wrap gap-1.5">
                         <span class="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 text-[10px] font-semibold border border-purple-500/20">InstaLink</span>
                         <span class="px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 text-[10px] font-semibold border border-pink-500/20">Video AI</span>
@@ -357,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
-                    Qanday <span class="gradient-text">ishlaydi?</span>
+                    <?= t('how.title') ?> <span class="gradient-text"><?= t('how.title_highlight') ?></span>
                 </h2>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -365,29 +366,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/20 mb-6 group-hover:border-indigo-500/40 transition-colors">
                         <span class="text-2xl font-bold gradient-text">01</span>
                     </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Vositani tanlang</h3>
-                    <p class="text-gray-400 text-sm">Dizayn, analitika, kalkulyator yoki boshqa kerakli instrumentni tanlang.</p>
+                    <h3 class="text-lg font-semibold text-white mb-2"><?= t('how.step1_title') ?></h3>
+                    <p class="text-gray-400 text-sm"><?= t('how.step1_desc') ?></p>
                 </div>
                 <div class="text-center group">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/20 mb-6 group-hover:border-indigo-500/40 transition-colors">
                         <span class="text-2xl font-bold gradient-text">02</span>
                     </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Ma'lumot kiriting</h3>
-                    <p class="text-gray-400 text-sm">Mahsulot ma'lumotlari, do'kon API kaliti yoki kerakli parametrlarni kiriting.</p>
+                    <h3 class="text-lg font-semibold text-white mb-2"><?= t('how.step2_title') ?></h3>
+                    <p class="text-gray-400 text-sm"><?= t('how.step2_desc') ?></p>
                 </div>
                 <div class="text-center group">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/20 mb-6 group-hover:border-indigo-500/40 transition-colors">
                         <span class="text-2xl font-bold gradient-text">03</span>
                     </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">AI ishlaydi</h3>
-                    <p class="text-gray-400 text-sm">Sun'iy intellekt bir necha soniyada natijani tayyorlaydi.</p>
+                    <h3 class="text-lg font-semibold text-white mb-2"><?= t('how.step3_title') ?></h3>
+                    <p class="text-gray-400 text-sm"><?= t('how.step3_desc') ?></p>
                 </div>
                 <div class="text-center group">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/20 mb-6 group-hover:border-indigo-500/40 transition-colors">
                         <span class="text-2xl font-bold gradient-text">04</span>
                     </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Foydalaning</h3>
-                    <p class="text-gray-400 text-sm">Tayyor natijani yuklab oling va biznesingizda foydalaning.</p>
+                    <h3 class="text-lg font-semibold text-white mb-2"><?= t('how.step4_title') ?></h3>
+                    <p class="text-gray-400 text-sm"><?= t('how.step4_desc') ?></p>
                 </div>
             </div>
         </div>
@@ -398,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
-                    Nega aynan <span class="gradient-text">Tiba AI?</span>
+                    <?= t('why.title') ?> <span class="gradient-text"><?= t('why.title_highlight') ?></span>
                 </h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -406,29 +407,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-4 mx-auto shadow-lg">
                         <i class="fa-solid fa-bolt text-white text-xl"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Tezkorlik</h3>
-                    <p class="text-gray-400 text-sm">Soatlab qiladigan ishlarni soniyalarda bajaring</p>
+                    <h3 class="text-lg font-bold text-white mb-2"><?= t('why.speed') ?></h3>
+                    <p class="text-gray-400 text-sm"><?= t('why.speed_desc') ?></p>
                 </div>
                 <div class="glass-card p-6 text-center">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mb-4 mx-auto shadow-lg">
                         <i class="fa-solid fa-bullseye text-white text-xl"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Marketplace uchun</h3>
-                    <p class="text-gray-400 text-sm">Uzum va Wildberries sotuvchilari uchun maxsus yaratilgan</p>
+                    <h3 class="text-lg font-bold text-white mb-2"><?= t('why.marketplace') ?></h3>
+                    <p class="text-gray-400 text-sm"><?= t('why.marketplace_desc') ?></p>
                 </div>
                 <div class="glass-card p-6 text-center">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center mb-4 mx-auto shadow-lg">
                         <i class="fa-solid fa-robot text-white text-xl"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">AI quvvati</h3>
-                    <p class="text-gray-400 text-sm">Eng zamonaviy AI texnologiyalari asosida ishlaydi</p>
+                    <h3 class="text-lg font-bold text-white mb-2"><?= t('why.ai') ?></h3>
+                    <p class="text-gray-400 text-sm"><?= t('why.ai_desc') ?></p>
                 </div>
                 <div class="glass-card p-6 text-center">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center mb-4 mx-auto shadow-lg">
                         <i class="fa-solid fa-coins text-white text-xl"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Tejamkor</h3>
-                    <p class="text-gray-400 text-sm">Dizayner, yozuvchi va tahlilchi yollashdan ko'ra arzon</p>
+                    <h3 class="text-lg font-bold text-white mb-2"><?= t('why.cost') ?></h3>
+                    <p class="text-gray-400 text-sm"><?= t('why.cost_desc') ?></p>
                 </div>
             </div>
         </div>
@@ -440,10 +441,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="glass-card p-10 sm:p-16 text-center relative overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/10 to-purple-600/10"></div>
                 <div class="relative">
-                    <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Hoziroq boshlang!</h2>
-                    <p class="text-gray-400 mb-8 max-w-lg mx-auto">Hozir ro'yxatdan o'ting — <span class="text-amber-400 font-bold">5 ta tangani mutlaqo tekinga</span> qo'lga kiriting va AI yordamchingizni sinab ko'ring!</p>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4"><?= t('cta.title') ?></h2>
+                    <p class="text-gray-400 mb-8 max-w-lg mx-auto"><?= t('cta.subtitle') ?></p>
                     <button onclick="toggleStartPopup(this)" class="btn-primary text-lg px-10 py-4 relative">
-                        Boshlash
+                        <?= t('cta.btn') ?>
                         <svg class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </button>
                 </div>
@@ -460,8 +461,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <i class="fa-solid fa-xmark"></i>
         </button>
         <div class="text-center mb-5">
-            <h3 class="text-lg font-bold" style="color:var(--text-heading)">Nimadan boshlaysiz?</h3>
-            <p class="text-sm mt-1" style="color:var(--text-muted)">Kerakli yo'nalishni tanlang</p>
+            <h3 class="text-lg font-bold" style="color:var(--text-heading)"><?= t('start_popup.title') ?></h3>
+            <p class="text-sm mt-1" style="color:var(--text-muted)"><?= t('start_popup.subtitle') ?></p>
         </div>
         <div class="grid grid-cols-1 gap-3">
             <a href="/create" class="mob-card-infografika flex items-center gap-4 p-4 rounded-2xl border active:scale-[0.97] transition-all">
@@ -469,8 +470,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <i class="fa-solid fa-wand-magic-sparkles text-lg" style="color:#fff"></i>
                 </div>
                 <div>
-                    <div class="text-sm font-bold" style="color:var(--text-heading)">Infografika yaratish</div>
-                    <div class="text-xs" style="color:var(--text-muted)">AI yordamida dizayn yarating</div>
+                    <div class="text-sm font-bold" style="color:var(--text-heading)"><?= t('start_popup.infografika') ?></div>
+                    <div class="text-xs" style="color:var(--text-muted)"><?= t('start_popup.infografika_desc') ?></div>
                 </div>
             </a>
             <a href="/instrumentlar" class="mob-card-instrumentlar flex items-center gap-4 p-4 rounded-2xl border active:scale-[0.97] transition-all">
@@ -478,8 +479,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <i class="fa-solid fa-toolbox text-lg" style="color:#fff"></i>
                 </div>
                 <div>
-                    <div class="text-sm font-bold" style="color:var(--text-heading)">Instrumentlar</div>
-                    <div class="text-xs" style="color:var(--text-muted)">Yordamchi vositalar</div>
+                    <div class="text-sm font-bold" style="color:var(--text-heading)"><?= t('start_popup.instruments') ?></div>
+                    <div class="text-xs" style="color:var(--text-muted)"><?= t('start_popup.instruments_desc') ?></div>
                 </div>
             </a>
         </div>
@@ -509,13 +510,13 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeStartPo
             <span class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0">
                 <svg class="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             </span>
-            <h3 class="text-white font-bold text-lg">Video qo'llanma</h3>
+            <h3 class="text-white font-bold text-lg"><?= t('hero.btn_video') ?></h3>
         </div>
         <!-- YouTube iframe wrapper -->
         <div class="rounded-2xl overflow-hidden shadow-2xl border" style="border-color:var(--border-color);aspect-ratio:16/9">
             <iframe id="yt-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
         </div>
-        <p class="text-center text-xs mt-3" style="color:var(--text-muted)">Tiba AI platformasidan qanday foydalanish haqida batafsil video qo'llanma</p>
+        <p class="text-center text-xs mt-3" style="color:var(--text-muted)"><?= t('js.video_desc') ?></p>
     </div>
 </div>
 

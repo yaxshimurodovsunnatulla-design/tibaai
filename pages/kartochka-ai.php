@@ -1,4 +1,6 @@
-<?php $pageTitle = 'Kartochka AI – Tiba AI'; ?>
+<?php
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.kartochka_ai') . ' – Tiba AI'; ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
 
 <div class="py-12 sm:py-20 relative overflow-hidden">
@@ -18,13 +20,13 @@
         <div class="text-center mb-12">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4">
                 <i class="fa-solid fa-brain text-amber-400"></i>
-                <span class="text-xs font-medium text-amber-300">AI Product Card Generator</span>
+                <span class="text-xs font-medium text-amber-300"><?= t('ka.title2') ?></span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
                 Kartochka <span class="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-400">AI</span>
             </h1>
             <p class="text-gray-400 max-w-xl mx-auto">
-                Mahsulot rasmini yuklang — AI kartochka uchun barcha ma'lumotlarni <span class="text-amber-400 font-semibold">O'zbekcha</span> va <span class="text-blue-400 font-semibold">Ruscha</span> tillarida tayyorlab beradi.
+                Mahsulot rasmini yuklang — AI kartochka uchun barcha ma'lumotlarni <span class="text-amber-400 font-semibold"><?= t('ka.uz_label') ?></span> va <span class="text-blue-400 font-semibold"><?= t('ka.ru_label') ?></span> tillarida tayyorlab beradi.
             </p>
         </div>
 
@@ -37,8 +39,8 @@
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex justify-between items-center">
                             <span><i class="fa-solid fa-camera mr-1"></i> Mahsulot rasmi <span class="text-red-400">*</span></span>
                             <div class="flex p-0.5 bg-white/5 rounded-lg border border-white/5 text-[9px]">
-                                <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2 py-1 rounded-md transition-all bg-amber-500/20 text-amber-400">FAYL</button>
-                                <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300">HAVOLA</button>
+                                <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2 py-1 rounded-md transition-all bg-amber-500/20 text-amber-400"><?= t('svc.file') ?></button>
+                                <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300"><?= t('svc.link') ?></button>
                             </div>
                         </label>
                         
@@ -53,8 +55,8 @@
                                         <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-amber-500/10 transition-all duration-500 border border-white/5 group-hover:border-amber-500/20">
                                             <i class="fa-solid fa-brain text-2xl text-gray-500 group-hover:text-amber-400"></i>
                                         </div>
-                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors">Mahsulot rasmini yuklash</span>
-                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">JPG, PNG • MAKS. 10 MB</span>
+                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors"><?= t('ka.upload_product') ?></span>
+                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter"><?= t('ka.jpg_10mb') ?></span>
                                     </div>
                                     <input id="file-input" type="file" accept="image/*" class="hidden" />
                                 </label>
@@ -83,15 +85,15 @@
                         <div class="grid grid-cols-3 gap-2" id="marketplace-selector">
                             <button data-mp="uzum" class="mp-btn active p-2.5 rounded-xl border text-center transition-all border-amber-500 bg-amber-500/15 text-white ring-2 ring-amber-500/30">
                                 <div class="text-lg mb-0.5 text-indigo-500"><i class="fa-solid fa-circle"></i></div>
-                                <div class="text-[10px] font-bold">Uzum</div>
+                                <div class="text-[10px] font-bold"><?= t('svc.uzum') ?></div>
                             </button>
                             <button data-mp="wildberries" class="mp-btn p-2.5 rounded-xl border text-center transition-all border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
                                 <div class="text-lg mb-0.5 text-purple-500"><i class="fa-solid fa-circle"></i></div>
-                                <div class="text-[10px] font-bold">Wildberries</div>
+                                <div class="text-[10px] font-bold"><?= t('ft.wildberries') ?></div>
                             </button>
                             <button data-mp="universal" class="mp-btn p-2.5 rounded-xl border text-center transition-all border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
                                 <div class="text-lg mb-0.5 text-gray-400"><i class="fa-solid fa-globe"></i></div>
-                                <div class="text-[10px] font-bold">Universal</div>
+                                <div class="text-[10px] font-bold"><?= t('ka.universal') ?></div>
                             </button>
                         </div>
                     </div>
@@ -109,7 +111,7 @@
                     <!-- Generate -->
                     <button id="generate-btn" disabled class="btn-primary w-full h-16 text-lg font-extrabold disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
                         <i class="fa-solid fa-brain mr-2"></i>
-                        <span id="btn-text">Tahlil qilish</span>
+                        <span id="btn-text"><?= t('common.analyze') ?></span>
                     </button>
 
                     <!-- Progress -->
@@ -143,9 +145,9 @@
                         <div class="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-4">
                             <i class="fa-solid fa-triangle-exclamation text-3xl text-red-500"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-red-400 mb-2">Xatolik</h3>
+                        <h3 class="text-lg font-semibold text-red-400 mb-2"><?= t('svc.error') ?></h3>
                         <p id="error-text" class="text-sm text-gray-400 mb-4"></p>
-                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2">Qayta urinish</button>
+                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2"><?= t('common.retry') ?></button>
                     </div>
 
                     <!-- Result -->
@@ -198,7 +200,7 @@
                         </div>
                         <h3 class="text-lg font-bold text-white mb-2">Kartochka ma'lumotlari shu yerda chiqadi</h3>
                         <p class="text-sm text-gray-500 max-w-md mx-auto mb-6">
-                            Mahsulot rasmini yuklang va AI quyidagi ma'lumotlarni <strong class="text-amber-400">O'zbekcha</strong> va <strong class="text-blue-400">Ruscha</strong> tillarida tayyorlaydi:
+                            Mahsulot rasmini yuklang va AI quyidagi ma'lumotlarni <strong class="text-amber-400"><?= t('ka.uz_label') ?></strong> va <strong class="text-blue-400"><?= t('ka.ru_label') ?></strong> tillarida tayyorlaydi:
                         </p>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-md mx-auto text-left">
                             <div class="glass-card p-3 border border-amber-500/10">
@@ -416,7 +418,7 @@
             if (!response.ok) {
                 if (data.auth_required) { TibaAuth.showModal(); throw new Error('Avval tizimga kiring'); }
                 if (data.insufficient_balance) { showNoBalance(data.cost, data.balance); throw new Error('__nobalance__'); }
-                throw new Error(data.error || 'Xatolik yuz berdi');
+                throw new Error(data.error || _t('error'));
             }
 
             if (data.balance !== undefined) TibaAuth.updateBalance(data.balance);

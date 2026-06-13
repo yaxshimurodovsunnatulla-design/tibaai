@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../api/config.php';
+require_once __DIR__ . '/../lang/i18n.php';
 $pageTitle = "Hisobotlar – Yo'qolgan Tovarlar | Tiba AI";
 $pageDescription = "Uzum Market do'koningizdagi yo'qolgan, harakatsiz va zarar keltiruvchi tovarlarni aniqlang. AI tahlili bilan samarali qarorlar qabul qiling.";
 ?>
@@ -19,7 +20,7 @@ $pageDescription = "Uzum Market do'koningizdagi yo'qolgan, harakatsiz va zarar k
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                     <h1 class="text-3xl sm:text-4xl font-black text-white mb-3">
-                        <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-2"></i> Yo'qolgan <span class="gradient-text">Tovarlar</span>
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-2"></i> Yo'qolgan <span class="gradient-text"><?= t('hb.title') ?></span>
                     </h1>
                     <p class="text-gray-400 text-lg">Omborda yotib, zarar keltiruvchi tovarlarni AI orqali aniqlang.</p>
                 </div>

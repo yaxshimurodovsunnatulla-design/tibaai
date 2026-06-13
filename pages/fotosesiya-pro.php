@@ -1,4 +1,6 @@
-<?php $pageTitle = 'Fotosesiya PRO – Tiba AI'; ?>
+<?php
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.fotosesiya') . ' – Tiba AI'; ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
 
 <div class="py-12 sm:py-20 relative overflow-hidden">
@@ -18,7 +20,7 @@
         <div class="text-center mb-12">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/10 mb-4">
                 <span class="text-lg"><i class="fa-solid fa-camera"></i></span>
-                <span class="text-xs font-medium text-gray-300">AI Photo Session</span>
+                <span class="text-xs font-medium text-gray-300"><?= t('fp.title2') ?></span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
                 Fotosesiya <span class="bg-clip-text text-transparent bg-gradient-to-r from-gray-300 to-indigo-400">PRO</span>
@@ -39,25 +41,25 @@
                     <div class="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-1.5 text-indigo-400">
                         <i class="fa-solid fa-house-chimney"></i>
                     </div>
-                    <div class="text-[10px] text-gray-400">Uy interyer</div>
+                    <div class="text-[10px] text-gray-400"><?= t('fp.home_interior') ?></div>
                 </div>
                 <div>
                     <div class="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mx-auto mb-1.5 text-violet-400">
                         <i class="fa-solid fa-leaf"></i>
                     </div>
-                    <div class="text-[10px] text-gray-400">Tabiat foni</div>
+                    <div class="text-[10px] text-gray-400"><?= t('fp.nature_bg') ?></div>
                 </div>
                 <div>
                     <div class="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-1.5 text-amber-400">
                         <i class="fa-solid fa-clapperboard"></i>
                     </div>
-                    <div class="text-[10px] text-gray-400">Studiya surat</div>
+                    <div class="text-[10px] text-gray-400"><?= t('fp.studio_shot') ?></div>
                 </div>
                 <div>
                     <div class="w-9 h-9 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto mb-1.5 text-rose-400">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                     </div>
-                    <div class="text-[10px] text-gray-400">Premium reklama</div>
+                    <div class="text-[10px] text-gray-400"><?= t('fp.premium_ad') ?></div>
                 </div>
             </div>
         </div>
@@ -85,8 +87,8 @@
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex justify-between items-center">
                             <span><i class="fa-solid fa-camera mr-1"></i> Mahsulot rasmi <span class="text-red-400">*</span></span>
                             <div class="flex p-0.5 bg-white/5 rounded-lg border border-white/5 text-[9px]">
-                                <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2 py-1 rounded-md transition-all bg-indigo-500/20 text-indigo-400">FAYL</button>
-                                <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300">HAVOLA</button>
+                                <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2 py-1 rounded-md transition-all bg-indigo-500/20 text-indigo-400"><?= t('svc.file') ?></button>
+                                <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300"><?= t('svc.link') ?></button>
                             </div>
                         </label>
                         
@@ -101,8 +103,8 @@
                                         <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-indigo-500/10 transition-all duration-500 border border-white/5 group-hover:border-indigo-500/20">
                                             <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-500 group-hover:text-indigo-400"></i>
                                         </div>
-                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors">Mahsulot rasmini yuklash</span>
-                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">JPG, PNG • MAKS. 6TA RASM</span>
+                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors"><?= t('fp.upload_product') ?></span>
+                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter"><?= t('fp.jpg_6') ?></span>
                                     </div>
                                     <input id="file-input" type="file" accept="image/*" multiple class="hidden" />
                                 </label>
@@ -188,15 +190,15 @@
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">📐 Format</label>
                         <div class="grid grid-cols-3 gap-2" id="ratio-selector">
                             <button data-ratio="3:4" class="ratio-btn active p-2 rounded-xl border text-center transition-all duration-200 border-indigo-500 bg-indigo-500/15 text-white shadow-lg shadow-indigo-500/10">
-                                <div class="text-[10px] font-bold uppercase">Uzum</div>
+                                <div class="text-[10px] font-bold uppercase"><?= t('svc.uzum') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">3:4</div>
                             </button>
                             <button data-ratio="1:1" class="ratio-btn p-2 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase">Kvadrat</div>
+                                <div class="text-[10px] font-bold uppercase"><?= t('svc.square') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">1:1</div>
                             </button>
                             <button data-ratio="4:3" class="ratio-btn p-2 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase">Landscape</div>
+                                <div class="text-[10px] font-bold uppercase"><?= t('svc.landscape') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">4:3</div>
                             </button>
                         </div>
@@ -280,9 +282,9 @@
                         <div class="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-4">
                             <span class="text-3xl text-red-500"><i class="fa-solid fa-circle-xmark"></i></span>
                         </div>
-                        <h3 class="text-lg font-semibold text-red-400 mb-2">Xatolik</h3>
+                        <h3 class="text-lg font-semibold text-red-400 mb-2"><?= t('svc.error') ?></h3>
                         <p id="error-text" class="text-sm text-gray-400 mb-4"></p>
-                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2">Qayta urinish</button>
+                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2"><?= t('common.retry') ?></button>
                     </div>
 
                     <!-- Result Gallery -->
@@ -611,7 +613,7 @@
                     if (slot) {
                         slot.classList.remove('animate-pulse', 'border-indigo-500/30');
                         slot.classList.add('border-red-500/30');
-                        slot.innerHTML = `<span class="text-xl mb-1">❌</span><span class="text-[9px] text-red-400 font-bold">Xatolik</span>`;
+                        slot.innerHTML = `<span class="text-xl mb-1">❌</span><span class="text-[9px] text-red-400 font-bold"><?= t('svc.error') ?></span>`;
                     }
                 }
             } catch (err) {

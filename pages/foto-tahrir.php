@@ -1,4 +1,6 @@
-<?php $pageTitle = 'Foto Tahrir – Tiba AI'; ?>
+<?php
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.foto_tahrir') . ' – Tiba AI'; ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
 
 <style>
@@ -30,7 +32,7 @@
         <!-- Header -->
         <div class="text-center mb-12">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
-                Foto <span class="gradient-text">Tahrir</span>
+                Foto <span class="gradient-text"><?= t('ft.title3') ?></span>
             </h1>
             <p class="text-gray-400 max-w-xl mx-auto">
                 Mahsulot rasmi fonini professional uslubda almashtiring. 12 ta tayyor stil mavjud.
@@ -46,10 +48,10 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex justify-between items-center">
                             <i class="fa-solid fa-image text-indigo-400/70"></i>
-                            <span>Mahsulot rasmi</span>
+                            <span><?= t('common.product_image') ?></span>
                             <div class="flex p-0.5 bg-white/5 rounded-lg border border-white/5 text-[9px]">
-                                <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2 py-1 rounded-md transition-all bg-indigo-500/20 text-indigo-400">FAYL</button>
-                                <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300">HAVOLA</button>
+                                <button type="button" onclick="switchImageMethod('file')" id="method-file-btn" class="px-2 py-1 rounded-md transition-all bg-indigo-500/20 text-indigo-400"><?= t('svc.file') ?></button>
+                                <button type="button" onclick="switchImageMethod('url')" id="method-url-btn" class="px-2 py-1 rounded-md transition-all text-gray-500 hover:text-gray-300"><?= t('svc.link') ?></button>
                             </div>
                         </label>
 
@@ -64,8 +66,8 @@
                                         <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-indigo-500/10 transition-all duration-500 border border-white/5 group-hover:border-indigo-500/20">
                                             <i class="fa-solid fa-image text-2xl text-gray-500 group-hover:text-indigo-400"></i>
                                         </div>
-                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors">Mahsulot rasmini yuklash</span>
-                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">JPG, PNG • MAKS. 10 MB</span>
+                                        <span class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors"><?= t('ft.upload_product') ?></span>
+                                        <span class="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter"><?= t('ft.jpg_10mb') ?></span>
                                     </div>
                                     <input id="file-input" type="file" accept="image/*" class="hidden" />
                                 </label>
@@ -94,27 +96,27 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                             <i class="fa-solid fa-maximize text-indigo-400/70"></i>
-                            <span>Format (o'lcham)</span>
+                            <span><?= t('ft.format2') ?></span>
                         </label>
                         <div class="grid grid-cols-3 sm:grid-cols-5 gap-2" id="template-selector">
                             <button data-ratio="3:4" data-id="uzum" class="template-btn active p-2.5 rounded-xl border text-center transition-all duration-200 border-indigo-500 bg-indigo-500/15 text-white shadow-lg shadow-indigo-500/10">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Uzum</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.uzum') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">1080x1440</div>
                             </button>
                             <button data-ratio="3:4" data-id="wildberries" class="template-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Wildberries</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('ft.wildberries') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">900x1200</div>
                             </button>
                             <button data-ratio="3:4" data-id="yandexmarket" class="template-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Yandex Market</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('ft.yandex') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">1080x1440</div>
                             </button>
                             <button data-ratio="1:1" data-id="square" class="template-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Kvadrat</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.square') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">1080x1080</div>
                             </button>
                             <button data-ratio="9:16" data-id="story" class="template-btn p-2.5 rounded-xl border text-center transition-all duration-200 border-white/10 bg-white/5 text-gray-400 hover:border-white/20">
-                                <div class="text-[10px] font-bold uppercase tracking-tighter">Story</div>
+                                <div class="text-[10px] font-bold uppercase tracking-tighter"><?= t('svc.story') ?></div>
                                 <div class="text-[8px] opacity-60 font-bold">1080x1920</div>
                             </button>
                         </div>
@@ -124,7 +126,7 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                             <i class="fa-solid fa-palette text-indigo-400/70"></i>
-                            <span>Vizual uslub</span>
+                            <span><?= t('ft.visual_style') ?></span>
                         </label>
                         <div class="grid grid-cols-4 gap-2" id="style-selector">
                             <button data-style="minimalist" class="style-btn active relative overflow-hidden rounded-lg border p-1.5 h-16 flex flex-col items-center justify-center gap-1 transition-all border-indigo-500 ring-2 ring-indigo-500/30">
@@ -132,63 +134,63 @@
                                 <div class="relative z-10">
                                     <i class="fa-solid fa-wand-magic-sparkles text-gray-400 text-lg"></i>
                                 </div>
-                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300">Minimalist</div>
+                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300"><?= t('ft.minimalist') ?></div>
                             </button>
                             <button data-style="bright" class="style-btn relative overflow-hidden rounded-lg border p-1.5 h-16 flex flex-col items-center justify-center gap-1 transition-all border-white/10 hover:border-white/20">
                                 <div class="absolute inset-0 bg-gradient-to-br from-orange-400 to-yellow-300 opacity-10"></div>
                                 <div class="relative z-10">
                                     <i class="fa-solid fa-sun text-yellow-500 text-lg"></i>
                                 </div>
-                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300">Yorqin</div>
+                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300"><?= t('ft.bright') ?></div>
                             </button>
                             <button data-style="premium" class="style-btn relative overflow-hidden rounded-lg border p-1.5 h-16 flex flex-col items-center justify-center gap-1 transition-all border-white/10 hover:border-white/20">
                                 <div class="absolute inset-0 bg-gradient-to-br from-purple-600 to-indigo-600 opacity-10"></div>
                                 <div class="relative z-10">
                                     <i class="fa-solid fa-crown text-indigo-400 text-lg"></i>
                                 </div>
-                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300">Premium</div>
+                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300"><?= t('ft.premium') ?></div>
                             </button>
                             <button data-style="studio" class="style-btn relative overflow-hidden rounded-lg border p-1.5 h-16 flex flex-col items-center justify-center gap-1 transition-all border-white/10 hover:border-white/20">
                                 <div class="absolute inset-0 bg-gradient-to-br from-gray-400 to-gray-600 opacity-10"></div>
                                 <div class="relative z-10">
                                     <i class="fa-solid fa-camera text-gray-300 text-lg"></i>
                                 </div>
-                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300">Studio</div>
+                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300"><?= t('ft.studio') ?></div>
                             </button>
                             <button data-style="nature" class="style-btn relative overflow-hidden rounded-lg border p-1.5 h-16 flex flex-col items-center justify-center gap-1 transition-all border-white/10 hover:border-white/20">
                                 <div class="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-600 opacity-10"></div>
                                 <div class="relative z-10">
                                     <i class="fa-solid fa-leaf text-emerald-400 text-lg"></i>
                                 </div>
-                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300">Tabiat</div>
+                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300"><?= t('ft.nature_style') ?></div>
                             </button>
                             <button data-style="neon" class="style-btn relative overflow-hidden rounded-lg border p-1.5 h-16 flex flex-col items-center justify-center gap-1 transition-all border-white/10 hover:border-white/20">
                                 <div class="absolute inset-0 bg-gradient-to-br from-pink-500 to-purple-600 opacity-10"></div>
                                 <div class="relative z-10">
                                     <i class="fa-solid fa-bolt-lightning text-pink-400 text-lg"></i>
                                 </div>
-                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300">Neon</div>
+                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300"><?= t('svc.neon') ?></div>
                             </button>
                             <button data-style="vintage" class="style-btn relative overflow-hidden rounded-lg border p-1.5 h-16 flex flex-col items-center justify-center gap-1 transition-all border-white/10 hover:border-white/20">
                                 <div class="absolute inset-0 bg-gradient-to-br from-amber-700 to-orange-900 opacity-10"></div>
                                 <div class="relative z-10">
                                     <i class="fa-solid fa-clock-rotate-left text-amber-500 text-lg"></i>
                                 </div>
-                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300">Vintage</div>
+                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300"><?= t('svc.vintage') ?></div>
                             </button>
                             <button data-style="loft" class="style-btn relative overflow-hidden rounded-lg border p-1.5 h-16 flex flex-col items-center justify-center gap-1 transition-all border-white/10 hover:border-white/20">
                                 <div class="absolute inset-0 bg-gradient-to-br from-stone-500 to-stone-700 opacity-10"></div>
                                 <div class="relative z-10">
                                     <i class="fa-solid fa-warehouse text-stone-400 text-lg"></i>
                                 </div>
-                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300">Loft</div>
+                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300"><?= t('svc.loft') ?></div>
                             </button>
                             <button data-style="water" class="style-btn relative overflow-hidden rounded-lg border p-1.5 h-16 flex flex-col items-center justify-center gap-1 transition-all border-white/10 hover:border-white/20">
                                 <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-500 opacity-10"></div>
                                 <div class="relative z-10">
                                     <i class="fa-solid fa-droplet text-cyan-400 text-lg"></i>
                                 </div>
-                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300">Suvli</div>
+                                <div class="relative z-10 font-bold text-[8px] uppercase tracking-tighter text-center text-gray-300"><?= t('svc.water') ?></div>
                             </button>
                             <button data-style="abstract" class="style-btn relative overflow-hidden rounded-lg border p-1.5 h-16 flex flex-col items-center justify-center gap-1 transition-all border-white/10 hover:border-white/20">
                                 <div class="absolute inset-0 bg-gradient-to-br from-violet-500 to-fuchsia-600 opacity-10"></div>
@@ -218,7 +220,7 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                             <i class="fa-solid fa-pen-nib text-indigo-400/70"></i>
-                            <span>Qo'shimcha istaklar (ixtiyoriy)</span>
+                            <span><?= t('svc.optional_extra') ?></span>
                         </label>
                         <textarea id="custom-prompt" placeholder="Masalan: Orqa fonni neonli tungi shahar qilib ber..." rows="2" class="input-field resize-none text-sm"></textarea>
                     </div>
@@ -262,9 +264,9 @@
                         <div class="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-4">
                             <span class="text-3xl">❌</span>
                         </div>
-                        <h3 class="text-lg font-semibold text-red-400 mb-2">Xatolik</h3>
+                        <h3 class="text-lg font-semibold text-red-400 mb-2"><?= t('svc.error') ?></h3>
                         <p id="error-text" class="text-sm text-gray-400 mb-4"></p>
-                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2">Qayta urinish</button>
+                        <button id="retry-btn" class="btn-secondary text-sm px-6 py-2"><?= t('common.retry') ?></button>
                     </div>
 
                     <!-- Result state -->
@@ -283,7 +285,7 @@
                                 </svg>
                                 Yuklab olish
                             </button>
-                            <button id="reset-result-btn" class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all group" title="Tozalash">
+                            <button id="reset-result-btn" class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all group" title="<?= t('tt.clear') ?>">
                                 <svg class="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
                                 </svg>
@@ -325,7 +327,7 @@
                         <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/20 flex items-center justify-center mx-auto mb-6">
                             <i class="fa-solid fa-image text-4xl text-indigo-400/50"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-white mb-2">Natija shu yerda ko'rinadi</h3>
+                        <h3 class="text-lg font-bold text-white mb-2"><?= t('common.result_here') ?></h3>
                         <p class="text-sm text-gray-500 max-w-xs mx-auto">
                             Rasmni yuklang, stilni tanlang va "Fonni almashtirish" tugmasini bosing.
                         </p>
@@ -596,7 +598,7 @@
             if (!response.ok) {
                 if (data.auth_required) { TibaAuth.showModal(); throw new Error('Avval tizimga kiring'); }
                 if (data.insufficient_balance) { showNoBalance(data.cost, data.balance); throw new Error('__nobalance__'); }
-                throw new Error(data.error || 'Xatolik yuz berdi');
+                throw new Error(data.error || _t('error'));
             }
 
             if (data.balance !== undefined) TibaAuth.updateBalance(data.balance);

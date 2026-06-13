@@ -131,7 +131,7 @@ function runMigrations($pdo) {
         }
     } catch (Exception $e) {}
 
-    $targetVersion = 8; // Har yangi migratsiya qo'shganda +1 qiling
+    $targetVersion = 9; // Har yangi migratsiya qo'shganda +1 qiling
     if ($currentVersion >= $targetVersion) return; // Allaqachon yangilangan
 
     // 1. Users table
@@ -472,6 +472,42 @@ function runMigrations($pdo) {
     )");
 
     // 14. Migratsiya versiyasini yangilash
+        // ========== i18n: Ko'p tilli qo'llab-quvvatlash ustunlari ==========
+    if ($currentVersion < 9) {
+        // services jadvaliga til ustunlari
+        $i18nCols = [
+            "ALTER TABLE services ADD COLUMN name_ru TEXT",
+            "ALTER TABLE services ADD COLUMN name_en TEXT",
+            "ALTER TABLE services ADD COLUMN name_zh TEXT",
+            "ALTER TABLE services ADD COLUMN description_ru TEXT",
+            "ALTER TABLE services ADD COLUMN description_en TEXT",
+            "ALTER TABLE services ADD COLUMN description_zh TEXT",
+            "ALTER TABLE services ADD COLUMN badge_ru TEXT",
+            "ALTER TABLE services ADD COLUMN badge_en TEXT",
+            "ALTER TABLE services ADD COLUMN badge_zh TEXT",
+            // instruments jadvaliga til ustunlari
+            "ALTER TABLE instruments ADD COLUMN name_ru TEXT",
+            "ALTER TABLE instruments ADD COLUMN name_en TEXT",
+            "ALTER TABLE instruments ADD COLUMN name_zh TEXT",
+            "ALTER TABLE instruments ADD COLUMN description_ru TEXT",
+            "ALTER TABLE instruments ADD COLUMN description_en TEXT",
+            "ALTER TABLE instruments ADD COLUMN description_zh TEXT",
+            "ALTER TABLE instruments ADD COLUMN badge_ru TEXT",
+            "ALTER TABLE instruments ADD COLUMN badge_en TEXT",
+            "ALTER TABLE instruments ADD COLUMN badge_zh TEXT",
+            // packages jadvaliga til ustunlari
+            "ALTER TABLE packages ADD COLUMN name_ru TEXT",
+            "ALTER TABLE packages ADD COLUMN name_en TEXT",
+            "ALTER TABLE packages ADD COLUMN name_zh TEXT",
+            "ALTER TABLE packages ADD COLUMN features_ru TEXT",
+            "ALTER TABLE packages ADD COLUMN features_en TEXT",
+            "ALTER TABLE packages ADD COLUMN features_zh TEXT",
+        ];
+        foreach ($i18nCols as $sql) {
+            try { $pdo->exec($sql); } catch (Exception $e) {}
+        }
+    }
+
     $pdo->exec("UPDATE migration_version SET version = $targetVersion WHERE id = 1");
 }
 

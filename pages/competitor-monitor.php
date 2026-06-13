@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../api/config.php';
-$pageTitle = 'Raqiblar Narxi Monitori – Tiba AI';
+require_once __DIR__ . '/../lang/i18n.php';
+$pageTitle = t('service.competitor') . ' – Tiba AI';
 $pageDescription = 'Uzum Market\'dagi raqobatchilar narxini avtomatik tahlil qiling va optimal narx strategiyangizni toping.';
 ?>
 <?php include __DIR__ . '/../components/header.php'; ?>
@@ -27,7 +28,7 @@ $pageDescription = 'Uzum Market\'dagi raqobatchilar narxini avtomatik tahlil qil
                         class="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 transition-all">
                 </div>
                 <div class="flex gap-2">
-                    <input type="number" id="my-price-input" placeholder="Sizning narxingiz (ixtiyoriy)" 
+                    <input type="number" id="my-price-input" placeholder="<?= t('ph.your_price') ?>" 
                         class="w-48 bg-emerald-500/[0.05] border border-emerald-500/20 rounded-xl px-4 py-3.5 text-sm text-emerald-400 font-bold placeholder-emerald-500/30 focus:outline-none focus:border-emerald-500/50 transition-all">
                     <button onclick="autoSearchCompetitors()" id="search-btn" class="bg-violet-600 hover:bg-violet-500 text-white px-6 py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-violet-600/20 active:scale-95 whitespace-nowrap flex items-center gap-2">
                         <i class="fa-solid fa-magnifying-glass-dollar" id="search-btn-icon"></i> Qidirish
@@ -186,7 +187,7 @@ async function autoSearchCompetitors() {
                             ${[1,2,3,4,5].map(i => `
                             <div class="flex items-center gap-2">
                                 <span class="text-gray-500 text-xs w-16">#${i}</span>
-                                <input type="number" placeholder="Narxi" class="manual-price flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50">
+                                <input type="number" placeholder="<?= t('ph.price') ?>" class="manual-price flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50">
                             </div>`).join('')}
                         </div>
                         <button onclick="analyzeManualPrices()" class="mt-4 w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm">
