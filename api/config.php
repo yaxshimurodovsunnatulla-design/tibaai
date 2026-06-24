@@ -131,7 +131,7 @@ function runMigrations($pdo) {
         }
     } catch (Exception $e) {}
 
-    $targetVersion = 9; // Har yangi migratsiya qo'shganda +1 qiling
+    $targetVersion = 11; // Har yangi migratsiya qo'shganda +1 qiling
     if ($currentVersion >= $targetVersion) return; // Allaqachon yangilangan
 
     // 1. Users table
@@ -506,6 +506,75 @@ function runMigrations($pdo) {
         foreach ($i18nCols as $sql) {
             try { $pdo->exec($sql); } catch (Exception $e) {}
         }
+    }
+
+    // ========== v10: Tiba Optom (Ulgurji savdo) jadvallar ==========
+    if ($currentVersion < 11) {
+        // Ulgurji sotuvchilar
+        $pdo->exec("CREATE TABLE IF NOT EXISTS optom_sellers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_name TEXT NOT NULL,
+            owner_name TEXT NOT NULL,
+            phone TEXT NOT NULL UNIQUE,
+            email TEXT,
+            password_hash TEXT NOT NULL,
+            inn TEXT,
+            logo_path TEXT,
+            description TEXT,
+            address TEXT,
+            city TEXT DEFAULT 'Toshkent',
+            categories TEXT DEFAULT '[]',
+            min_order_amount INTEGER DEFAULT 0,
+            delivery_regions TEXT DEFAULT '[\"Toshkent\"]',
+            rating REAL DEFAULT 0,
+            review_count INTEGER DEFAULT 0,
+            views INTEGER DEFAULT 0,
+            status TEXT DEFAULT 'pending',
+            verified INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )");
+
+        // Optom sessiyalar
+        $pdo->exec("CREATE TABLE IF NOT EXISTS optom_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            seller_id INTEGER NOT NULL,
+            token TEXT NOT NULL UNIQUE,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            expires_at DATETIME NOT NULL,
+            FOREIGN KEY(seller_id) REFERENCES optom_sellers(id)
+        )");
+
+        // Ulgurji mahsulotlar
+        $pdo->exec("CREATE TABLE IF NOT EXISTS optom_products (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            seller_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            description TEXT,
+            category TEXT DEFAULT 'Boshqa',
+            price_retail INTEGER DEFAULT 0,
+            price_wholesale INTEGER DEFAULT 0,
+            min_quantity INTEGER DEFAULT 1,
+            unit TEXT DEFAULT 'dona',
+            image_path TEXT,
+            in_stock INTEGER DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(seller_id) REFERENCES optom_sellers(id)
+        )");
+
+        // Ulgurji buyurtmalar/so'rovlar
+        $pdo->exec("CREATE TABLE IF NOT EXISTS optom_orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            seller_id INTEGER NOT NULL,
+            customer_name TEXT NOT NULL,
+            customer_phone TEXT NOT NULL,
+            product_id INTEGER,
+            quantity INTEGER DEFAULT 1,
+            message TEXT,
+            status TEXT DEFAULT 'new',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(seller_id) REFERENCES optom_sellers(id),
+            FOREIGN KEY(product_id) REFERENCES optom_products(id)
+        )");
     }
 
     $pdo->exec("UPDATE migration_version SET version = $targetVersion WHERE id = 1");

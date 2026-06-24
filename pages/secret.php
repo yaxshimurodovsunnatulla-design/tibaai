@@ -74,6 +74,8 @@
             <button data-tab="samples" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">🎨 Namunalar</button>
             <button data-tab="instruments" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">🔧 Instrumentlar</button>
             <button data-tab="users" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">👥 Foydalanuvchilar</button>
+            <button data-tab="bloggers" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">🎙️ Blogerlar</button>
+            <button data-tab="optom" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">📦 Optom</button>
             <button data-tab="logs" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">📜 Loglar</button>
             <button data-tab="settings" class="tab-btn px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all text-gray-400 hover:text-white">⚙️ Sozlamalar</button>
         </div>
@@ -626,6 +628,59 @@
                             <i class="fa-solid fa-trash-can mr-1"></i> O'chirish
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Bloggers -->
+            <div id="tab-bloggers" class="admin-tab hidden animate-fade-in">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">🎙️ Blogerlar Moderatsiyasi</h2>
+                    <button onclick="loadBloggers()" class="btn-secondary px-4 py-2 text-xs font-bold">🔄 Yangilash</button>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-[800px]">
+                        <thead>
+                            <tr class="border-b border-white/10 text-xs text-gray-400 uppercase tracking-wider bg-white/[0.02]">
+                                <th class="p-4 font-semibold">ID</th>
+                                <th class="p-4 font-semibold">Ism-Familiya</th>
+                                <th class="p-4 font-semibold">Telefon</th>
+                                <th class="p-4 font-semibold">Sana</th>
+                                <th class="p-4 font-semibold text-center">Status</th>
+                                <th class="p-4 font-semibold text-right">Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bloggers-tbody" class="text-sm divide-y divide-white/5">
+                            <!-- JS orqali to'ldiriladi -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Optom (Wholesale Sellers Moderation) -->
+            <div id="tab-optom" class="admin-tab hidden animate-fade-in">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">📦 Ulgurji Sotuvchilar Moderatsiyasi</h2>
+                    <button onclick="loadOptomSellers()" class="btn-secondary px-4 py-2 text-xs font-bold">🔄 Yangilash</button>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-[1000px]">
+                        <thead>
+                            <tr class="border-b border-white/10 text-xs text-gray-400 uppercase tracking-wider bg-white/[0.02]">
+                                <th class="p-4 font-semibold">ID</th>
+                                <th class="p-4 font-semibold">Kompaniya</th>
+                                <th class="p-4 font-semibold">Egasi</th>
+                                <th class="p-4 font-semibold">Telefon / Email</th>
+                                <th class="p-4 font-semibold">INN / Shahar</th>
+                                <th class="p-4 font-semibold">Kategoriyalar</th>
+                                <th class="p-4 font-semibold text-center">Tasdiqlangan</th>
+                                <th class="p-4 font-semibold text-center">Status</th>
+                                <th class="p-4 font-semibold text-right">Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="optom-tbody" class="text-sm divide-y divide-white/5">
+                            <tr><td colspan="9" class="p-8 text-center text-gray-500">Yuklanmoqda...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -1283,7 +1338,7 @@ document.addEventListener('DOMContentLoaded', () => {
         adminSect.classList.remove('hidden');
         // Hashdan tabni tiklash
         const hash = window.location.hash.replace('#', '');
-        const validTabs = ['dashboard','prompts','packages','payments','sections','gallery','samples','instruments','users','logs','settings'];
+        const validTabs = ['dashboard','prompts','packages','payments','sections','gallery','samples','instruments','users','bloggers','optom','logs','settings'];
         const savedTab = validTabs.includes(hash) ? hash : 'dashboard';
         const tabBtn = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
         if (tabBtn) tabBtn.click();
@@ -1313,6 +1368,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tab === 'logs') loadLogs();
             if (tab === 'samples') { loadSamples(); loadCarouselSpeed(); }
             if (tab === 'instruments') loadInstruments();
+            if (tab === 'bloggers') loadBloggers();
+            if (tab === 'optom') loadOptomSellers();
         };
     });
 
@@ -2778,6 +2835,208 @@ document.addEventListener('DOMContentLoaded', () => {
             await fetch(`/api/admin-samples.php?id=${id}`, { method: 'DELETE', headers: { 'X-Admin-Session': sessionToken } });
             showToast("Namuna o'chirildi");
             loadSamples();
+        } catch (e) { console.error(e); }
+    }
+
+    // ========== BLOGGERS (MODERATSIYA) ==========
+    window.loadBloggers = async function() {
+        if (!sessionToken) return;
+        try {
+            const res = await fetch('/api/admin-bloggers.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Session': sessionToken },
+                body: JSON.stringify({ action: 'list' })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const tbody = document.getElementById('bloggers-tbody');
+                tbody.innerHTML = '';
+                if (data.bloggers.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500">Hech qanday bloger yo'q.</td></tr>`;
+                    return;
+                }
+                data.bloggers.forEach(b => {
+                    let statusBadge = '';
+                    if (b.status === 'pending') statusBadge = '<span class="px-2 py-1 rounded bg-amber-500/20 text-amber-400 text-xs font-bold">Kutilmoqda</span>';
+                    else if (b.status === 'approved') statusBadge = '<span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-xs font-bold">Tasdiqlangan</span>';
+                    else if (b.status === 'rejected') statusBadge = '<span class="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs font-bold">Rad etilgan</span>';
+                    else statusBadge = `<span class="px-2 py-1 rounded bg-gray-500/20 text-gray-400 text-xs font-bold">${b.status}</span>`;
+
+                    let actions = '';
+                    if (b.status === 'pending') {
+                        actions = `
+                            <button onclick="approveBlogger(${b.id})" class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/40 px-3 py-1.5 rounded transition-all text-xs font-bold mr-2"><i class="fa-solid fa-check"></i> Tasdiqlash</button>
+                            <button onclick="rejectBlogger(${b.id})" class="bg-red-500/20 text-red-400 hover:bg-red-500/40 px-3 py-1.5 rounded transition-all text-xs font-bold"><i class="fa-solid fa-xmark"></i> Rad etish</button>
+                        `;
+                    } else if (b.status === 'approved') {
+                        actions = `<button onclick="blockBlogger(${b.id})" class="bg-gray-500/20 text-gray-400 hover:bg-gray-500/40 px-3 py-1.5 rounded transition-all text-xs font-bold"><i class="fa-solid fa-ban"></i> Bloklash</button>`;
+                    } else if (b.status === 'blocked' || b.status === 'rejected') {
+                        actions = `<button onclick="approveBlogger(${b.id})" class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/40 px-3 py-1.5 rounded transition-all text-xs font-bold"><i class="fa-solid fa-rotate-left"></i> Qayta tiklash</button>`;
+                    }
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/[0.02] transition-colors">
+                            <td class="p-4 text-gray-400">#${b.id}</td>
+                            <td class="p-4 font-bold text-white">${b.display_name}</td>
+                            <td class="p-4 text-gray-300">${b.phone}</td>
+                            <td class="p-4 text-gray-400 text-xs">${b.created_at}</td>
+                            <td class="p-4 text-center">${statusBadge}</td>
+                            <td class="p-4 text-right">${actions}</td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    window.approveBlogger = async function(id) {
+        if (!confirm('Ushbu blogerni tasdiqlaysizmi? U endi tizimga kira oladi.')) return;
+        try {
+            await fetch('/api/admin-bloggers.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Session': sessionToken },
+                body: JSON.stringify({ action: 'approve', id: id })
+            });
+            window.loadBloggers();
+        } catch (e) { console.error(e); }
+    }
+
+    window.rejectBlogger = async function(id) {
+        let reason = prompt('Rad etish sababini kiriting:');
+        if (reason === null) return;
+        try {
+            await fetch('/api/admin-bloggers.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Session': sessionToken },
+                body: JSON.stringify({ action: 'reject', id: id, reason: reason })
+            });
+            window.loadBloggers();
+        } catch (e) { console.error(e); }
+    }
+
+    window.blockBlogger = async function(id) {
+        if (!confirm('Ushbu blogerni bloklaysizmi? U endi tizimga kira olmaydi.')) return;
+        try {
+            await fetch('/api/admin-bloggers.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Session': sessionToken },
+                body: JSON.stringify({ action: 'block', id: id })
+            });
+            window.loadBloggers();
+        } catch (e) { console.error(e); }
+    }
+
+    // ========== OPTOM (ULGURJI SAVDO MODERATSIYA) ==========
+    window.loadOptomSellers = async function() {
+        if (!sessionToken) return;
+        try {
+            const res = await fetch('/api/admin-optom.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Session': sessionToken },
+                body: JSON.stringify({ action: 'list' })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const tbody = document.getElementById('optom-tbody');
+                tbody.innerHTML = '';
+                if (data.sellers.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-gray-500">Hech qanday sotuvchi yo'q.</td></tr>`;
+                    return;
+                }
+                data.sellers.forEach(s => {
+                    let statusBadge = '';
+                    if (s.status === 'pending') statusBadge = '<span class="px-2 py-1 rounded bg-amber-500/20 text-amber-400 text-xs font-bold">Kutilmoqda</span>';
+                    else if (s.status === 'active') statusBadge = '<span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-xs font-bold">Faol</span>';
+                    else if (s.status === 'rejected') statusBadge = '<span class="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs font-bold">Rad etilgan</span>';
+                    else if (s.status === 'blocked') statusBadge = '<span class="px-2 py-1 rounded bg-gray-500/20 text-gray-400 text-xs font-bold">Bloklangan</span>';
+                    else statusBadge = `<span class="px-2 py-1 rounded bg-gray-500/20 text-gray-400 text-xs font-bold">${s.status}</span>`;
+
+                    let verifiedBadge = s.verified 
+                        ? `<button onclick="toggleVerifyOptom(${s.id})" class="px-2 py-1 rounded bg-teal-500/20 text-teal-400 text-xs font-bold border border-teal-500/30 hover:bg-teal-500/40 transition-colors"><i class="fa-solid fa-circle-check"></i> Ha</button>`
+                        : `<button onclick="toggleVerifyOptom(${s.id})" class="px-2 py-1 rounded bg-white/5 text-gray-400 text-xs font-bold border border-white/10 hover:bg-white/10 transition-colors"><i class="fa-solid fa-circle-xmark"></i> Yo'q</button>`;
+
+                    let actions = '';
+                    if (s.status === 'pending') {
+                        actions = `
+                            <button onclick="approveOptomSeller(${s.id})" class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/40 px-2.5 py-1 rounded transition-all text-xs font-bold mr-1" title="Tasdiqlash"><i class="fa-solid fa-check"></i></button>
+                            <button onclick="rejectOptomSeller(${s.id})" class="bg-red-500/20 text-red-400 hover:bg-red-500/40 px-2.5 py-1 rounded transition-all text-xs font-bold" title="Rad etish"><i class="fa-solid fa-xmark"></i></button>
+                        `;
+                    } else if (s.status === 'active') {
+                        actions = `<button onclick="blockOptomSeller(${s.id})" class="bg-gray-500/20 text-gray-400 hover:bg-gray-500/40 px-2 py-1.5 rounded transition-all text-xs font-bold"><i class="fa-solid fa-ban"></i> Bloklash</button>`;
+                    } else if (s.status === 'blocked' || s.status === 'rejected') {
+                        actions = `<button onclick="approveOptomSeller(${s.id})" class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/40 px-2 py-1.5 rounded transition-all text-xs font-bold"><i class="fa-solid fa-rotate-left"></i> Tiklash</button>`;
+                    }
+
+                    const catsStr = (s.categories && s.categories.length) ? s.categories.join(', ') : '—';
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/[0.02] transition-colors">
+                            <td class="p-4 text-gray-400">#${s.id}</td>
+                            <td class="p-4 font-bold text-white">${s.company_name}</td>
+                            <td class="p-4 text-gray-300">${s.owner_name}</td>
+                            <td class="p-4 text-gray-300">
+                                <div class="font-semibold">${s.phone}</div>
+                                <div class="text-[10px] text-gray-500">${s.email || '—'}</div>
+                            </td>
+                            <td class="p-4 text-gray-300">
+                                <div>${s.inn || '—'}</div>
+                                <div class="text-[10px] text-gray-500">${s.city}</div>
+                            </td>
+                            <td class="p-4 text-gray-400 text-xs max-w-[200px] truncate" title="${catsStr}">${catsStr}</td>
+                            <td class="p-4 text-center">${verifiedBadge}</td>
+                            <td class="p-4 text-center">${statusBadge}</td>
+                            <td class="p-4 text-right">${actions}</td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    window.approveOptomSeller = async function(id) {
+        if (!confirm('Ushbu ulgurji sotuvchini faollashtirasizmi?')) return;
+        try {
+            await fetch('/api/admin-optom.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Session': sessionToken },
+                body: JSON.stringify({ action: 'approve', id: id })
+            });
+            window.loadOptomSellers();
+        } catch (e) { console.error(e); }
+    }
+
+    window.rejectOptomSeller = async function(id) {
+        if (!confirm('Ushbu ulgurji sotuvchining arizasini rad etasizmi?')) return;
+        try {
+            await fetch('/api/admin-optom.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Session': sessionToken },
+                body: JSON.stringify({ action: 'reject', id: id })
+            });
+            window.loadOptomSellers();
+        } catch (e) { console.error(e); }
+    }
+
+    window.blockOptomSeller = async function(id) {
+        if (!confirm('Ushbu sotuvchini bloklaysizmi?')) return;
+        try {
+            await fetch('/api/admin-optom.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Session': sessionToken },
+                body: JSON.stringify({ action: 'block', id: id })
+            });
+            window.loadOptomSellers();
+        } catch (e) { console.error(e); }
+    }
+
+    window.toggleVerifyOptom = async function(id) {
+        try {
+            await fetch('/api/admin-optom.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Session': sessionToken },
+                body: JSON.stringify({ action: 'toggle_verify', id: id })
+            });
+            window.loadOptomSellers();
         } catch (e) { console.error(e); }
     }
 

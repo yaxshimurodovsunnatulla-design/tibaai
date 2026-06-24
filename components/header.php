@@ -153,6 +153,8 @@ document.addEventListener('click', function(e) {
                 ['path' => '/analitika', 'label' => t('nav.analytics'), 'icon' => 'fa-chart-line text-emerald-400'],
                 ['path' => '/pricing',       'label' => t('nav.pricing'),              'icon' => 'fa-tag text-emerald-400'],
                 ['path' => '/kurslar',       'label' => t('nav.courses'),              'icon' => 'fa-graduation-cap text-amber-400'],
+                ['path' => '/reklama-birja', 'label' => t('nav.reklama_birja'), 'icon' => 'fa-bullhorn text-orange-400'],
+                ['path' => '/optom',         'label' => t('nav.optom'),         'icon' => 'fa-boxes-stacked text-teal-400'],
             ];
             foreach ($sidebarLinks as $link):
                 $isActive = ($currentPage === $link['path']);

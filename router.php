@@ -125,7 +125,41 @@ $routes = [
     '/hisobotlar' => '/pages/hisobotlar.php',
     '/didox-etty' => '/pages/didox-etty.php',
     '/namunalar' => '/pages/namunalar.php',
+    '/reklama-birja' => '/pages/reklama-birja.php',
+    '/optom' => '/pages/optom.php',
 ];
+
+// ========== BLOGER PANEL ROUTES ==========
+$bloggerRoutes = [
+    '/blogger'            => '/blogger/pages/dashboard.php',
+    '/blogger/login'      => '/blogger/pages/login.php',
+    '/blogger/profil'     => '/blogger/pages/profil.php',
+    '/blogger/takliflar'  => '/blogger/pages/takliflar.php',
+    '/blogger/bitimlar'   => '/blogger/pages/bitimlar.php',
+    '/blogger/chat'       => '/blogger/pages/chat.php',
+    '/blogger/daromad'    => '/blogger/pages/daromad.php',
+    '/blogger/portfolio'  => '/blogger/pages/portfolio.php',
+    '/blogger/sozlamalar' => '/blogger/pages/sozlamalar.php',
+];
+
+if (isset($bloggerRoutes[$uri])) {
+    include __DIR__ . $bloggerRoutes[$uri];
+    return true;
+}
+
+// ========== OPTOM PANEL ROUTES ==========
+$optomRoutes = [
+    '/optom/login'       => '/optom/pages/login.php',
+    '/optom/dashboard'   => '/optom/pages/dashboard.php',
+    '/optom/mahsulotlar' => '/optom/pages/mahsulotlar.php',
+    '/optom/buyurtmalar' => '/optom/pages/buyurtmalar.php',
+    '/optom/profil'      => '/optom/pages/profil.php',
+];
+
+if (isset($optomRoutes[$uri])) {
+    include __DIR__ . $optomRoutes[$uri];
+    return true;
+}
 
 // Check if URI matches a route
 if (isset($routes[$uri])) {
